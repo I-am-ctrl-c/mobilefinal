@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-darkBg text-white font-sans;
+}
+
+a {
+  @apply transition duration-200;
+}
+
+#app {
+  /* 可以保留 max-width，但最好不要 padding 会撑出中间色块 */
+  max-width: 1280px;
+  margin: 0 auto;
+}
