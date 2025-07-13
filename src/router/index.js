@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Home from '../pages/Home.vue'
-import Schedule from '../pages/Schedule.vue'
-import Booking from '../pages/Booking.vue'
-import Workout from '../pages/Workout.vue'
-import Profile from '../pages/Profile.vue'
+import Home from '../pages/Home'
+import Schedule from '../pages/Schedule'
+import Booking from '../pages/Booking'
+import Workout from '../pages/Workout'
+import Profile from '../pages/Profile'
 
 
 const routes = [
