@@ -78,23 +78,28 @@
   gap: 1rem;          /* 图片和圆环之间的间距 */
 }
 
-
+/* 针对刚才改的 Workout2 类名 */
 /* 针对新的 .Workout2 类 */
-.Workout2 {
-  /* 宽度固定或响应式均可，示例： */
-  width: 240px;       /* 你需要的宽度 */
-  height: auto;       /* 保持原图比例 */
-  object-fit: cover;  /* 填充并裁切 */
-  border-radius: 12px;/* 圆角 */
+/* 响应式图片：小屏 100% 宽度，大屏固定 240px */
+.workout-visual-img {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 12px;
   transition: transform 0.3s ease;
   cursor: pointer;
 }
 
-.Workout2:hover {
-  transform: scale(1.05);
-  border: 3px solid red !important;
+@media (min-width: 768px) {
+  .workout-visual-img {
+    width: 240px;
+  }
 }
 
+.workout-visual-img:hover {
+  transform: scale(1.05);
+}
 
 
 /* 原来的 ring-container 样式如果不再使用可删除，保留如下仅供参考 */
@@ -103,3 +108,46 @@
   display: inline-block;
 }
 
+/* 容器：并列三个信息框 */
+/* 包裹三个框的容器：横向并列 */
+/* —— 并排容器 —— */
+.info-box-wrapper {
+  display: flex;                    /* 横向排列 */
+  justify-content: space-between;   /* 均匀分布 */
+  gap: 2rem;                        /* 框间间距 */
+  margin: 2rem;                 /* 与上方内容保持距离 */
+}
+
+/* —— 单个信息框 —— */
+.info-box {
+  flex: 1;                          /* 三个等分父容器宽度 */
+  min-width: 150px;                 /* 防止过窄时太挤 */
+  border: 1px solid #fff;           /* 白色实线 */
+  border-radius: 12px;              /* 圆角 */
+  padding: 1rem;                    /* 内边距 */
+  border-bottom-width: 1px;         /* 默认细底边 */
+  border-bottom-color: #fff;
+  transition: 
+    border-bottom-width 0.3s ease, 
+    border-bottom-color 0.3s ease;
+}
+
+/* —— 悬停时 紫色粗底边 —— */
+.info-box:hover {
+  border-bottom-width: 4px;
+  border-bottom-color: #9d4edd;     /* 主题紫色 */
+}
+
+/* —— 内部文字样式 —— */
+.metric-value {
+  color: #9d4edd;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.metric-label {
+  color: #fff;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+}

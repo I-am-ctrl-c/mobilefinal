@@ -1,6 +1,9 @@
 import workoutTemplate from './workout.html?raw'
 import Footer from '../../components/Footer'
 import workoutImg from '../../assets/images/Workout.jpg'
+import workoutImg2 from '../../assets/images/Workout2.jpg' 
+import './workout.css'
+
 import { ref, computed, onMounted } from 'vue'
 
 export default {
@@ -9,6 +12,7 @@ export default {
   template: workoutTemplate,
   setup() {
     const workoutImgRef = ref(workoutImg)
+    const workoutImg2Ref = ref(workoutImg2)  
 
     // 生成从 2020-01-01 到今天的周起始列表（每周日）
     const generateWeekRanges = () => {
@@ -53,6 +57,7 @@ export default {
 
     return {
       workoutImg: workoutImgRef,
+      workoutImg2: workoutImg2Ref,
       weekDisplay,
       prevWeek,
       nextWeek
