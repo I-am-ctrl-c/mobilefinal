@@ -5,7 +5,7 @@
       isScrolled ? 'bg-black shadow-md' : 'bg-transparent'
     ]"
   >
-    <nav class="max-w-7xl mx-auto flex items-center justify-between p-4 text-white">
+  <nav class="max-w-7xl mx-auto flex items-center justify-between px-6 py-5 text-white text-lg">
       <div class="text-xl font-bold">XGYM</div>
       <ul class="flex space-x-6">
         <li v-for="item in navItems" :key="item.path">
