@@ -27,3 +27,48 @@ a {
   /*max-width: 1280px; */
   margin: 0 auto;
 }
+
+
+/* 容器：并列三个信息框（也可以只用一个，信息框大小都可以自定义 */
+/* 包裹三个框的容器：横向并列 */
+/* —— 并排容器 —— */
+.info-box-wrapper {
+  display: flex;                    /* 横向排列 */
+  justify-content: space-between;   /* 均匀分布 */
+  gap: 2rem;                        /* 框间间距 */
+  margin: 2rem;                 /* 与上方内容保持距离 */
+}
+
+/* —— 单个信息框 —— */
+.info-box {
+  flex: 1;                          /* 三个等分父容器宽度 */
+  min-width: 150px;                 /* 防止过窄时太挤 */
+  border: 1px solid #fff;           /* 白色实线 */
+  border-radius: 12px;              /* 圆角 */
+  padding: 1rem;                    /* 内边距 */
+  border-bottom-width: 1px;         /* 默认细底边 */
+  border-bottom-color: #fff;
+  transition: 
+    border-bottom-width 0.3s ease, 
+    border-bottom-color 0.3s ease;
+}
+
+/* —— 悬停时 紫色粗底边 —— */
+.info-box:hover {
+  border-bottom-width: 4px;
+  border-bottom-color: #9d4edd;     /* 主题紫色 */
+}
+
+/* —— 内部文字样式(可以不用这个，自己定义） —— */
+.metric-value {
+  color: #9d4edd;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.metric-label {
+  color: #fff;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+}

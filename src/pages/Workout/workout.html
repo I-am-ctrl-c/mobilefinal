@@ -2,6 +2,7 @@
 
 <head>
   <link rel="stylesheet" href="./workout.css">
+  <link rel="stylesheet" href="/src/assets/main.css">
   <script src="./index.js" defer></script>
 </head>
 
@@ -15,21 +16,21 @@
 
 
 
-  <!-- ◀ 信息框区域 ▶ -->
-  <div class="info-box-wrapper">
-    <div class="info-box">
-      <p class="metric-value">6530/9300</p>
-      <p class="metric-label">Progress</p>
-    </div>
-    <div class="info-box">
-      <p class="metric-value">130</p>
-      <p class="metric-label">Run/min</p>
-    </div>
-    <div class="info-box">
-      <p class="metric-value">60</p>
-      <p class="metric-label">Training/min</p>
-    </div>
+ <!-- ✅ 信息框区域（应用 info-box） -->
+<div class="max-w-7xl mx-auto mt-8 px-4 flex flex-wrap gap-6 justify-between">
+  <div class="info-box text-center text-white">
+    <p class="metric-value text-2xl font-bold text-primaryPurple">6530/9300</p>
+    <p class="metric-label text-sm mt-1">Progress</p>
   </div>
+  <div class="info-box text-center text-white">
+    <p class="metric-value text-2xl font-bold text-primaryPurple">130</p>
+    <p class="metric-label text-sm mt-1">Run/min</p>
+  </div>
+  <div class="info-box text-center text-white">
+    <p class="metric-value text-2xl font-bold text-primaryPurple">60</p>
+    <p class="metric-label text-sm mt-1">Training/min</p>
+  </div>
+</div>
 
 
 
@@ -37,7 +38,7 @@
 
 <div class="max-w-7xl mx-auto mt-8 mb-8 px-4 grid grid-cols-1 md:grid-cols-2 gap-14 items-start">
   <!-- 左侧：图片＋圆环 -->
-  <div class="flex flex-wrap items-center gap-6">
+  <div class="flex flex-wrap items-center gap-x-16">
     <!-- 响应式：小屏 100% 宽度，大于 md 固定 240px -->
     <img
       :src="workoutImg2"
@@ -98,6 +99,10 @@
       </button>
     </div>
   </div>
+
+
+
+
 </section>
 
 <div class="pt-24">
