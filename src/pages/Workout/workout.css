@@ -1,1 +1,35 @@
-/* Workout page styles */ 
+/* Workout page styles */
+
+/* Calorie ring*/
+.ring-svg {
+  transform: rotate(-90deg);
+}
+
+.ring-text {
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  transform: translate(-50%, -52%);
+  text-align: center;
+  color: white;
+  pointer-events: none;
+}
+
+.ring-value {
+  font-size: 1.7rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.ring-label {
+  font-size: 0.8rem;
+}
+
+.ring-subtext {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+  color: white;
+}

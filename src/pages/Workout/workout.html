@@ -1,4 +1,11 @@
 <!-- ✅ src/pages/Workout/workout.html -->
+
+<head>
+  <link rel="stylesheet" href="workout.css">
+  <script src="index.js" defer></script>
+</head>
+
+
 <div class="w-full aspect-[21/5] relative mt-6 overflow-hidden">
   <img :src="workoutImg" class="w-full h-full object-cover" alt="Workout Image" />
   <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
@@ -9,34 +16,10 @@
 <section class="w-full px-8 py-20 bg-darkBg text-white">
   <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
     <!-- ✅ 左区域：放大的圆环图 -->
-<div class="w-full flex justify-center">
-  <div class="relative w-52 h-52 sm:w-60 sm:h-60">
-    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-      <circle
-        cx="50"
-        cy="50"
-        r="45"
-        fill="none"
-        stroke="#333"
-        stroke-width="10"
-      />
-      <circle
-        cx="50"
-        cy="50"
-        r="45"
-        fill="none"
-        stroke="#a855f7"
-        stroke-width="10"
-        stroke-dasharray="282.74"
-        :stroke-dashoffset="282.74 - (progress / goal) * 282.74"
-        stroke-linecap="round"
-      />
-    </svg>
-    <div class="absolute inset-0 flex flex-col items-center justify-center text-white font-bold text-xl">
-      <span>{{ progress }}</span>
-      <span class="text-sm font-medium opacity-80">kcal</span>
-    </div>
-  </div>
+<!-- workout.html 中想显示的地方插入 -->
+<!-- Calorie Ring 容器 -->
+<div class="relative calorie-ring" data-current="6530" data-goal="9300" style="--ring-size: 200">
+  <!-- SVG 插入由 JS 动态完成 -->
 </div>
 
 
