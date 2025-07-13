@@ -3,8 +3,13 @@
 @tailwind utilities;
 
 body {
-  /* 浅色模式：背景 lightBg 文字 darkText | 深色模式：背景 darkBg 文字 white */
-  @apply bg-lightBg dark:bg-darkBg text-darkText dark:text-white font-noto;
+  /* 默认浅色模式 */
+  @apply bg-lightBg text-darkText font-noto;
+}
+
+/* 深色模式（当 html 或 root 元素带 .dark 类时）*/
+.dark body {
+  @apply bg-darkBg text-white;
 }
 
 /* Example utility classes now available:
