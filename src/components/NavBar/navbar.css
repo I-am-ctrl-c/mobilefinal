@@ -31,3 +31,47 @@ a {
   from, to { border-color: transparent }
   50% { border-color: currentColor }
 } 
+
+/* ================== 导航栏大小定制区域 ================== */
+
+/* Logo 文本（XGYM）*/
+.navbar-logo-title {
+  /* TODO: 在此处自定义 Logo 的字体和字号： */
+  @apply font-ledger text-4xl; 
+}
+
+/* 打字机文字 */
+.navbar-typewriter {
+  /* TODO: 自定义打字机文字的字体和字号 */
+  @apply font-antic text-xl; 
+}
+
+/* 中间导航链接文字 */
+.navbar-nav-link {
+  /* TODO: 自定义导航链接的字体和字号 */
+  @apply font-noto text-2xl;
+}
+
+/* 右侧用户名 */
+.navbar-username {
+  /* TODO: 自定义用户名的字体和字号 */
+  @apply font-noto text-xl;
+}
+
+/* Logo 图片尺寸 */
+.navbar-logo-img {
+  /* TODO: 自定义 logo 图片高度/宽度，例如： */
+  @apply h-10 w-auto; 
+}
+
+/* 主题/语言切换按钮（文字或整体按钮）尺寸 */
+.navbar-toggle-btn {
+  /* TODO: 自定义按钮字号或 padding，例如： */
+  @apply text-xl px-1;
+}
+
+/* 主题切换图标尺寸 */
+.navbar-toggle-icon {
+  /* TODO: 自定义 Sun/Moon 图标尺寸，例如： */
+  @apply text-2xl;
+} 
