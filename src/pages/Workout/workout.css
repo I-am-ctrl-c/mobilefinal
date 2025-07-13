@@ -120,11 +120,12 @@
 .info-box {
   flex: 1;                          /* 三个等分父容器宽度 */
   min-width: 150px;                 /* 防止过窄时太挤 */
-  border: 1px solid var(--bg-1);         /* 白色实线 */
+  border: 1px solid var(--font-7);         /* 中灰边框 */
+  border-color: var(--font-7) !important;
   border-radius: 12px;              /* 圆角 */
   padding: 1rem;                    /* 内边距 */
   border-bottom-width: 1px;         /* 默认细底边 */
-  border-bottom-color: var(--bg-1);
+  border-bottom-color: var(--font-7) !important;
   transition:
     border-bottom-width 0.3s ease,
     border-bottom-color 0.3s ease;

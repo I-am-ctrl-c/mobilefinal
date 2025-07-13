@@ -18,16 +18,16 @@
 
  <!-- ✅ 信息框区域（应用 info-box） -->
 <div class="max-w-7xl mx-auto mt-8 px-4 flex flex-wrap gap-6 justify-between">
-  <div class="info-box text-center text-white">
-    <p class="metric-value text-2xl font-bold text-primaryPurple">6530/9300</p>
+  <div class="info-box text-center">
+    <p class="metric-value text-2xl font-bold text-decorPu-5">6530/9300</p>
     <p class="metric-label text-sm mt-1">Progress</p>
   </div>
-  <div class="info-box text-center text-white">
-    <p class="metric-value text-2xl font-bold text-primaryPurple">130</p>
+  <div class="info-box text-center">
+    <p class="metric-value text-2xl font-bold text-decorPu-5">130</p>
     <p class="metric-label text-sm mt-1">Run/min</p>
   </div>
-  <div class="info-box text-center text-white">
-    <p class="metric-value text-2xl font-bold text-primaryPurple">60</p>
+  <div class="info-box text-center">
+    <p class="metric-value text-2xl font-bold text-decorPu-5">60</p>
     <p class="metric-label text-sm mt-1">Training/min</p>
   </div>
 </div>
@@ -61,18 +61,18 @@
     <div class="space-y-8">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm text-primaryPurple uppercase font-semibold tracking-wide">Achievement</p>
+          <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">Achievement</p>
           <h2 class="text-3xl md:text-5xl font-bold leading-relaxed">
             Week in {{ weekDisplay }}
           </h2>
         </div>
         <div class="flex space-x-3">
-          <button @click="prevWeek" class="text-white border border-white rounded p-1 hover:bg-white hover:text-darkBg transition">⬅️</button>
-          <button @click="nextWeek" class="text-white border border-white rounded p-1 hover:bg-white hover:text-darkBg transition">➡️</button>
+          <button @click="prevWeek" class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition">⬅️</button>
+          <button @click="nextWeek" class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition">➡️</button>
         </div>
       </div>
 
-      <p class="text-gray-300 leading-relaxed">
+      <p class="text-font-6 leading-relaxed">
         Lorem ipsum dolor sit amet consectetur. Lectus ac sed purus ultrices
         diam eu scelerisque. Eu ipsum curabitur ultricies id vel lacus
         pellentesque tristique.
@@ -81,20 +81,20 @@
       <!-- ✅ 数据块展示 -->
       <div class="flex flex-wrap gap-x-10 gap-y-6 mt-6">
         <div>
-          <p class="text-primaryPurple text-3xl font-bold">6530/9300</p>
+          <p class="text-decorPu-5 text-3xl font-bold">6530/9300</p>
           <p class="text-font-10 text-sm font-medium mt-1">Progress</p>
         </div>
         <div>
-          <p class="text-primaryPurple text-3xl font-bold">130</p>
+          <p class="text-decorPu-5 text-3xl font-bold">130</p>
           <p class="text-font-10 text-sm font-medium mt-1">Run/min</p>
         </div>
         <div>
-          <p class="text-primaryPurple text-3xl font-bold">60</p>
+          <p class="text-decorPu-5 text-3xl font-bold">60</p>
           <p class="text-font-10 text-sm font-medium mt-1">Training/min</p>
         </div>
       </div>
 
-      <button class="mt-8 bg-primaryPurple hover:bg-purple-600 text-white font-semibold px-6 py-3 rounded shadow transition">
+      <button class="mt-8 bg-decorPu-5 hover:bg-decorPu-6 text-white font-semibold px-6 py-3 rounded shadow transition">
         MORE ABOUT
       </button>
     </div>
