@@ -1,3 +1,33 @@
 a {
   transition: color 0.2s ease;
+}
+
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid currentColor;
+  animation: typing 4s steps(25, end) infinite, blink-caret 0.75s step-end infinite;
+}
+
+@media (max-width: 768px) { /* md breakpoint */
+  .typewriter {
+    font-size: 0.875rem; /* reduce text */
+  }
+}
+
+@media (max-width: 640px) { /* sm breakpoint */
+  .typewriter {
+    font-size: 0.75rem;
+    max-width: 6rem;
+  }
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: currentColor }
 } 
