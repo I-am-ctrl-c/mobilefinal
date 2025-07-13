@@ -13,7 +13,7 @@ export default {
   zh: {
     langToggle: 'EN',
     home: '首页',
-    schedule: '课程表',
+    schedule: '计划',
     booking: '预约',
     workout: '锻炼',
     profile: '我的',

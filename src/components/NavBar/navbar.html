@@ -4,22 +4,22 @@
     isScrolled ? 'bg-black shadow-md' : 'bg-transparent'
   ]"
 >
-  <nav class="w-full grid grid-cols-3 items-center px-8 md:px-6 sm:px-4 py-6 md:py-5 sm:py-4 text-xl lg:text-xl md:text-lg sm:text-base">
+  <nav class="w-full grid grid-cols-2 lg:grid-cols-3 items-center px-8 md:px-6 sm:px-4 py-6 md:py-5 sm:py-4 text-xl lg:text-xl md:text-lg sm:text-base">
     <!-- Left section: Logo -->
     <div class="flex items-center space-x-3 justify-self-start">
-      <img :src="logoUrl" alt="Logo" class="logo-img h-8 w-auto md:h-7 sm:h-6 select-none" />
-      <span class="logo-title font-bold text-white text-xl md:text-lg sm:text-base">XGYM</span>
+      <img :src="logoUrl" alt="Logo" class="logo-img navbar-logo-img h-8 w-auto md:h-7 sm:h-6 select-none" />
+      <span class="logo-title navbar-logo-title font-heading text-xl md:text-lg sm:text-base">XGYM</span>
       <!-- Typing effect text -->
-      <span class="typewriter hidden xl:inline-block ml-4 xl:w-40 lg:w-32 md:w-24">{{ t('typewriter') }}</span>
+      <span class="typewriter navbar-typewriter hidden xl:inline-block ml-4 xl:w-40 lg:w-32 md:w-24">{{ t('typewriter') }}</span>
     </div>
     
 
-    <!-- Center section: Navigation links (hidden on small screens) -->
-    <ul class="flex items-center justify-center space-x-6 md:space-x-5 sm:space-x-4 justify-self-center hidden sm:flex">
+    <!-- Center section: Navigation links (仅 lg 及以上显示) -->
+    <ul class="flex items-center justify-center space-x-6 md:space-x-5 sm:space-x-4 justify-self-center hidden lg:flex">
       <li v-for="item in navItems" :key="item.path">
         <router-link
           :to="item.path"
-          class="pb-1 transition duration-300 border-b-2"
+          class="navbar-nav-link pb-1 transition duration-300 border-b-2"
           :class="[
             isActive(item.path)
               ? 'text-primaryPurple border-primaryPurple'
@@ -36,19 +36,12 @@
       <!-- Control buttons for lg and above -->
       <div class="hidden lg:flex items-center space-x-4">
         <!-- Theme toggle -->
-        <button @click="toggleDarkMode" class="toggle-icons focus:outline-none">
-          <!-- Sun icon -->
-          <svg v-if="!isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v2m6.364 2.636l-1.414 1.414M18 12h2m-2.636 6.364l-1.414-1.414M12 18v2m-4.95-1.364l-1.414 1.414M6 12H4m1.364-4.95L7.778 5.636M12 8a4 4 0 110 8 4 4 0 010-8z" />
-          </svg>
-          <!-- Moon icon -->
-          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M21 12.79A9 9 0 0111.21 3 7 7 0 1018 10.79 9 9 0 0121 12.79z" />
-          </svg>
+        <button @click="toggleDarkMode" class="toggle-icons navbar-toggle-btn focus:outline-none">
+          <i :class="[isDarkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon', 'navbar-toggle-icon']"></i>
         </button>
 
         <!-- Language toggle -->
-        <button @click="toggleLanguage" class="toggle-icons focus:outline-none">
+        <button @click="toggleLanguage" class="toggle-icons navbar-toggle-btn focus:outline-none">
           {{ t('langToggle') }}
         </button>
       </div>
@@ -60,10 +53,10 @@
         </svg>
       </button>
 
-      <!-- User avatar & name (hidden on sm and below) -->
-      <div class="flex items-center space-x-2 sm:flex hidden">
+      <!-- User avatar & name -->
+      <div class="flex items-center space-x-2">
         <img :src="user.avatar" alt="User Avatar" class="avatar h-9 w-9 md:h-8 md:w-8 sm:h-7 sm:w-7 rounded-full" />
-        <span class="user-name md:inline-block sm:hidden">{{ user.name }}</span>
+        <span class="user-name navbar-username hidden lg:inline-block">{{ user.name }}</span>
       </div>
 
       <!-- Dropdown controls for md and below -->
