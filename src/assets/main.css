@@ -5,14 +5,13 @@
 @tailwind utilities;
 
 body {
-  /* 默认浅色模式 */
-  @apply bg-lightBg text-darkText font-noto;
+  /* 使用 CSS 变量自动随主题切换 */
+  @apply font-noto;
+  background-color: var(--bg-2);
+  color: var(--font-10);
 }
 
-/* 深色模式（当 html 或 root 元素带 .dark 类时）*/
-.dark body {
-  @apply bg-darkBg text-white;
-}
+/* 深色模式下无需另外设置，变量已在 .dark 根级别被覆盖 */
 
 /* Example utility classes now available:
    font-ledger  -> uses Ledger serif font (suitable for headings)

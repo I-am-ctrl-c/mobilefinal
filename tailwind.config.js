@@ -11,11 +11,6 @@ module.exports = {
     theme: {
       extend: {
         colors: {
-          darkBg: '#222332',
-          primaryPurple: '#9662F1',
-          lightBg: '#F5F6FA',
-          darkText: '#1A1A1A',
-
           // Expose CSS variable palettes so we can use e.g. text-font-5
           ...(() => {
             const out = {}
