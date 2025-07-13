@@ -3,6 +3,7 @@ import { useRoute } from 'vue-router'
 import navTemplate from './navbar.html?raw'
 import './navbar.css'
 import logoUrl from '../../assets/images/xgymlogo.png'
+import messages from '../../i18n/messages.js'
 
 export default {
   name: 'NavBarComponent',
@@ -12,12 +13,18 @@ export default {
     const route = useRoute()
 
     const navItems = [
-      { label: 'Home', path: '/home' },
-      { label: 'Schedule', path: '/schedule' },
-      { label: 'Booking', path: '/booking' },
-      { label: 'Workout', path: '/workout' },
-      { label: 'Profile', path: '/profile' }
+      { key: 'home', path: '/home' },
+      { key: 'schedule', path: '/schedule' },
+      { key: 'booking', path: '/booking' },
+      { key: 'workout', path: '/workout' },
+      { key: 'profile', path: '/profile' }
     ]
+
+    // translation helper
+    const t = (key) => {
+      const lang = language.value
+      return messages[lang]?.[key] || key
+    }
 
     // Dark mode state
     const isDarkMode = ref(false)
@@ -35,6 +42,9 @@ export default {
     const language = ref('en')
     const toggleLanguage = () => {
       language.value = language.value === 'en' ? 'zh' : 'en'
+      window.currentLang = language.value
+      // force update (for demo, in real app use a reactive i18n plugin)
+      window.dispatchEvent(new Event('languagechange'))
     }
 
     // Small screen controls dropdown
@@ -58,6 +68,6 @@ export default {
     onMounted(() => window.addEventListener('scroll', handleScroll))
     onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
-    return { logoUrl, isScrolled, navItems, isActive, isDarkMode, toggleDarkMode, language, toggleLanguage, user, controlsMenuOpen, toggleControlsMenu }
+    return { logoUrl, isScrolled, navItems, isActive, isDarkMode, toggleDarkMode, language, toggleLanguage, user, controlsMenuOpen, toggleControlsMenu, t }
   }
 } 

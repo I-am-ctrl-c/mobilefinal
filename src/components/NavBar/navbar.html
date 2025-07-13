@@ -10,7 +10,7 @@
       <img :src="logoUrl" alt="Logo" class="logo-img h-8 w-auto md:h-7 sm:h-6 select-none" />
       <span class="logo-title font-bold text-white text-xl md:text-lg sm:text-base">XGYM</span>
       <!-- Typing effect text -->
-      <span class="typewriter hidden xl:inline-block ml-4 xl:w-40 lg:w-32 md:w-24">Transform Your Body</span>
+      <span class="typewriter hidden xl:inline-block ml-4 xl:w-40 lg:w-32 md:w-24">{{ t('typewriter') }}</span>
     </div>
     
 
@@ -26,7 +26,7 @@
               : 'text-white border-transparent hover:text-primaryPurple hover:border-primaryPurple'
           ]"
         >
-          {{ item.label }}
+          {{ t(item.key) }}
         </router-link>
       </li>
     </ul>
@@ -49,7 +49,7 @@
 
         <!-- Language toggle -->
         <button @click="toggleLanguage" class="toggle-icons focus:outline-none">
-          {{ language === 'en' ? '中' : 'EN' }}
+          {{ t('langToggle') }}
         </button>
       </div>
 
@@ -69,9 +69,9 @@
       <!-- Dropdown controls for md and below -->
       <div v-if="controlsMenuOpen" class="absolute right-0 top-full mt-2 bg-gray-800 text-sm rounded shadow-lg py-2 lg:hidden z-50 min-w-[10rem]">
         <div class="flex flex-col">
-          <button v-for="item in navItems" :key="item.path" @click="() => { $router.push(item.path); toggleControlsMenu(); }" class="block w-full text-left px-4 py-2 hover:bg-gray-700">{{ item.label }}</button>
-          <button @click="toggleDarkMode" class="block w-full text-left px-4 py-2 hover:bg-gray-700">{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</button>
-          <button @click="toggleLanguage" class="block w-full text-left px-4 py-2 hover:bg-gray-700">{{ language === 'en' ? '中文' : 'English' }}</button>
+          <button v-for="item in navItems" :key="item.path" @click="() => { $router.push(item.path); toggleControlsMenu(); }" class="block w-full text-left px-4 py-2 hover:bg-gray-700">{{ t(item.key) }}</button>
+          <button @click="toggleDarkMode" class="block w-full text-left px-4 py-2 hover:bg-gray-700">{{ isDarkMode ? t('lightMode') : t('darkMode') }}</button>
+          <button @click="toggleLanguage" class="block w-full text-left px-4 py-2 hover:bg-gray-700">{{ t('langToggle') }}</button>
         </div>
       </div>
     </div>
