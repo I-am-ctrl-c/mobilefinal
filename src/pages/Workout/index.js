@@ -1,7 +1,7 @@
 import workoutTemplate from './workout.html?raw'
 import Footer from '../../components/Footer'
 import workoutImg from '../../assets/images/Workout.jpg'
-import workoutImg2 from '../../assets/images/Workout2.jpg' 
+import workoutImg2 from '../../assets/images/Workout2.jpg'
 import './workout.css'
 
 import { ref, computed, onMounted } from 'vue'
@@ -12,7 +12,7 @@ export default {
   template: workoutTemplate,
   setup() {
     const workoutImgRef = ref(workoutImg)
-    const workoutImg2Ref = ref(workoutImg2)  
+    const workoutImg2Ref = ref(workoutImg2)
 
     // 生成从 2020-01-01 到今天的周起始列表（每周日）
     const generateWeekRanges = () => {
@@ -96,7 +96,7 @@ function renderCalorieRings(defaultSize = 240, defaultFontRatio = 0.16) {
     bg.setAttribute("cy", cy);
     bg.setAttribute("r", radius);
     bg.setAttribute("fill", "none");
-    bg.setAttribute("stroke", "#444"); // 浅灰色背景
+    bg.setAttribute("stroke", "var(--font-7)"); // 浅灰色背景
     bg.setAttribute("stroke-width", stroke);
 
     const fg = document.createElementNS(svgNS, "circle");
@@ -104,7 +104,7 @@ function renderCalorieRings(defaultSize = 240, defaultFontRatio = 0.16) {
     fg.setAttribute("cy", cy);
     fg.setAttribute("r", radius);
     fg.setAttribute("fill", "none");
-    fg.setAttribute("stroke", "#9d4edd");
+    fg.setAttribute("stroke", "var(--decorPu-5)");
     fg.setAttribute("stroke-width", stroke);
     fg.setAttribute("stroke-linecap", "round");
     fg.setAttribute("stroke-dasharray", circumference);
@@ -118,7 +118,7 @@ function renderCalorieRings(defaultSize = 240, defaultFontRatio = 0.16) {
     text1.setAttribute("dominant-baseline", "middle");
     text1.setAttribute("font-size", size * fontRatio);
     text1.setAttribute("font-weight", "bold");
-    text1.setAttribute("fill", "white");
+    text1.setAttribute("fill", "var(--font-10)");
     text1.textContent = `${current} kcal`;
 
     const text2 = document.createElementNS(svgNS, "text");
@@ -126,7 +126,7 @@ function renderCalorieRings(defaultSize = 240, defaultFontRatio = 0.16) {
     text2.setAttribute("y", svgHeight -1);
     text2.setAttribute("text-anchor", "middle");
     text2.setAttribute("font-size", size * 0.09);
-    text2.setAttribute("fill", "white");
+    text2.setAttribute("fill", "var(--font-10)");
     text2.textContent = `${current} / ${goal} kcal`;
 
     svg.appendChild(bg);

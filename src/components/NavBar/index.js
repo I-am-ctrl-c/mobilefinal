@@ -1,8 +1,9 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import navTemplate from './navbar.html?raw'
 import './navbar.css'
-import logoUrl from '../../assets/images/xgymlogo.png'
+import logoDark from '../../assets/images/xgymlogo.png'
+import logoLight from '../../assets/images/xgymlogo_b.png'
 import messages from '../../i18n/messages.js'
 
 export default {
@@ -28,6 +29,9 @@ export default {
 
     // Dark mode state
     const isDarkMode = ref(false)
+    // Dynamic logo based on theme
+    const logoUrl = computed(() => (isDarkMode.value ? logoDark : logoLight))
+
     const toggleDarkMode = () => {
       isDarkMode.value = !isDarkMode.value
       const root = document.documentElement
@@ -70,4 +74,4 @@ export default {
 
     return { logoUrl, isScrolled, navItems, isActive, isDarkMode, toggleDarkMode, language, toggleLanguage, user, controlsMenuOpen, toggleControlsMenu, t }
   }
-} 
+}

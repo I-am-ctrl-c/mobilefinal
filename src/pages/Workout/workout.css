@@ -11,7 +11,7 @@
   left: 50%;
   transform: translate(-50%, -52%);
   text-align: center;
-  color: white;
+  color: var(--font-10);
   pointer-events: none;
 }
 
@@ -31,7 +31,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.85rem;
-  color: white;
+  color: var(--font-10);
 }
 .calorie-ring {
   --ring-size: 260px;
@@ -47,7 +47,7 @@
 .ring-subtext {
   margin-top: 12px; /* 圆环下方留空 */
   font-size: 16px;
-  color: white;
+  color: var(--font-10);
   text-align: center;
 }
 
@@ -122,32 +122,32 @@
 .info-box {
   flex: 1;                          /* 三个等分父容器宽度 */
   min-width: 150px;                 /* 防止过窄时太挤 */
-  border: 1px solid #fff;           /* 白色实线 */
+  border: 1px solid var(--bg-1);           /* 白色实线 */
   border-radius: 12px;              /* 圆角 */
   padding: 1rem;                    /* 内边距 */
   border-bottom-width: 1px;         /* 默认细底边 */
-  border-bottom-color: #fff;
-  transition: 
-    border-bottom-width 0.3s ease, 
+  border-bottom-color: var(--bg-1);
+  transition:
+    border-bottom-width 0.3s ease,
     border-bottom-color 0.3s ease;
 }
 
 /* —— 悬停时 紫色粗底边 —— */
 .info-box:hover {
   border-bottom-width: 4px;
-  border-bottom-color: #9d4edd;     /* 主题紫色 */
+  border-bottom-color: var(--decorPu-5);     /* 主题紫色 */
 }
 
 /* —— 内部文字样式 —— */
 .metric-value {
-  color: #9d4edd;
+  color: var(--decorPu-5);
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0;
 }
 
 .metric-label {
-  color: #fff;
+  color: var(--font-10);
   font-size: 0.875rem;
   margin: 0.5rem 0 0;
 }
