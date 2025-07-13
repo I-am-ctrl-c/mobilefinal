@@ -4,9 +4,18 @@
     isScrolled ? 'bg-black shadow-md' : 'bg-transparent'
   ]"
 >
-  <nav class="max-w-7xl mx-auto flex items-center justify-between px-6 py-5 text-white text-lg">
-    <div class="text-xl font-bold">XGYM</div>
-    <ul class="flex space-x-6">
+  <nav class="w-full grid grid-cols-3 items-center px-8 md:px-6 sm:px-4 py-6 md:py-5 sm:py-4 text-xl lg:text-xl md:text-lg sm:text-base">
+    <!-- Left section: Logo -->
+    <div class="flex items-center space-x-3 justify-self-start">
+      <img :src="logoUrl" alt="Logo" class="logo-img h-8 w-auto md:h-7 sm:h-6 select-none" />
+      <span class="logo-title font-bold text-white text-xl md:text-lg sm:text-base">XGYM</span>
+      <!-- Typing effect text -->
+      <span class="typewriter hidden xl:inline-block ml-4 xl:w-40 lg:w-32 md:w-24">Transform Your Body</span>
+    </div>
+    
+
+    <!-- Center section: Navigation links (hidden on small screens) -->
+    <ul class="flex items-center justify-center space-x-6 md:space-x-5 sm:space-x-4 justify-self-center hidden sm:flex">
       <li v-for="item in navItems" :key="item.path">
         <router-link
           :to="item.path"
@@ -21,5 +30,50 @@
         </router-link>
       </li>
     </ul>
+
+    <!-- Right section: Controls -->
+    <div class="flex items-center justify-end space-x-4 md:space-x-5 text-white justify-self-end pr-0 relative">
+      <!-- Control buttons for lg and above -->
+      <div class="hidden lg:flex items-center space-x-4">
+        <!-- Theme toggle -->
+        <button @click="toggleDarkMode" class="toggle-icons focus:outline-none">
+          <!-- Sun icon -->
+          <svg v-if="!isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v2m6.364 2.636l-1.414 1.414M18 12h2m-2.636 6.364l-1.414-1.414M12 18v2m-4.95-1.364l-1.414 1.414M6 12H4m1.364-4.95L7.778 5.636M12 8a4 4 0 110 8 4 4 0 010-8z" />
+          </svg>
+          <!-- Moon icon -->
+          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 0111.21 3 7 7 0 1018 10.79 9 9 0 0121 12.79z" />
+          </svg>
+        </button>
+
+        <!-- Language toggle -->
+        <button @click="toggleLanguage" class="toggle-icons focus:outline-none">
+          {{ language === 'en' ? '中' : 'EN' }}
+        </button>
+      </div>
+
+      <!-- Compact menu button for md and below -->
+      <button @click="toggleControlsMenu" class="lg:hidden focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- User avatar & name (hidden on sm and below) -->
+      <div class="flex items-center space-x-2 sm:flex hidden">
+        <img :src="user.avatar" alt="User Avatar" class="avatar h-9 w-9 md:h-8 md:w-8 sm:h-7 sm:w-7 rounded-full" />
+        <span class="user-name md:inline-block sm:hidden">{{ user.name }}</span>
+      </div>
+
+      <!-- Dropdown controls for md and below -->
+      <div v-if="controlsMenuOpen" class="absolute right-0 top-full mt-2 bg-gray-800 text-sm rounded shadow-lg py-2 lg:hidden z-50 min-w-[10rem]">
+        <div class="flex flex-col">
+          <button v-for="item in navItems" :key="item.path" @click="() => { $router.push(item.path); toggleControlsMenu(); }" class="block w-full text-left px-4 py-2 hover:bg-gray-700">{{ item.label }}</button>
+          <button @click="toggleDarkMode" class="block w-full text-left px-4 py-2 hover:bg-gray-700">{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</button>
+          <button @click="toggleLanguage" class="block w-full text-left px-4 py-2 hover:bg-gray-700">{{ language === 'en' ? '中文' : 'English' }}</button>
+        </div>
+      </div>
+    </div>
   </nav>
 </header> 
