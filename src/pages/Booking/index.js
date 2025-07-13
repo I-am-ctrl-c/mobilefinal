@@ -1,11 +1,12 @@
 import bookingTemplate from './booking.html?raw'
 import Footer from '../../components/Footer'
+import NavBar from '../../components/NavBar'
 import messages from '../../i18n/bookingMessages.js'
 import { ref, onMounted, onUnmounted } from 'vue'
 
 export default {
   name: 'BookingPage',
-  components: { Footer },
+  components: { NavBar, Footer },
   template: bookingTemplate,
   setup() {
     const language = ref(window.currentLang || 'en')
@@ -23,4 +24,4 @@ export default {
 
     return { t }
   }
-} 
+}

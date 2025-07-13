@@ -27,8 +27,11 @@ export default {
       return messages[lang]?.[key] || key
     }
 
-    // Dark mode state
-    const isDarkMode = ref(false)
+    // Dark mode state (persisted)
+    const isDarkMode = ref(
+      localStorage.getItem('darkMode') === 'true' ||
+        document.documentElement.classList.contains('dark')
+    )
     // Dynamic logo based on theme
     const logoUrl = computed(() => (isDarkMode.value ? logoDark : logoLight))
 
@@ -40,6 +43,7 @@ export default {
       } else {
         root.classList.remove('dark')
       }
+      localStorage.setItem('darkMode', isDarkMode.value)
     }
 
     // Language state
@@ -69,7 +73,13 @@ export default {
 
     const isActive = (path) => route.path === path
 
-    onMounted(() => window.addEventListener('scroll', handleScroll))
+    onMounted(() => {
+      // ensure root class matches stored value on mount
+      const root = document.documentElement
+      if (isDarkMode.value) root.classList.add('dark')
+      else root.classList.remove('dark')
+      window.addEventListener('scroll', handleScroll)
+    })
     onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
     return { logoUrl, isScrolled, navItems, isActive, isDarkMode, toggleDarkMode, language, toggleLanguage, user, controlsMenuOpen, toggleControlsMenu, t }

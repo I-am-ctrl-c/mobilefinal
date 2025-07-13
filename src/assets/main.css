@@ -57,7 +57,7 @@ a {
 /* —— 悬停时 紫色粗底边 —— */
 .info-box:hover {
   border-bottom-width: 4px;
-  border-bottom-color: var(--decorPu-5);     /* 主题紫色 */
+  border-bottom-color: var(--decorPu-5) !important;     /* 主题紫色 */
 }
 
 /* —— 内部文字样式(可以不用这个，自己定义） —— */

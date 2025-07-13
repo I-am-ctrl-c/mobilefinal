@@ -1,4 +1,5 @@
 import workoutTemplate from './workout.html?raw'
+import NavBar from '../../components/NavBar'
 import Footer from '../../components/Footer'
 import workoutImg from '../../assets/images/Workout.jpg'
 import workoutImg2 from '../../assets/images/Workout2.jpg'
@@ -8,7 +9,7 @@ import { ref, computed, onMounted } from 'vue'
 
 export default {
   name: 'WorkoutPage',
-  components: { Footer },
+  components: { NavBar, Footer },
   template: workoutTemplate,
   setup() {
     const workoutImgRef = ref(workoutImg)
