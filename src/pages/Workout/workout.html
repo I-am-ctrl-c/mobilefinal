@@ -1,8 +1,8 @@
 <!-- ✅ src/pages/Workout/workout.html -->
 
 <head>
-  <link rel="stylesheet" href="workout.css">
-  <script src="index.js" defer></script>
+  <link rel="stylesheet" href="./workout.css">
+  <script src="./index.js" defer></script>
 </head>
 
 
@@ -18,8 +18,16 @@
     <!-- ✅ 左区域：放大的圆环图 -->
 <!-- workout.html 中想显示的地方插入 -->
 <!-- Calorie Ring 容器 -->
-<div class="relative calorie-ring" data-current="6530" data-goal="9300" style="--ring-size: 200">
-  <!-- SVG 插入由 JS 动态完成 -->
+<div class="image-ring-row">
+  <img class="Workout2" src="./assets/images/Workout2.jpg" alt="Workout2" />
+
+  <div
+    class="calorie-ring"
+    data-current="6530"
+    data-goal="9300"
+    data-size="200"
+    data-font="0.15"
+  ></div>
 </div>
 
 

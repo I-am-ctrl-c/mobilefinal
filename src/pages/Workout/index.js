@@ -61,33 +61,40 @@ export default {
 }
 
 // ✅ 移出 setup，放外部命名函数，避免 setup 作用域污染
-function renderCalorieRings() {
+// ✅ setup 外定义，无需 DOMContentLoaded
+function renderCalorieRings(defaultSize = 240, defaultFontRatio = 0.16) {
   document.querySelectorAll(".calorie-ring").forEach(ring => {
     const current = parseInt(ring.dataset.current) || 0;
     const goal = parseInt(ring.dataset.goal) || 1;
-    const size = parseInt(getComputedStyle(ring).getPropertyValue('--ring-size')) || 180;
-    const stroke = 20;
+    const size = parseInt(ring.dataset.size) || defaultSize;
+    const fontRatio = parseFloat(ring.dataset.font) || defaultFontRatio;
+
+    const stroke = Math.round(size * 0.083);             // 环宽度
+    const padding = size * 0.24;                         // 上下预留空间
     const radius = (size - stroke) / 2;
     const cx = size / 2;
-    const cy = size / 2;
+    const cy = size / 2 + padding / 2;                   // 圆心向下偏移一点，避免头部被裁
     const circumference = 2 * Math.PI * radius;
     const ratio = Math.min(current / goal, 1);
     const dashOffset = circumference * (1 - ratio);
 
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const svgHeight = size + padding;
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
     svg.setAttribute("width", size);
-    svg.setAttribute("height", size);
+    svg.setAttribute("height", svgHeight);
     svg.classList.add("ring-svg");
 
-    const bg = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    const bg = document.createElementNS(svgNS, "circle");
     bg.setAttribute("cx", cx);
     bg.setAttribute("cy", cy);
     bg.setAttribute("r", radius);
     bg.setAttribute("fill", "none");
-    bg.setAttribute("stroke", "#2e2e2e");
+    bg.setAttribute("stroke", "#444"); // 浅灰色背景
     bg.setAttribute("stroke-width", stroke);
 
-    const fg = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    const fg = document.createElementNS(svgNS, "circle");
     fg.setAttribute("cx", cx);
     fg.setAttribute("cy", cy);
     fg.setAttribute("r", radius);
@@ -97,24 +104,32 @@ function renderCalorieRings() {
     fg.setAttribute("stroke-linecap", "round");
     fg.setAttribute("stroke-dasharray", circumference);
     fg.setAttribute("stroke-dashoffset", dashOffset);
+    fg.setAttribute("transform", `rotate(-90 ${cx} ${cy})`);
+
+    const text1 = document.createElementNS(svgNS, "text");
+    text1.setAttribute("x", cx);
+    text1.setAttribute("y", cy);
+    text1.setAttribute("text-anchor", "middle");
+    text1.setAttribute("dominant-baseline", "middle");
+    text1.setAttribute("font-size", size * fontRatio);
+    text1.setAttribute("font-weight", "bold");
+    text1.setAttribute("fill", "white");
+    text1.textContent = `${current} kcal`;
+
+    const text2 = document.createElementNS(svgNS, "text");
+    text2.setAttribute("x", cx);
+    text2.setAttribute("y", svgHeight -1);
+    text2.setAttribute("text-anchor", "middle");
+    text2.setAttribute("font-size", size * 0.09);
+    text2.setAttribute("fill", "white");
+    text2.textContent = `${current} / ${goal} kcal`;
 
     svg.appendChild(bg);
     svg.appendChild(fg);
+    svg.appendChild(text1);
+    svg.appendChild(text2);
+
+    ring.innerHTML = '';
     ring.appendChild(svg);
-
-    const text = document.createElement("div");
-    text.className = "ring-text";
-    text.innerHTML = `
-      <div class="ring-value">${current}</div>
-      <div class="ring-label">kcal</div>
-    `;
-
-    const subtext = document.createElement("div");
-    subtext.className = "ring-subtext";
-    subtext.textContent = `${current} / ${goal}`;
-
-    ring.appendChild(text);
-    ring.appendChild(subtext);
   });
 }
-

@@ -33,3 +33,73 @@
   font-size: 0.85rem;
   color: white;
 }
+.calorie-ring {
+  --ring-size: 260px;
+  display: inline-block;
+  position: relative;
+}
+.ring-svg {
+  display: block;
+  margin: 0 auto;
+}
+
+
+.ring-subtext {
+  margin-top: 12px; /* 圆环下方留空 */
+  font-size: 16px;
+  color: white;
+  text-align: center;
+}
+
+/*workout 图片布局*/
+/* 外层布局容器，左右排列 */
+.workout-visual-block {
+  display: flex;
+  align-items: center;
+  gap: 3rem; /* 控制图片与圆环之间的距离 */
+  margin-left: 1rem; /* 整体向右偏移一点 */
+}
+
+/* 图片样式 + 鼠标悬浮放大效果 */
+.image-ring-container {
+  display: flex;
+  align-items: center;        /* 垂直居中 */
+  justify-content: flex-start;
+  gap: 2.5rem;                /* 控制图和环之间间距 */
+  margin-top: 2rem;
+}
+
+/* 固定图片宽高比例 */
+/* workout.css */
+
+.image-ring-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;          /* 图片和圆环之间的间距 */
+}
+
+
+/* 针对新的 .Workout2 类 */
+.Workout2 {
+  /* 宽度固定或响应式均可，示例： */
+  width: 240px;       /* 你需要的宽度 */
+  height: auto;       /* 保持原图比例 */
+  object-fit: cover;  /* 填充并裁切 */
+  border-radius: 12px;/* 圆角 */
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.Workout2:hover {
+  transform: scale(1.05);
+  border: 3px solid red !important;
+}
+
+
+
+/* 原来的 ring-container 样式如果不再使用可删除，保留如下仅供参考 */
+.ring-container {
+  position: relative;
+  display: inline-block;
+}
+
