@@ -1,4 +1,5 @@
 import template from './equipmentschedule.html?raw'
+import './equipmentschedule.css'
 import NavBar from '../../components/NavBar'
 import Footer from '../../components/Footer'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
@@ -111,6 +112,8 @@ export default {
       language.value = window.currentLang
     }
 
+    const equipmentName = computed(() => equipment.value ? equipment.value.name : '')
+
     onMounted(() => {
       loadData()
       window.addEventListener('languagechange', handleLangChange)
@@ -126,7 +129,8 @@ export default {
       selectSlot,
       isSelected,
       confirmBooking,
-      goBack
+      goBack,
+      equipmentName
     }
   }
 }
