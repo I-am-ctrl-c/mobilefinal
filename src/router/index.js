@@ -5,6 +5,7 @@ import Schedule from '../pages/Schedule'
 import Booking from '../pages/Booking'
 import Workout from '../pages/Workout'
 import Profile from '../pages/Profile'
+import EquipmentSchedule from '../pages/EquipmentSchedule'
 
 // 简易登录态检查，可根据项目需要替换为真正的验证逻辑
 function isLoggedIn() {
@@ -22,6 +23,7 @@ const routes = [
   { path: '/booking', component: Booking },
   { path: '/workout', component: Workout },
   { path: '/profile', component: Profile },
+  { path: '/equipment/:id/schedule', component: EquipmentSchedule },
   // 登录页占位，后续实现真正的登录页面
   { path: '/login', component: { template: '<div></div>' } },
   { path: '/video-player', component: () => import('../pages/Videos/VideoPlayer.vue') },
