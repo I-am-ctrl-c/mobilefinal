@@ -1,1 +1,65 @@
 /* Home Page styles */ 
+/* Purple Theme with Animations */
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fade {
+  animation: fadeIn 1s ease-in-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 1s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 1s ease-out;
+}
+
+/* Outlined Button Style */
+.outlined-button {
+  background: transparent;
+  border: 2px solid #a855f7; /* purple-500 */
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.outlined-button:hover {
+  background: #a855f7; /* purple-500 */
+  color: #ffffff;
+  box-shadow: 0 5px 15px rgba(168, 85, 247, 0.3);
+}
+
+/* You can continue adding Tailwind or custom styles here... */

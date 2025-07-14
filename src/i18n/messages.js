@@ -5,6 +5,7 @@ export default {
     schedule: 'Schedule',
     booking: 'Booking',
     workout: 'Workout',
+    blogs: 'Blogs',
     profile: 'Profile',
     lightMode: 'Light Mode',
     darkMode: 'Dark Mode',
@@ -16,9 +17,10 @@ export default {
     schedule: '计划',
     booking: '预约',
     workout: '锻炼',
+    blogs: '博客',
     profile: '我的',
     lightMode: '浅色模式',
     darkMode: '深色模式',
     typewriter: '改变你的身体',
   }
-} 
+}

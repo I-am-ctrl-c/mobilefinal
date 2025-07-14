@@ -1,8 +1,8 @@
 export default {
   en: {
-    title: 'This is the Booking Page'
+    title: 'Start your booking',
   },
   zh: {
-    title: '预约页面'
+    title: '开始您的预定',
   }
-} 
+}

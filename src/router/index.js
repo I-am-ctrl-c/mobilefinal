@@ -24,6 +24,7 @@ const routes = [
   { path: '/profile', component: Profile },
   // 登录页占位，后续实现真正的登录页面
   { path: '/login', component: { template: '<div></div>' } },
+  { path: '/video-player', component: () => import('../pages/Videos/VideoPlayer.vue') },
 ]
 
 const router = createRouter({
