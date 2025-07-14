@@ -84,7 +84,7 @@
           <!-- 日期信息：可调整字体大小、颜色、间距 -->
           <!-- text-sm: 小字体，font-color-4: 文字颜色，mb-1: 底部间距 -->
           <p class="text-lg font-color-4" v-if="eq.description">{{ eq.description.slice(0, 80) }}...</p>
-          <button class="mt-6 w-full bg-decorPu-5 hover:bg-decorPu-6 text-white py-3 rounded-full font-semibold text-xl transition-colors duration-200">
+          <button @click="$router.push(`/equipment/${eq.id}/schedule`)" class="mt-6 w-full bg-decorPu-5 hover:bg-decorPu-6 text-white py-3 rounded-full font-semibold text-xl transition-colors duration-200">
             Booking
           </button>
         </div>
