@@ -3,6 +3,7 @@
 <head>
   <link rel="stylesheet" href="./workout.css">
   <link rel="stylesheet" href="/src/assets/main.css">
+  <link rel="stylesheet" href="/src/assets/colors.css">
   <script src="./index.js" defer></script>
 </head>
 
@@ -18,20 +19,103 @@
 
 
  <!-- ✅ 信息框区域（应用 info-box） -->
-<div class="max-w-7xl mx-auto mt-8 px-4 flex flex-wrap gap-6 justify-between">
-  <div class="info-box text-center">
-    <p class="metric-value text-2xl font-bold text-decorPu-5">6530/9300</p>
-    <p class="metric-label text-sm mt-1">Progress</p>
+ <div class="max-w-7xl mx-auto mt-8 px-4 flex flex-wrap gap-6 justify-between" style="height: 400px;">
+  <!-- 替换原 Progress 框为圆环 -->
+  <div class="info-box text-center flex items-center justify-center">
+    <div
+      class="calorie-ring"
+      data-current="1200"
+      data-goal="1350"
+      data-size="190"
+      data-font="0.15"
+    ></div>
   </div>
-  <div class="info-box text-center">
-    <p class="metric-value text-2xl font-bold text-decorPu-5">130</p>
-    <p class="metric-label text-sm mt-1">Run/min</p>
+
+  
+
+<!-- —— Activities info-box —— -->
+<div class="info-box flex flex-col" id="activity-box" style="height:400px;">
+  <div class="flex justify-between items-center mb-2">
+    <h2 class="font-semibold">Activities</h2>
+    <button id="addActivityBtn" class="text-xl px-3 rounded bg-purple-500 text-white">+</button>
   </div>
-  <div class="info-box text-center">
-    <p class="metric-value text-2xl font-bold text-decorPu-5">60</p>
-    <p class="metric-label text-sm mt-1">Training/min</p>
+
+  <!-- 活动列表容器 -->
+  <div id="activityList" class="overflow-y-auto flex flex-col gap-3 pr-1" style="flex:1;"></div>
+</div>
+
+<!-- —— 弹出添加表单 —— -->
+<!-- 弹窗 -->
+<!-- Add Activity Modal -->
+<div id="activityModal" class="activity-modal hidden">
+  <div class="activity-modal-content activity-modal-large">
+    <h2 class="text-xl font-bold text-center mb-4">Add Activity</h2>
+
+    <label for="activityName">Name</label>
+    <input type="text" id="activityName" class="modal-input" placeholder="e.g. Running" />
+
+    <label for="activityDuration">Duration (minutes)</label>
+    <input type="number" id="activityDuration" class="modal-input" placeholder="e.g. 30" />
+
+    <label>Choose an icon</label>
+    <div class="icon-grid">
+      <div class="icon-btn icon-option" data-icon="🏃">🏃</div>
+      <div class="icon-btn icon-option" data-icon="🧘">🧘</div>
+      <div class="icon-btn icon-option" data-icon="💪">💪</div>
+      <div class="icon-btn icon-option" data-icon="🚴">🚴</div>
+      <div class="icon-btn icon-option" data-icon="🤸">🤸</div>
+      <div class="icon-btn icon-option" data-icon="🏊">🏊</div>
+    </div>
+
+    <div class="flex justify-end gap-4 mt-4">
+      <button id="cancelActivity" class="modal-cancel">Cancel</button>
+      <button id="saveActivity" class="modal-save">Save</button>
+    </div>
   </div>
 </div>
+
+
+
+
+
+
+<!-- ===== 替换 info-box 中 BMI 区块 ===== -->
+<!-- —— BMI info-box —— -->
+<div class="info-box text-center flex flex-col items-center gap-5" id="bmi-box" style="height:400px">
+
+  <!-- BMI 数值 -->
+  <p class="bmi-value-display-strong" id="bmiResult">Your BMI: --</p>
+
+  <!-- 输入 -->
+  <div class="flex gap-6">
+    <div class="bmi-input-group">
+      <label class="bmi-label">cm</label>
+      <input id="heightInput" type="number" class="bmi-input" />
+    </div>
+    <div class="bmi-input-group">
+      <label class="bmi-label">kg</label>
+      <input id="weightInput" type="number" class="bmi-input" />
+    </div>
+  </div>
+
+  <!-- 彩条 + 指针（注意 id="bmiPointer"） -->
+  <div class="bmi-bar flex w-full">
+    <div class="bmi-section underweight"></div>
+    <div class="bmi-section normal"></div>
+    <div class="bmi-section overweight"></div>
+    <div class="bmi-section obesity"></div>
+    <div id="bmiPointer" class="bmi-pointer">▼</div>
+  </div>
+
+  <p id="bmiLabel" class="bmi-label-display font-bold">--</p>
+</div>
+
+
+
+  
+  
+</div>
+
 
 
 

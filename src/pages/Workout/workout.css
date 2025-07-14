@@ -150,3 +150,189 @@
   font-size: 0.875rem;
   margin: 0.5rem 0 0;
 }
+
+/* —— BMI —— */
+/* —— 输入框与标签 —— */
+/* 输入框 + Label */
+.bmi-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.bmi-label {
+  font-size: 0.75rem;
+  color: var(--font-6);
+}
+.bmi-input {
+  width: 100px;
+  padding: 0.8rem 1rem;        /* 更高 */
+  border: 1px solid var(--font-7);
+  border-radius: 12px;
+  font-size: 1.05rem;          /* 字也稍大 */
+  text-align: center;
+  background-color: var(--bg-3);
+  color: var(--font-10);
+}
+
+/* Your BMI 显示值 */
+.bmi-value-display-strong {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--font-10);
+}
+
+/* 分类标签 */
+.bmi-label-display {
+  font-size: 1rem;
+  margin-top: 0.4rem;
+  transition: color 0.3s;
+}
+
+
+.bmi-pointer {
+  position: absolute;
+  top: -18px;              /* 让箭头高出 bar 顶部 */
+  font-size: 22px;         /* 更大更清晰 */
+  left: 0;
+  transform: translateX(-50%);
+  z-index: 10;             /* 在 bar 上层 */
+  pointer-events: none;    /* 不影响交互 */
+}
+
+/* —— 彩条 —— */
+.bmi-bar {
+  position: relative;
+  height: 18px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.bmi-section {
+  flex: 1;
+  height: 100%;
+}
+.bmi-section.underweight { background:#7dd3fc; border-top-left-radius:9999px;  border-bottom-left-radius:9999px; }
+.bmi-section.normal      { background:#86efac; }
+.bmi-section.overweight  { background:#fde68a; }
+.bmi-section.obesity     { background:#f87171; border-top-right-radius:9999px; border-bottom-right-radius:9999px; }
+
+/* —— 指针 —— */
+.bmi-pointer {
+  position:absolute;
+  top:-24px;                /* 高出条 */
+  left:0;
+  transform:translateX(-50%);
+  font-size:22px;           /* 更大 */
+  font-weight:bold;
+  color:var(--font-10);
+  text-shadow:0 0 4px rgba(0,0,0,.6);
+  pointer-events:none;
+  z-index:10;
+}
+
+
+
+/* —— Activity弹窗样式 —— */
+.activity-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.activity-modal-content {
+  background: var(--bg-2); 
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-input {
+  margin: 0.3rem 0;
+  padding: 0.5rem;
+  border: 1px solid var(--bg-6);
+  border-radius: 8px;
+}
+
+.modal-cancel, .modal-save {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+}
+
+.modal-cancel {
+  background-color: var(--bg-6);
+}
+
+.modal-save {
+  background-color: var(--decorPu-5);
+  color: white;
+}
+
+/* —— 活动卡片 —— */
+.activity-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-3);
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.activity-card span.icon {
+  font-size: 1.4rem;
+  margin-right: 0.5rem;
+}
+/* 放大弹窗尺寸 */
+.activity-modal-large {
+  width: 420px;
+  max-width: 90vw;
+}
+
+/* 图标选择网格 */
+.icon-grid {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.icon-btn {
+  font-size: 1.6rem;
+  padding: 0.4rem 0.6rem;
+  border: 2px solid transparent;
+  background: var(--bg-3);
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.icon-btn:hover {
+  background-color: var(--decorPu-2);
+}
+
+.icon-btn.selected {
+  border-color: var(--main-purple);
+  background-color: var(--decorPu-1);
+}
+
+.icon-option {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.icon-option:hover {
+  background-color: var(--bg-3);
+}
+.icon-option.ring-2 {
+  border-color: #a855f7;
+  background-color: var(--decorPu-2);
+}

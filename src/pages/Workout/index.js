@@ -53,8 +53,11 @@ export default {
     }
 
     onMounted(() => {
-      renderCalorieRings()
-    })
+      renderCalorieRings();
+      setupBMICalculator();
+      setupActivityModal(); 
+    });
+    
 
     return {
       workoutImg: workoutImgRef,
@@ -139,3 +142,110 @@ function renderCalorieRings(defaultSize = 240, defaultFontRatio = 0.16) {
     ring.appendChild(svg);
   });
 }
+
+function setupBMICalculator() {
+  const h = document.getElementById('heightInput');
+  const w = document.getElementById('weightInput');
+  const r = document.getElementById('bmiResult');
+  const lbl = document.getElementById('bmiLabel');
+  const ptr = document.getElementById('bmiPointer');
+
+  function update() {
+    const height = parseFloat(h.value);
+    const weight = parseFloat(w.value);
+    if (!height || !weight || height < 50 || weight < 20) {
+      r.textContent = 'Your BMI: --';
+      lbl.textContent = '--';
+      ptr.style.left = '0%';
+      return;
+    }
+
+    const bmi = weight / ((height / 100) ** 2);
+    const cat = getCat(bmi);
+
+    // 更新文字与颜色
+    r.textContent = `Your BMI: ${bmi.toFixed(1)}`;
+    lbl.textContent = cat.label;
+    lbl.style.color = cat.color;
+
+    // 四等分区块内线性定位
+    let left;
+    if (bmi < 18.5) {
+      const t = Math.min(Math.max((bmi - 0) / 18.5, 0), 1);
+      left = t * 25;
+    } else if (bmi < 25) {
+      const t = (bmi - 18.5) / (25 - 18.5);
+      left = 25 + t * 25;
+    } else if (bmi < 30) {
+      const t = (bmi - 25) / (30 - 25);
+      left = 50 + t * 25;
+    } else {
+      const t = Math.min((bmi - 30) / 10, 1);
+      left = 75 + t * 25;
+    }
+    ptr.style.left = `${left}%`;
+  }
+
+  function getCat(bmi) {
+    if (bmi < 18.5) return { label: 'Underweight', color: '#7dd3fc' };
+    if (bmi < 25)   return { label: 'Normal',      color: '#86efac' };
+    if (bmi < 30)   return { label: 'Overweight',  color: '#fde68a' };
+    return              { label: 'Obesity',     color: '#f87171' };
+  }
+
+  h.addEventListener('input', update);
+  w.addEventListener('input', update);  // 加上体重监听
+  update(); // 初始触发一次
+}
+
+function setupActivityModal() {
+  let selectedIcon = "🏃";
+
+  const openBtn = document.getElementById("addActivityBtn");
+  const modal = document.getElementById("activityModal");
+  const cancelBtn = document.getElementById("cancelActivity");
+  const saveBtn = document.getElementById("saveActivity");
+
+  const nameInput = document.getElementById("activityName");
+  const durationInput = document.getElementById("activityDuration");
+  const iconOptions = document.querySelectorAll(".icon-option");
+  const list = document.getElementById("activityList");
+
+  openBtn.onclick = () => modal.classList.remove("hidden");
+  cancelBtn.onclick = () => modal.classList.add("hidden");
+
+  iconOptions.forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectedIcon = btn.dataset.icon;
+      iconOptions.forEach(b => b.classList.remove("ring-2", "selected"));
+      btn.classList.add("ring-2", "selected");
+    });
+  });
+
+  saveBtn.onclick = () => {
+    const name = nameInput.value.trim();
+    const duration = durationInput.value.trim();
+
+    if (!name || !duration) {
+      alert("Please enter name and duration");
+      return;
+    }
+
+    const card = document.createElement("div");
+    card.className = "activity-card";
+    card.innerHTML = `
+      <div class="flex items-center">
+        <span class="icon">${selectedIcon}</span>
+        <span>${name}</span>
+      </div>
+      <span>${duration} min</span>
+    `;
+    list.appendChild(card);
+
+    // 清空 + 关闭弹窗
+    nameInput.value = "";
+    durationInput.value = "";
+    modal.classList.add("hidden");
+  };
+}
+
