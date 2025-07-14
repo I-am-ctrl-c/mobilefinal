@@ -1,9 +1,11 @@
-import template from './schedule.html?raw'
+import template from './equipmentschedule.html?raw'
 import NavBar from '../../components/NavBar'
 import Footer from '../../components/Footer'
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import FirebaseService from '../../services/firebaseService.js'
+import messages from '../../i18n/messages.js'
+import bookingMessages from '../../i18n/bookingMessages.js'
 
 export default {
   name: 'EquipmentSchedulePage',
@@ -11,6 +13,7 @@ export default {
   template,
   setup() {
     const route = useRoute()
+    const router = useRouter()
     const eqId = route.params.id
 
     const equipment = ref(null)
@@ -23,11 +26,48 @@ export default {
       date.setDate(date.getDate() + i)
       return {
         date,
-        label: date.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' })
+        label: date.toLocaleDateString('en-US', { weekday: 'long' }),
+        dateLabel: date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })
       }
     })
 
     const bookings = ref([])
+
+    // Selected slot: { slotIndex, dayIndex }
+    const selectedSlot = ref(null)
+
+    function selectSlot(slotIndex, dayIndex) {
+      selectedSlot.value = { slotIndex, dayIndex }
+    }
+
+    function isSelected(slotIndex, dayIndex) {
+      return (
+        selectedSlot.value &&
+        selectedSlot.value.slotIndex === slotIndex &&
+        selectedSlot.value.dayIndex === dayIndex
+      )
+    }
+
+    function confirmBooking() {
+      if (!selectedSlot.value) return // ignore if none selected
+
+      const day = days[selectedSlot.value.dayIndex]
+      const slotHour = timeSlots[selectedSlot.value.slotIndex]
+
+      // In a full implementation, we'd create a booking or navigate with details
+      router.push({
+        path: '/booking',
+        query: {
+          eqId,
+          date: day.date.toISOString(),
+          hour: slotHour
+        }
+      })
+    }
+
+    function goBack() {
+      router.back()
+    }
 
     /** Compute availability matrix: {[dayIndex][slotIndex] = remaining} */
     const availability = computed(() => {
@@ -56,8 +96,37 @@ export default {
       })
     }
 
-    onMounted(loadData)
+    const language = ref(window.currentLang || 'en')
 
-    return { timeSlots, days, availability }
+    const t = (key) => {
+      // Try bookingMessages first, then messages
+      return (
+        bookingMessages[language.value]?.[key] ||
+        messages[language.value]?.[key] ||
+        key
+      )
+    }
+
+    const handleLangChange = () => {
+      language.value = window.currentLang
+    }
+
+    onMounted(() => {
+      loadData()
+      window.addEventListener('languagechange', handleLangChange)
+    })
+    onUnmounted(() => window.removeEventListener('languagechange', handleLangChange))
+
+    return {
+      t,
+      timeSlots,
+      days,
+      availability,
+      selectedSlot,
+      selectSlot,
+      isSelected,
+      confirmBooking,
+      goBack
+    }
   }
 }

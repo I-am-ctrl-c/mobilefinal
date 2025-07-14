@@ -28,7 +28,7 @@
         <div class="relative">
           <input 
             type="text" 
-            placeholder="Searching for equipments..." 
+            :placeholder="t('sub_title2')" 
             class="w-full p-4 pl-12 rounded-lg background-color-9 font-color-1 border border-font-7 focus:outline-none focus:border-decorPu-5 transition-colors"
             v-model="searchQuery"
           />
@@ -44,7 +44,7 @@
       <!-- 左侧Tag筛选栏 -->
       <div class="lg:w-40 flex-shrink-0">
         <div class="sticky top-24">
-          <h3 class="text-lg font-semibold font-color-1 mb-4">设备类型</h3>
+          <h3 class="text-lg font-semibold mb-4">{{ t('sub_title1') }}</h3>
           <div class="space-y-2">
             <button 
               v-for="tag in tags" 

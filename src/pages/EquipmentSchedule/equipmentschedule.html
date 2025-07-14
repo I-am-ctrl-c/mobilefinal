@@ -1,0 +1,86 @@
+<NavBar />
+<main class="pt-16">
+  <div class="mx-auto max-w-6xl px-6 lg:px-16 py-8">
+    <!-- Back Button -->
+    <button @click="goBack" class="mb-4 inline-flex items-center gap-1 font-bold decoratePu-color-5 hover:underline">
+      ← {{ t('back') }}
+    </button>
+    <h1 class="text-3xl font-bold mb-6">{{ t('equipmentSchedule') }}</h1>
+    
+    <!-- Schedule Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse border border-gray-300" style="table-layout: fixed;">
+        <thead>
+          <tr class="background-color-4">
+            <th class="border border-gray-300 px-4 py-3 text-left font-color-8 min-w-[100px] max-w-[140px]">{{ t('time') }}</th>
+            <th v-for="day in days" :key="day.label" class="border border-gray-300 px-3 py-2 text-center font-color-8 min-w-[100px] max-w-[140px]">
+              <div class="font-bold text-lg">{{ t(day.label.substring(0,3).toLowerCase()) }}</div>
+              <div class="text-sm">{{ day.dateLabel }}</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(slot, slotIndex) in timeSlots" :key="slot">
+            <td class="border border-gray-300 px-4 py-3 font-medium font-color-8 min-w-[100px] max-w-[140px]">
+              {{ slot }}:00-{{ slot + 1 }}:00
+            </td>
+            <td
+              v-for="(day, dayIndex) in days"
+              :key="`${slot}-${dayIndex}`"
+              class="border border-gray-300 p-0 h-14"
+            >
+              <button
+                class="flex items-center justify-center w-full h-full transition-colors duration-150 cursor-pointer border-none"
+                :class="{}"
+                :class="{
+                  'background-color-1 decoratePu-color-5 hover:background-color-2': availability[slotIndex] && availability[slotIndex][dayIndex] > 0,
+                  'background-color-5 font-color-4 hover:background-color-6': availability[slotIndex] && availability[slotIndex][dayIndex] === 0,
+                  'background-color-2 font-color-4 hover:background-color-3': !availability[slotIndex] || !availability[slotIndex][dayIndex],
+                  'text-white': isSelected(slotIndex, dayIndex)
+                }"
+                :style="isSelected(slotIndex, dayIndex) ? { 'background-color': 'var(--decorPu-5)' } : {}"
+                @click="selectSlot(slotIndex, dayIndex)"
+              >
+                <span v-if="availability[slotIndex] && availability[slotIndex][dayIndex] !== undefined">
+                  {{ availability[slotIndex][dayIndex] }}
+                </span>
+                <span v-else>-</span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Legend -->
+    <div class="mt-4 flex gap-4 text-sm">
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 background-color-1 border border-gray-300"></div>
+        <span class="decoratePu-color-5">{{ t('available') }}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 background-color-5 border border-gray-300"></div>
+        <span class="font-color-4">{{ t('fullyBooked') }}</span>
+      </div>
+    </div>
+
+    <!-- Booking button -->
+    <div class="mt-6 text-center">
+      <button
+        @click="confirmBooking"
+        :disabled="!selectedSlot"
+        class="px-8 py-3 rounded font-bold text-white transition-opacity duration-150"
+        :class="{
+          'decoratePu-color-5 background-color-1 border border-decorPu-color-5 hover:opacity-90': selectedSlot,
+          'background-color-5 font-color-4 cursor-not-allowed': !selectedSlot
+        }"
+      >
+        {{ t('bookingNow') }}
+      </button>
+    </div>
+  </div>
+  
+  <div class="pt-20">
+    <Footer />
+  </div>
+</main> 
