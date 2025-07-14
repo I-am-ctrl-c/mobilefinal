@@ -1,4 +1,4 @@
-import template from './schedule.html?raw'
+import template from '../Schedule/schedule.html?raw'
 import NavBar from '../../components/NavBar'
 import Footer from '../../components/Footer'
 import { ref, computed, onMounted } from 'vue'
