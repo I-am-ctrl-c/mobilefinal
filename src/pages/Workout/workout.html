@@ -3,8 +3,10 @@
 <head>
   <link rel="stylesheet" href="./workout.css">
   <link rel="stylesheet" href="/src/assets/main.css">
-  <link rel="stylesheet" href="/src/assets/colors.css">
-  <script src="./index.js" defer></script>
+  <link rel="stylesheet" href="/src/assets/col.css">
+  <script type="module" src="./index.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <NavBar />
@@ -16,6 +18,34 @@
   </div>
 </div>
 
+<!-- —— Date 选择 —— -->
+<div class="max-w-7xl mx-auto mt-8 px-4">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">
+        Date
+      </p>
+      <h2 class="text-3xl md:text-5xl font-bold leading-relaxed">
+        {{ selectedDateDisplay }}
+      </h2>
+    </div>
+    <button
+      @click="showDatePicker = !showDatePicker"
+      class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition"
+    >
+      See more
+    </button>
+  </div>
+  <div v-if="showDatePicker" class="mb-6">
+    <input
+      type="date"
+      v-model="selectedDate"
+      :min="minDate"
+      :max="maxDate"
+      class="border border-font-7 rounded p-2"
+    />
+  </div>
+</div>
 
 
  <!-- ✅ 信息框区域（应用 info-box） -->
@@ -35,13 +65,17 @@
 
 <!-- —— Activities info-box —— -->
 <div class="info-box flex flex-col" id="activity-box" style="height:400px;">
-  <div class="flex justify-between items-center mb-2">
-    <h2 class="font-semibold">Activities</h2>
-    <button id="addActivityBtn" class="text-xl px-3 rounded bg-purple-500 text-white">+</button>
-  </div>
+    <div class="relative w-full mb-4 flex justify-center items-center">
+       <!-- 复用 BMI 标题样式 -->
+      <h2 class="bmi-value-display-strong">Activities</h2>
+      <!-- 加号按钮固定在右上角 -->
+      <button
+         id="addActivityBtn"
+        class="absolute top-0 right-0 text-xl px-3 rounded bg-purple-500 text-white">+</button>
+    </div>
 
   <!-- 活动列表容器 -->
-  <div id="activityList" class="overflow-y-auto flex flex-col gap-3 pr-1" style="flex:1;"></div>
+  <div id="activityList" class="overflow-y-auto flex flex-col gap-3 pr-1 w-full" style="flex:1;"></div>
 </div>
 
 <!-- —— 弹出添加表单 —— -->
@@ -186,6 +220,79 @@
   </div>
 
 
+<!-- —— Weekly Charts —— -->
+<section class="max-w-7xl mx-auto mt-8 px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- 柱状图框：周卡路里消耗 -->
+  <div class="info-box flex flex-col">
+    <h3 class="text-xl font-semibold mb-2">Weekly Calorie Burn</h3>
+    <canvas id="calorieBarChart"></canvas>
+  </div>
+  <!-- 折线图框：周体重变化 -->
+  <div class="info-box flex flex-col">
+    <h3 class="text-xl font-semibold mb-2">Weekly Weight Trend</h3>
+    <canvas id="weightLineChart"></canvas>
+  </div>
+</section>
+
+
+
+<!-- —— Monthly Calendar —— -->
+<section class="max-w-7xl mx-auto mt-12 px-4">
+  <!-- 月份标题 & 切换 -->
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-3xl md:text-5xl font-bold leading-relaxed">{{ monthDisplay }}</h2>
+    <div class="flex space-x-3">
+      <button
+        @click="prevMonth"
+        class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition"
+      >⬅️</button>
+      <button
+        @click="nextMonth"
+        class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition"
+      >➡️</button>
+    </div>
+  </div>
+
+  <!-- 日历表格 -->
+  <div class="calendar-container">
+  <table class="w-full table-fixed border-collapse text-center calendar-table">
+    <thead>
+      <tr>
+        <th class="py-2 font-semibold">Mon</th>
+        <th class="py-2 font-semibold">Tue</th>
+        <th class="py-2 font-semibold">Wed</th>
+        <th class="py-2 font-semibold">Thu</th>
+        <th class="py-2 font-semibold">Fri</th>
+        <th class="py-2 font-semibold">Sat</th>
+        <th class="py-2 font-semibold">Sun</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(week, wi) in calendar" :key="wi">
+        <td
+          v-for="day in week"
+          :key="day.date.toISOString()"
+          class="border border-font-7 p-2 align-top"
+          :class="!day.inMonth && 'text-font-6'"
+        >
+          <div v-if="day.inMonth">
+            <!-- 日期数字 -->
+            <div class="text-sm mb-1">{{ day.date.getDate() }}</div>
+            <!-- 卡路里环 -->
+            <div
+            class="calorie-ring mx-auto"
+            :data-current="day.current"
+            :data-goal="day.goal"
+            data-size="110"    
+            data-font="0.15"   
+          ></div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</section>
 
 
 </section>

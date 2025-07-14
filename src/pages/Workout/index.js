@@ -1,3 +1,5 @@
+// src/pages/Workout/index.js
+
 import workoutTemplate from './workout.html?raw'
 import NavBar from '../../components/NavBar'
 import Footer from '../../components/Footer'
@@ -5,142 +7,252 @@ import workoutImg from '../../assets/images/Workout.jpg'
 import workoutImg2 from '../../assets/images/Workout2.jpg'
 import './workout.css'
 
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import Chart from 'chart.js/auto'
 
 export default {
   name: 'WorkoutPage',
   components: { NavBar, Footer },
   template: workoutTemplate,
   setup() {
-    const workoutImgRef = ref(workoutImg)
+    // 图片引用
+    const workoutImgRef  = ref(workoutImg)
     const workoutImg2Ref = ref(workoutImg2)
 
-    // 生成从 2020-01-01 到今天的周起始列表（每周日）
+    // —— 周列表 & 切换逻辑 —— 
     const generateWeekRanges = () => {
       const result = []
       let start = new Date('2020-01-01')
       const today = new Date()
-
+      // 向前补到最近的周日
       while (start.getDay() !== 0) {
         start.setDate(start.getDate() - 1)
       }
-
+      // 生成每周区间（周日到下周六）
       while (start <= today) {
         const end = new Date(start)
         end.setDate(end.getDate() + 6)
         result.push({ start: new Date(start), end })
         start.setDate(start.getDate() + 7)
       }
-
       return result
     }
-
     const weeks = generateWeekRanges()
     const currentIndex = ref(weeks.length - 1)
-
     const weekDisplay = computed(() => {
-      const range = weeks[currentIndex.value]
-      const fmt = (d) => `${d.getMonth() + 1}.${d.getDate()}`
-      return `${fmt(range.start)} – ${fmt(range.end)}`
+      const r = weeks[currentIndex.value]
+      const fmt = d => `${d.getMonth()+1}.${d.getDate()}`
+      return `${fmt(r.start)} – ${fmt(r.end)}`
+    })
+    const prevWeek = () => { if (currentIndex.value > 0) currentIndex.value-- }
+    const nextWeek = () => { if (currentIndex.value < weeks.length-1) currentIndex.value++ }
+
+    // —— Date Picker —— 
+    const formatDate = d => {
+      const y  = d.getFullYear()
+      const m  = String(d.getMonth()+1).padStart(2,'0')
+      const dd = String(d.getDate()).padStart(2,'0')
+      return `${y}-${m}-${dd}`
+    }
+    const todayDate       = new Date()
+    const selectedDate    = ref(formatDate(todayDate))
+    const minDate         = ref('2020-01-01')
+    const maxDate         = ref(formatDate(todayDate))
+    const showDatePicker  = ref(false)
+    const selectedDateDisplay = computed(() => selectedDate.value)
+    watch(selectedDate, nv => {
+      const d = new Date(nv)
+      const idx = weeks.findIndex(w => w.start <= d && d <= w.end)
+      if (idx !== -1) currentIndex.value = idx
     })
 
-    const prevWeek = () => {
-      if (currentIndex.value > 0) currentIndex.value--
+    // —— Monthly Calendar —— 
+    const currentMonth = ref(new Date(2025, 6, 1))
+    const monthDisplay = computed(() =>
+      currentMonth.value.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+    )
+    const generateCalendar = () => {
+      const y = currentMonth.value.getFullYear()
+      const m = currentMonth.value.getMonth()
+      const first = new Date(y, m, 1)
+      const offset = (first.getDay() + 6) % 7  // 周一=0
+      const start = new Date(first)
+      start.setDate(start.getDate() - offset)
+      const cal = []
+      let cursor = new Date(start)
+      for (let w = 0; w < 6; w++) {
+        const week = []
+        for (let d = 0; d < 7; d++) {
+          let cur = 0, goalVal = 2000
+          // 演示：2025年7月随机几天有数据
+          if (y === 2025 && m === 6) {
+            const samples = [3,7,12,19,25]
+            if (samples.includes(cursor.getDate())) {
+              cur = Math.floor(Math.random()*801) + 200
+            }
+          }
+          week.push({
+            date: new Date(cursor),
+            inMonth: cursor.getMonth() === m,
+            current: cur,
+            goal: goalVal
+          })
+          cursor.setDate(cursor.getDate() + 1)
+        }
+        cal.push(week)
+      }
+      return cal
     }
+    const calendar = ref(generateCalendar())
+    const prevMonth = () => {
+      const d = new Date(currentMonth.value)
+      d.setMonth(d.getMonth() - 1)
+      if (d >= new Date(2020, 0, 1)) currentMonth.value = d
+    }
+    const nextMonth = () => {
+      const d = new Date(currentMonth.value)
+      d.setMonth(d.getMonth() + 1)
+      if (d <= new Date()) currentMonth.value = d
+    }
+    watch(currentMonth, () => {
+      calendar.value = generateCalendar()
+      nextTick(renderCalorieRings)
+    })
 
-    const nextWeek = () => {
-      if (currentIndex.value < weeks.length - 1) currentIndex.value++
-    }
+    // —— Chart.js 数据准备 —— 
+    const weekLabels = computed(() =>
+      weeks[currentIndex.value].map(d =>
+        `${d.date.getMonth()+1}/${d.date.getDate()}`
+      )
+    )
+    const weekCalories = computed(() =>
+      weeks[currentIndex.value].map(() =>
+        Math.floor(Math.random() * 500) + 200
+      )
+    )
+    const weekWeights = computed(() =>
+      weeks[currentIndex.value].map((_, i) =>
+        70 + i * 0.2 + Math.random() * 0.3
+      )
+    )
 
     onMounted(() => {
-      renderCalorieRings();
-      setupBMICalculator();
-      setupActivityModal(); 
-    });
-    
+      // 渲染：SVG 环、BMI 计算器、活动弹窗
+      renderCalorieRings()
+      setupBMICalculator()
+      setupActivityModal()
+
+      // 等 DOM 真正挂载后再绘制图表
+      nextTick(() => {
+        // —— Weekly Calorie Burn 柱状图 —— 
+        const barCtx = document
+          .getElementById('calorieBarChart')
+          .getContext('2d')
+        new Chart(barCtx, {
+          type: 'bar',
+          data: {
+            labels: weekLabels.value,
+            datasets: [{
+              label: 'Calories',
+              data: weekCalories.value,
+              backgroundColor: 'rgba(127,90,255,0.6)',
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true } },
+            plugins: { legend: { display: false } }
+          }
+        })
+
+        // —— Weekly Weight Trend 折线图 —— 
+        const lineCtx = document
+          .getElementById('weightLineChart')
+          .getContext('2d')
+        new Chart(lineCtx, {
+          type: 'line',
+          data: {
+            labels: weekLabels.value,
+            datasets: [{
+              label: 'Weight (kg)',
+              data: weekWeights.value,
+              borderWidth: 2,
+              tension: 0.3,
+              pointRadius: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: false } },
+            plugins: { legend: { display: false } }
+          }
+        })
+      })
+    })
 
     return {
       workoutImg: workoutImgRef,
       workoutImg2: workoutImg2Ref,
-      weekDisplay,
-      prevWeek,
-      nextWeek
+      weekDisplay, prevWeek, nextWeek,
+      selectedDate, minDate, maxDate, showDatePicker, selectedDateDisplay,
+      monthDisplay, calendar, prevMonth, nextMonth
     }
   }
 }
 
-// ✅ 移出 setup，放外部命名函数，避免 setup 作用域污染
-// ✅ setup 外定义，无需 DOMContentLoaded
+// —— 公共方法，无需改动 —— 
 function renderCalorieRings(defaultSize = 240, defaultFontRatio = 0.16) {
-  document.querySelectorAll(".calorie-ring").forEach(ring => {
-    const current = parseInt(ring.dataset.current) || 0;
-    const goal = parseInt(ring.dataset.goal) || 1;
-    const size = parseInt(ring.dataset.size) || defaultSize;
-    const fontRatio = parseFloat(ring.dataset.font) || defaultFontRatio;
+  document.querySelectorAll('.calorie-ring').forEach(ring => {
+    const current   = parseInt(ring.dataset.current) || 0
+    const goal      = parseInt(ring.dataset.goal)    || 1
+    const size      = parseInt(ring.dataset.size)    || defaultSize
+    const fontRatio = parseFloat(ring.dataset.font)  || defaultFontRatio
 
-    const stroke = Math.round(size * 0.083);             // 环宽度
-    const padding = size * 0.24;                         // 上下预留空间
-    const radius = (size - stroke) / 2;
-    const cx = size / 2;
-    const cy = size / 2 + padding / 2;                   // 圆心向下偏移一点，避免头部被裁
-    const circumference = 2 * Math.PI * radius;
-    const ratio = Math.min(current / goal, 1);
-    const dashOffset = circumference * (1 - ratio);
+    const stroke   = Math.round(size * 0.083)
+    const padding  = size * 0.24
+    const radius   = (size - stroke) / 2
+    const cx       = size / 2
+    const cy       = size / 2 + padding / 2
+    const circ     = 2 * Math.PI * radius
+    const dashOff  = circ * (1 - Math.min(current / goal, 1))
+    const svgH     = size + padding
+    const NS       = 'http://www.w3.org/2000/svg'
 
-    const svgHeight = size + padding;
+    const svg = document.createElementNS(NS, 'svg')
+    svg.setAttribute('width', size)
+    svg.setAttribute('height', svgH)
+    svg.classList.add('ring-svg')
 
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("width", size);
-    svg.setAttribute("height", svgHeight);
-    svg.classList.add("ring-svg");
+    const bg = document.createElementNS(NS, 'circle')
+    bg.setAttribute('cx', cx); bg.setAttribute('cy', cy); bg.setAttribute('r', radius)
+    bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', 'var(--font-7)')
+    bg.setAttribute('stroke-width', stroke)
 
-    const bg = document.createElementNS(svgNS, "circle");
-    bg.setAttribute("cx", cx);
-    bg.setAttribute("cy", cy);
-    bg.setAttribute("r", radius);
-    bg.setAttribute("fill", "none");
-    bg.setAttribute("stroke", "var(--font-7)"); // 浅灰色背景
-    bg.setAttribute("stroke-width", stroke);
+    const fg = document.createElementNS(NS, 'circle')
+    fg.setAttribute('cx', cx); fg.setAttribute('cy', cy); fg.setAttribute('r', radius)
+    fg.setAttribute('fill', 'none'); fg.setAttribute('stroke', 'var(--decorPu-5)')
+    fg.setAttribute('stroke-width', stroke); fg.setAttribute('stroke-linecap', 'round')
+    fg.setAttribute('stroke-dasharray', circ); fg.setAttribute('stroke-dashoffset', dashOff)
+    fg.setAttribute('transform', `rotate(-90 ${cx} ${cy})`)
 
-    const fg = document.createElementNS(svgNS, "circle");
-    fg.setAttribute("cx", cx);
-    fg.setAttribute("cy", cy);
-    fg.setAttribute("r", radius);
-    fg.setAttribute("fill", "none");
-    fg.setAttribute("stroke", "var(--decorPu-5)");
-    fg.setAttribute("stroke-width", stroke);
-    fg.setAttribute("stroke-linecap", "round");
-    fg.setAttribute("stroke-dasharray", circumference);
-    fg.setAttribute("stroke-dashoffset", dashOffset);
-    fg.setAttribute("transform", `rotate(-90 ${cx} ${cy})`);
+    const txt1 = document.createElementNS(NS, 'text')
+    txt1.setAttribute('x', cx); txt1.setAttribute('y', cy)
+    txt1.setAttribute('text-anchor', 'middle'); txt1.setAttribute('dominant-baseline', 'middle')
+    txt1.setAttribute('font-size', size * fontRatio); txt1.setAttribute('font-weight', 'bold')
+    txt1.setAttribute('fill', 'var(--font-10)')
+    txt1.textContent = `${current} kcal`
 
-    const text1 = document.createElementNS(svgNS, "text");
-    text1.setAttribute("x", cx);
-    text1.setAttribute("y", cy);
-    text1.setAttribute("text-anchor", "middle");
-    text1.setAttribute("dominant-baseline", "middle");
-    text1.setAttribute("font-size", size * fontRatio);
-    text1.setAttribute("font-weight", "bold");
-    text1.setAttribute("fill", "var(--font-10)");
-    text1.textContent = `${current} kcal`;
+    const txt2 = document.createElementNS(NS, 'text')
+    txt2.setAttribute('x', cx); txt2.setAttribute('y', svgH - 1)
+    txt2.setAttribute('text-anchor', 'middle'); txt2.setAttribute('font-size', size * 0.09)
+    txt2.setAttribute('fill', 'var(--font-10)')
+    txt2.textContent = `${current} / ${goal} kcal`
 
-    const text2 = document.createElementNS(svgNS, "text");
-    text2.setAttribute("x", cx);
-    text2.setAttribute("y", svgHeight -1);
-    text2.setAttribute("text-anchor", "middle");
-    text2.setAttribute("font-size", size * 0.09);
-    text2.setAttribute("fill", "var(--font-10)");
-    text2.textContent = `${current} / ${goal} kcal`;
-
-    svg.appendChild(bg);
-    svg.appendChild(fg);
-    svg.appendChild(text1);
-    svg.appendChild(text2);
-
-    ring.innerHTML = '';
-    ring.appendChild(svg);
-  });
+    svg.append(bg, fg, txt1, txt2)
+    ring.innerHTML = ''; ring.appendChild(svg)
+  })
 }
 
 function setupBMICalculator() {
