@@ -186,4 +186,38 @@
     max-width: 90%;
     padding: 2rem;
   }
+  .password-group {
+  position: relative;
+}
+
+.password-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.password-wrapper input {
+  flex: 1;
+  padding-right: 2rem;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--font-6);
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: var(--font-9);
+}
+
+.toggle-password.visible {
+  color: var(--decorPu-6);
+}
+
 }

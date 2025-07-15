@@ -25,20 +25,13 @@ export default {
 
     const updateModeUI = () => {
       const isLogin = mode.value === 'login'
-
       document.getElementById('authButton').innerText = isLogin ? 'Login' : 'Register'
-
-      // 显示或隐藏注册字段
       document.getElementById('confirmGroup').classList.toggle('hidden', isLogin)
       document.getElementById('ageGroup').classList.toggle('hidden', isLogin)
       document.getElementById('genderGroup').classList.toggle('hidden', isLogin)
-
-      // 更新提示文字
       document.getElementById('toggleText').innerHTML = isLogin
         ? `Don't have an account? <span id="toggleAuth" class="auth-toggle-link">Sign Up</span>`
         : `Already have an account? <span id="toggleAuth" class="auth-toggle-link">Login</span>`
-
-      // 重新绑定 toggleAuth
       document.getElementById('toggleAuth').addEventListener('click', toggleMode)
     }
 
@@ -89,19 +82,18 @@ export default {
 
           await firebaseService.addUser(newUser)
 
-          localStorage.setItem('userId', uid)
-          localStorage.setItem('isAdmin', newUser.role === 'admin' ? 'true' : 'false')
+          // 存储信息供登录页自动填充
+          sessionStorage.setItem('prefillName', name)
+          sessionStorage.setItem('prefillEmail', email)
 
-          location.href = '/home'
+          location.reload() // 注册成功后自动跳转到登录页
         } catch (err) {
           showError(err.message)
         }
       } else {
-        // login
         try {
           const cred = await signInWithEmailAndPassword(auth, email, password)
           const uid = cred.user.uid
-
           const userDoc = await getDoc(doc(db, 'users', uid))
           if (!userDoc.exists()) {
             await signOut(auth)
@@ -127,12 +119,38 @@ export default {
       }
     }
 
+    const bindPasswordToggles = () => {
+      const toggles = document.querySelectorAll('.toggle-password')
+      toggles.forEach((toggle) => {
+        toggle.addEventListener('click', () => {
+          const targetId = toggle.getAttribute('data-target')
+          const input = document.getElementById(targetId)
+          if (input.type === 'password') {
+            input.type = 'text'
+            toggle.classList.add('visible')
+          } else {
+            input.type = 'password'
+            toggle.classList.remove('visible')
+          }
+        })
+      })
+    }
+
     onMounted(() => {
       document.getElementById('authForm')?.addEventListener('submit', handleSubmit)
       document.getElementById('toggleAuth')?.addEventListener('click', toggleMode)
-
-      // 初始渲染 UI
+      bindPasswordToggles()
       updateModeUI()
+
+      // 自动填充注册信息
+      const prefillName = sessionStorage.getItem('prefillName')
+      const prefillEmail = sessionStorage.getItem('prefillEmail')
+      if (prefillName && prefillEmail) {
+        document.getElementById('name').value = prefillName
+        document.getElementById('email').value = prefillEmail
+        sessionStorage.removeItem('prefillName')
+        sessionStorage.removeItem('prefillEmail')
+      }
     })
 
     return {}
