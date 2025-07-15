@@ -1,0 +1,38 @@
+<head>
+  <link rel="stylesheet" href="./upgrade.css">
+  <link rel="stylesheet" href="/src/assets/main.css">
+  <script src="./index.js" defer></script>
+</head>
+
+<NavBar />
+
+<main class="pt-16 min-h-screen">
+  <section class="h-48 w-full bg-cover bg-center flex items-center justify-center mt-6" style="background-image: url('/src/assets/images/Upgrade_banner.jpg')">
+    <h1 class="text-5xl font-bold text-white">{{ t('title') }}</h1>
+  </section>
+
+  <section class="max-w-5xl mx-auto text-center px-4 mt-8">
+    <p class="text-font-6 text-lg">{{ t('subtitle') }}</p>
+  </section>
+
+  <div class="info-box-wrapper">
+    <div class="info-box text-center">
+      <h3 class="metric-value">{{ t('basic') }}</h3>
+      <p class="metric-label">{{ t('desc1') }}</p>
+    </div>
+    <div class="info-box text-center">
+      <h3 class="metric-value">{{ t('premium') }}</h3>
+      <p class="metric-label">{{ t('desc2') }}</p>
+    </div>
+  </div>
+
+  <div class="text-center mt-10">
+    <button class="bg-decorPu-5 hover:bg-decorPu-6 text-white font-semibold px-6 py-3 rounded shadow transition">
+      {{ t('button') }}
+    </button>
+  </div>
+</main>
+
+<div class="pt-24">
+  <Footer />
+</div>

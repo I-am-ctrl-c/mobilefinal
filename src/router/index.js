@@ -6,6 +6,9 @@ import Booking from '../pages/Booking'
 import Workout from '../pages/Workout'
 import Profile from '../pages/Profile'
 
+import FAQ from '../pages/FAQ'
+import Upgrade from '../pages/Upgrade'
+
 // 简易登录态检查，可根据项目需要替换为真正的验证逻辑
 function isLoggedIn() {
   // 这里暂时返回true
@@ -22,6 +25,9 @@ const routes = [
   { path: '/booking', component: Booking },
   { path: '/workout', component: Workout },
   { path: '/profile', component: Profile },
+  { path: '/faq', component: FAQ },
+  { path: '/upgrade', component: Upgrade },
+
   // 登录页占位，后续实现真正的登录页面
   { path: '/login', component: { template: '<div></div>' } },
 ]
