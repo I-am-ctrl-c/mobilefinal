@@ -1,8 +1,8 @@
 export default {
   en: {
     title: 'Start your booking',
-    sub_title1: 'Equipment Type',
-    sub_title2: 'Searching for equipments...',
+    equipmenttype: 'Equipment Type',
+    searchingbar: 'Searching for equipments...',
     back: 'Back',
     equipmentSchedule: 'Equipment Schedule',
     available: 'Available',
@@ -19,8 +19,8 @@ export default {
   },
   zh: {
     title: '开始您的预定',
-    sub_title1: '设备类型',
-    sub_title2: '搜索器材...',
+    equipmenttype: '设备类型',
+    searchingbar: '搜索器材...',
     back: '返回',
     equipmentSchedule: '器材预定',
     available: '可用',
