@@ -112,7 +112,11 @@ export default {
       language.value = window.currentLang
     }
 
-    const equipmentName = computed(() => equipment.value ? equipment.value.name : '')
+    const equipmentName = computed(() => {
+      if (!equipment.value) return ''
+      if (language.value === 'zh') return equipment.value.name_cn || equipment.value.name
+      return equipment.value.name
+    })
 
     onMounted(() => {
       window.scrollTo({ top: 0, left: 0 })
