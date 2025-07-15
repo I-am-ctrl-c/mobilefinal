@@ -3,7 +3,10 @@
 <head>
   <link rel="stylesheet" href="./workout.css">
   <link rel="stylesheet" href="/src/assets/main.css">
-  <script src="./index.js" defer></script>
+  <link rel="stylesheet" href="/src/assets/col.css">
+  <script type="module" src="./index.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <NavBar />
@@ -15,23 +18,141 @@
   </div>
 </div>
 
+<!-- —— Date 选择 —— -->
+<div class="max-w-7xl mx-auto mt-8 px-4">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">
+        Date
+      </p>
+      <h2 class="text-3xl md:text-5xl font-bold leading-relaxed">
+        {{ selectedDateDisplay }}
+      </h2>
+    </div>
+    <button
+      @click="showDatePicker = !showDatePicker"
+      class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition"
+    >
+      See more
+    </button>
+  </div>
+  <div v-if="showDatePicker" class="mb-6">
+    <input
+      type="date"
+      v-model="selectedDate"
+      :min="minDate"
+      :max="maxDate"
+      class="border border-font-7 rounded p-2"
+    />
+  </div>
+</div>
 
 
  <!-- ✅ 信息框区域（应用 info-box） -->
-<div class="max-w-7xl mx-auto mt-8 px-4 flex flex-wrap gap-6 justify-between">
-  <div class="info-box text-center">
-    <p class="metric-value text-2xl font-bold text-decorPu-5">6530/9300</p>
-    <p class="metric-label text-sm mt-1">Progress</p>
-  </div>
-  <div class="info-box text-center">
-    <p class="metric-value text-2xl font-bold text-decorPu-5">130</p>
-    <p class="metric-label text-sm mt-1">Run/min</p>
-  </div>
-  <div class="info-box text-center">
-    <p class="metric-value text-2xl font-bold text-decorPu-5">60</p>
-    <p class="metric-label text-sm mt-1">Training/min</p>
+ <div class="max-w-7xl mx-auto mt-8 px-4 flex flex-wrap gap-6 justify-between" style="height: 400px;">
+  <!-- 替换原 Progress 框为圆环 -->
+  <div class="info-box">
+    <h2 class="text-xl font-semibold text-center mb-2">Calories</h2>
+      <div class="flex items-center justify-center">
+        <div
+          class="calorie-ring"
+          data-current="1200"
+          data-goal="1350"
+          data-size="190"
+          data-font="0.15"
+        ></div>
+      </div>
+    </div>
+
+  
+
+<!-- —— Activities info-box —— -->
+<div class="info-box flex flex-col" id="activity-box" style="height:400px;">
+    <div class="relative w-full mb-4 flex justify-center items-center">
+       <!-- 复用 BMI 标题样式 -->
+      <h2 class="bmi-value-display-strong">Activities</h2>
+      <!-- 加号按钮固定在右上角 -->
+      <button
+         id="addActivityBtn"
+        class="absolute top-0 right-0 text-xl px-3 rounded bg-purple-500 text-white">+</button>
+    </div>
+
+  <!-- 活动列表容器 -->
+  <div id="activityList" class="overflow-y-auto flex flex-col gap-3 pr-1 w-full" style="flex:1;"></div>
+</div>
+
+<!-- —— 弹出添加表单 —— -->
+<!-- 弹窗 -->
+<!-- Add Activity Modal -->
+<div id="activityModal" class="activity-modal hidden">
+  <div class="activity-modal-content activity-modal-large">
+    <h2 class="text-xl font-bold text-center mb-4">Add Activity</h2>
+
+    <label for="activityName">Name</label>
+    <input type="text" id="activityName" class="modal-input" placeholder="e.g. Running" />
+
+    <label for="activityDuration">Duration (minutes)</label>
+    <input type="number" id="activityDuration" class="modal-input" placeholder="e.g. 30" />
+
+    <label>Choose an icon</label>
+    <div class="icon-grid">
+      <div class="icon-btn icon-option" data-icon="🏃">🏃</div>
+      <div class="icon-btn icon-option" data-icon="🧘">🧘</div>
+      <div class="icon-btn icon-option" data-icon="💪">💪</div>
+      <div class="icon-btn icon-option" data-icon="🚴">🚴</div>
+      <div class="icon-btn icon-option" data-icon="🤸">🤸</div>
+      <div class="icon-btn icon-option" data-icon="🏊">🏊</div>
+    </div>
+
+    <div class="flex justify-end gap-4 mt-4">
+      <button id="cancelActivity" class="modal-cancel">Cancel</button>
+      <button id="saveActivity" class="modal-save">Save</button>
+    </div>
   </div>
 </div>
+
+
+
+
+
+
+<!-- ===== 替换 info-box 中 BMI 区块 ===== -->
+<!-- —— BMI info-box —— -->
+<div class="info-box text-center flex flex-col items-center gap-5 pt-4" id="bmi-box" style="height:400px">
+
+  <!-- BMI 数值 -->
+  <p class="bmi-value-display-strong" id="bmiResult">Your BMI: --</p>
+
+  <!-- 输入 -->
+  <div class="flex gap-6">
+    <div class="bmi-input-group">
+      <label class="bmi-label">cm</label>
+      <input id="heightInput" type="number" class="bmi-input" />
+    </div>
+    <div class="bmi-input-group">
+      <label class="bmi-label">kg</label>
+      <input id="weightInput" type="number" class="bmi-input" />
+    </div>
+  </div>
+
+  <!-- 彩条 + 指针（注意 id="bmiPointer"） -->
+  <div class="bmi-bar flex w-full">
+    <div class="bmi-section underweight"></div>
+    <div class="bmi-section normal"></div>
+    <div class="bmi-section overweight"></div>
+    <div class="bmi-section obesity"></div>
+    <div id="bmiPointer" class="bmi-pointer">▼</div>
+  </div>
+
+  <p id="bmiLabel" class="bmi-label-display font-bold">--</p>
+</div>
+
+
+
+  
+  
+</div>
+
 
 
 
@@ -102,6 +223,85 @@
   </div>
 
 
+<!-- —— Weekly Charts —— -->
+<!-- —— Weekly Charts —— -->
+<section class="max-w-7xl mx-auto mt-8 px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="info-box p-4">
+    <h3 class="text-xl font-semibold mb-2">Weekly Calorie Burn</h3>
+    <div class="chart-container">
+      <canvas id="calorieBarChart" width="600" height="240"></canvas>
+    </div>
+  </div>
+  <div class="info-box p-4">
+    <h3 class="text-xl font-semibold mb-2">Weekly Weight Trend</h3>
+    <div class="chart-container">
+      <canvas id="weightLineChart" width="600" height="240"></canvas>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+<!-- —— Monthly Calendar —— -->
+<section class="max-w-7xl mx-auto mt-12 px-4">
+  <!-- 月份标题 & 切换 -->
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-3xl md:text-5xl font-bold leading-relaxed">{{ monthDisplay }}</h2>
+    <div class="flex space-x-3">
+      <button
+        @click="prevMonth"
+        class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition"
+      >⬅️</button>
+      <button
+        @click="nextMonth"
+        class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition"
+      >➡️</button>
+    </div>
+  </div>
+
+  <!-- 日历表格 -->
+  <div class="calendar-container">
+  <table class="w-full table-fixed border-collapse text-center calendar-table">
+    <thead>
+      <tr>
+        <th class="py-2 font-semibold">Mon</th>
+        <th class="py-2 font-semibold">Tue</th>
+        <th class="py-2 font-semibold">Wed</th>
+        <th class="py-2 font-semibold">Thu</th>
+        <th class="py-2 font-semibold">Fri</th>
+        <th class="py-2 font-semibold">Sat</th>
+        <th class="py-2 font-semibold">Sun</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(week, wi) in calendar" :key="wi">
+        <td
+          v-for="day in week"
+          :key="day.date.toISOString()"
+          class="border border-font-7 p-2 align-top"
+          :class="!day.inMonth && 'text-font-6'"
+        >
+          <div v-if="day.inMonth">
+            <!-- 日期数字 -->
+            <div class="text-sm mb-1">{{ day.date.getDate() }}</div>
+            <!-- 卡路里环 -->
+            <div
+            class="calorie-ring mx-auto"
+            :data-current="day.current"
+            :data-goal="day.goal"
+            data-size="110"    
+            data-font="0.15"   
+          ></div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</section>
 
 
 </section>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Workout Charts Demo</title>
+  <!-- Tailwind / CSS 变量按需替换，这里只做最基本布局 -->
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    .info-box { 
+      border: 1px solid #ccc; border-radius: 8px; padding: 1rem; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+      margin-bottom: 1rem;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    canvas { background: #fafafa; }
+  </style>
+  <!-- 引入 Vue 3 + Chart.js -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h2>Weekly Calorie Burn & Weight Trend</h2>
+    <div class="grid">
+      <div class="info-box">
+        <h3>Weekly Calorie Burn</h3>
+        <canvas id="calorieBarChart" width="600" height="240" style="width:100%;height:240px;"></canvas>
+      </div>
+      <div class="info-box">
+        <h3>Weekly Weight Trend</h3>
+        <canvas id="weightLineChart" width="600" height="240" style="width:100%;height:240px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, onMounted, ref } = Vue;
+
+    createApp({
+      setup() {
+        // 示例数据：周一到周日
+        const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        const calories = [350, 420, 310, 480, 500, 390, 450];
+        const weights  = [70.2, 70.0, 69.8, 69.9, 69.7, 69.5, 69.6];
+
+        onMounted(() => {
+          // 柱状图
+          new Chart(
+            document.getElementById('calorieBarChart').getContext('2d'),
+            {
+              type: 'bar',
+              data: {
+                labels,
+                datasets: [{
+                  label: 'Calories',
+                  data: calories,
+                  backgroundColor: 'rgba(127,90,255,0.6)'
+                }]
+              },
+              options: {
+                scales: { y: { beginAtZero: true } },
+                plugins: { legend: { display: false } }
+              }
+            }
+          );
+
+          // 折线图
+          new Chart(
+            document.getElementById('weightLineChart').getContext('2d'),
+            {
+              type: 'line',
+              data: {
+                labels,
+                datasets: [{
+                  label: 'Weight (kg)',
+                  data: weights,
+                  borderColor: 'rgba(127,90,255,1)',
+                  borderWidth: 2,
+                  tension: 0.3,
+                  pointRadius: 4
+                }]
+              },
+              options: {
+                scales: { y: { beginAtZero: false } },
+                plugins: { legend: { display: false } }
+              }
+            }
+          );
+        });
+
+        return {};
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

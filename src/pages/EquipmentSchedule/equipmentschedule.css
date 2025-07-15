@@ -1,0 +1,6 @@
+/* EquipmentSchedule page specific styles */
+
+/* Ensure the schedule table keeps fixed column widths */
+.schedule-table {
+  table-layout: fixed;
+}
