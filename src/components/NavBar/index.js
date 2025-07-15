@@ -23,7 +23,6 @@ export default {
     ]
 
     // translation helper
-    const language = ref('en')
     const t = (key) => {
       const lang = language.value
       return messages[lang]?.[key] || key
