@@ -9,7 +9,33 @@
     <button @click="goBack" class="mb-4 inline-flex items-center gap-1 font-bold decoratePu-color-5 hover:underline">
       ← {{ t('back') }}
     </button>
-    <h1 class="text-3xl font-bold mb-6">{{ t('equipmentSchedule') }}: {{ equipmentName }}</h1>
+    <h1 class="text-3xl font-bold mb-4">{{ t('equipmentSchedule') }}: {{ equipmentName }}</h1>
+
+    <!-- Equipments selector row (horizontal scroll with arrows) -->
+    <div class="mb-6 flex items-center gap-2">
+      <!-- Left arrow -->
+      <button @click="scrollLeft" class="p-2 rounded-full background-color-1 hover:bg-decorPu-6 text-font-8 hover:text-white transition-colors duration-150">
+        ‹
+      </button>
+      <!-- Scrollable container -->
+      <div ref="scrollContainer" class="flex-1 overflow-x-auto whitespace-nowrap equipment-scroll" @wheel.prevent="onWheelScroll">
+        <div class="inline-flex gap-3 pr-2">
+          <button
+            v-for="eq in equipmentOptions"
+            :key="eq.id"
+            @click="goToEquipment(eq.id)"
+            class="px-3 py-1 rounded-full border cursor-pointer transition-colors duration-150 flex-shrink-0"
+            :class="eq.id === eqId ? 'bg-decorPu-5 text-white border-transparent' : 'background-color-1 text-font-8 hover:bg-decorPu-6 hover:text-white'"
+          >
+            {{ eq.label }}
+          </button>
+        </div>
+      </div>
+      <!-- Right arrow -->
+      <button @click="scrollRight" class="p-2 rounded-full background-color-1 hover:bg-decorPu-6 text-font-8 hover:text-white transition-colors duration-150">
+        ›
+      </button>
+    </div>
     
     <!-- Schedule Table -->
     <div class="overflow-x-auto">
@@ -34,7 +60,7 @@
               class="border border-gray-300 p-0 h-14"
             >
               <button
-                class="flex items-center justify-center w-full h-full transition-colors duration-150 cursor-pointer border-none"
+                class="flex items-center justify-center w-full h-full transition-all duration-150 cursor-pointer border-none hover:scale-105 hover:brightness-110 hover:ring-2 hover:ring-decorPu-5"
                 :class="{}"
                 :class="{
                   'background-color-1 decoratePu-color-5 hover:background-color-2': availability[slotIndex] && availability[slotIndex][dayIndex] > 0,
@@ -73,10 +99,10 @@
       <button
         @click="confirmBooking"
         :disabled="!selectedSlot"
-        class="px-8 py-3 rounded font-bold transition-opacity duration-150"
+        class="px-12 py-4 rounded-full font-semibold text-xl transition-colors duration-200 shadow-lg"
         :class="{
-          'decoratePu-color-5 border border-decorPu-color-5 hover:opacity-90': selectedSlot,
-          'background-color-5 cursor-not-allowed': !selectedSlot
+          'bg-decorPu-5 hover:bg-decorPu-6 text-white': selectedSlot,
+          'bg-gray-400 text-white cursor-not-allowed': !selectedSlot
         }"
       >
         {{ t('bookingNow') }}

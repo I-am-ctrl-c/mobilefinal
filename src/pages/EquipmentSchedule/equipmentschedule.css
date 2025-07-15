@@ -4,3 +4,25 @@
 .schedule-table {
   table-layout: fixed;
 }
+
+/* Hide scrollbar for equipment selector */
+
+/* Scrollbar hidden by default, visible on hover */
+.equipment-scroll {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+.equipment-scroll:hover {
+  scrollbar-width: thin;    /* Firefox */
+}
+
+.equipment-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.equipment-scroll:not(:hover)::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+.equipment-scroll:hover::-webkit-scrollbar-thumb {
+  background: var(--decorPu-5);
+  border-radius: 4px;
+}

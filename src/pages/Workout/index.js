@@ -6,6 +6,7 @@ import Footer from '../../components/Footer'
 import workoutImg from '../../assets/images/Workout.jpg'
 import workoutImg2 from '../../assets/images/Workout2.jpg'
 import './workout.css'
+import FirebaseService from '../../services/firebaseService.js'
 
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import Chart from 'chart.js/auto'
@@ -19,7 +20,18 @@ export default {
     const workoutImgRef  = ref(workoutImg)
     const workoutImg2Ref = ref(workoutImg2)
 
-    // —— 周列表 & 切换逻辑 —— 
+    // ── Firebase backend ──
+    const service = FirebaseService.getInstance()
+    const uid = window.currentUserId || 'demoUser'
+
+    // 当前选中日期的卡路里信息（用于顶部环形图）
+    const selectedCalories = ref({ current: 0, goal: 2000 })
+
+    // 图表实例引用
+    let calorieChart = null
+    let weightChart  = null
+
+    // —— 周列表 & 切换逻辑 ——
     const generateWeekRanges = () => {
       const result = []
       let start = new Date('2020-01-01')
@@ -47,7 +59,7 @@ export default {
     const prevWeek = () => { if (currentIndex.value > 0) currentIndex.value-- }
     const nextWeek = () => { if (currentIndex.value < weeks.length-1) currentIndex.value++ }
 
-    // —— Date Picker —— 
+    // —— Date Picker ——
     const formatDate = d => {
       const y  = d.getFullYear()
       const m  = String(d.getMonth()+1).padStart(2,'0')
@@ -66,7 +78,71 @@ export default {
       if (idx !== -1) currentIndex.value = idx
     })
 
-    // —— Monthly Calendar —— 
+    /* ─────────────────────────── Firebase 数据加载 ─────────────────────────── */
+
+    function dateId(d) { return d.toISOString().split('T')[0] }
+
+    async function loadSelectedDateStats() {
+      const stats = await service.fetchDailyStats(uid, new Date(selectedDate.value))
+      selectedCalories.value = {
+        current: stats?.caloriesCurrent ?? 0,
+        goal:    stats?.caloriesGoal    ?? 2000
+      }
+      await nextTick(renderCalorieRings)
+    }
+
+    async function loadWeekStats() {
+      const range = weeks[currentIndex.value]
+      if (!range) return
+      const map = await service.fetchDailyStatsRange(uid, range.start, range.end)
+
+      const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+      const dataCal = []
+      const dataWgt = []
+
+      const cur = new Date(range.start)
+      for (let i = 0; i < 7; i++) {
+        const stats = map[dateId(cur)] || {}
+        dataCal.push(stats.caloriesCurrent ?? 0)
+        dataWgt.push(stats.bmi?.weight ?? null)
+        cur.setDate(cur.getDate() + 1)
+      }
+
+      if (calorieChart) {
+        calorieChart.data.labels = labels
+        calorieChart.data.datasets[0].data = dataCal
+        calorieChart.update()
+      }
+      if (weightChart) {
+        weightChart.data.labels = labels
+        weightChart.data.datasets[0].data = dataWgt
+        weightChart.update()
+      }
+    }
+
+    async function loadMonthStats() {
+      const y = currentMonth.value.getFullYear()
+      const m = currentMonth.value.getMonth()
+      const first = new Date(y, m, 1)
+      const last  = new Date(y, m + 1, 0)
+      const map = await service.fetchDailyStatsRange(uid, first, last)
+
+      calendar.value.forEach(week => {
+        week.forEach(day => {
+          const stats = map[dateId(day.date)] || {}
+          day.current = stats.caloriesCurrent ?? 0
+          day.goal    = stats.caloriesGoal    ?? 2000
+        })
+      })
+
+      await nextTick(renderCalorieRings)
+    }
+
+    // 监听选择变更
+    watch(selectedDate, loadSelectedDateStats)
+    watch(currentIndex, loadWeekStats)
+
+    // —— Monthly Calendar ——
     const currentMonth = ref(new Date(2025, 6, 1))
     const monthDisplay = computed(() =>
       currentMonth.value.toLocaleString('en-US', { month: 'long', year: 'numeric' })
@@ -114,13 +190,13 @@ export default {
       d.setMonth(d.getMonth() + 1)
       if (d <= new Date()) currentMonth.value = d
     }
-    watch(currentMonth, () => {
+    watch(currentMonth, async () => {
       calendar.value = generateCalendar()
-      nextTick(renderCalorieRings)
+      await loadMonthStats()
     })
 
-    // —— Chart.js 数据准备 —— 
-    
+    // —— Chart.js 数据准备 ——
+
 
     onMounted(() => {
       // 渲染：SVG 环、BMI 计算器、活动弹窗
@@ -135,7 +211,7 @@ export default {
         const dataWgt = [70.2,70.0,69.8,69.9,69.7,69.5,69.6]
 
         // 柱状图
-        new Chart(
+        calorieChart = new Chart(
           document.getElementById('calorieBarChart').getContext('2d'),
           { type:'bar',
             data:{ labels, datasets:[{ data:dataCal, backgroundColor:'rgba(127,90,255,0.6)' }] },
@@ -144,13 +220,18 @@ export default {
         )
 
         // 折线图
-        new Chart(
+        weightChart = new Chart(
           document.getElementById('weightLineChart').getContext('2d'),
           { type:'line',
             data:{ labels, datasets:[{ data:dataWgt, borderColor:'rgba(127,90,255,1)', borderWidth:2, tension:0.3, pointRadius:4 }] },
             options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:false } }, plugins:{ legend:{ display:false } } }
           }
         )
+
+        // 初始加载
+        loadSelectedDateStats()
+        loadWeekStats()
+        loadMonthStats()
       })
     })
 
@@ -159,12 +240,13 @@ export default {
       workoutImg2: workoutImg2Ref,
       weekDisplay, prevWeek, nextWeek,
       selectedDate, minDate, maxDate, showDatePicker, selectedDateDisplay,
-      monthDisplay, calendar, prevMonth, nextMonth
+      monthDisplay, calendar, prevMonth, nextMonth,
+      selectedCalories
     }
   }
 }
 
-// —— 公共方法，无需改动 —— 
+// —— 公共方法，无需改动 ——
 function renderCalorieRings(defaultSize = 240, defaultFontRatio = 0.16) {
   document.querySelectorAll('.calorie-ring').forEach(ring => {
     const current   = parseInt(ring.dataset.current) || 0
