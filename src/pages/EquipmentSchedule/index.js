@@ -2,7 +2,7 @@ import template from './equipmentschedule.html?raw'
 import './equipmentschedule.css'
 import NavBar from '../../components/NavBar'
 import Footer from '../../components/Footer'
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import FirebaseService from '../../services/firebaseService.js'
 import messages from '../../i18n/messages.js'
@@ -15,7 +15,7 @@ export default {
   setup() {
     const route = useRoute()
     const router = useRouter()
-    const eqId = route.params.id
+    const eqId = computed(() => route.params.id)
 
     const equipment = ref(null)
     const capacity = ref(0)
@@ -87,14 +87,37 @@ export default {
       return matrix
     })
 
-    async function loadData() {
+    const allEquipments = ref([])
+
+    async function loadData(id) {
       const service = FirebaseService.getInstance()
-      equipment.value = await service.getEquipment(eqId)
+
+      // Load current equipment details
+      equipment.value = await service.getEquipment(id)
       capacity.value = equipment.value.available || 0
+
+      // Fetch all equipments for selector (cache once)
+      if (allEquipments.value.length === 0) {
+        allEquipments.value = await service.loadAllEquipment()
+      }
+
       // fetch bookings between now and +7d
-      service.streamBookingsByEquipment(eqId, list => {
+      service.streamBookingsByEquipment(id, list => {
         bookings.value = list.filter(b => b.endTime >= new Date())
       })
+    }
+
+    const equipmentOptions = computed(() => {
+      const lang = language.value
+      return allEquipments.value.map(e => ({
+        id: e.id,
+        label: lang === 'zh' ? (e.name_cn || e.name) : e.name
+      }))
+    })
+
+    function goToEquipment(id) {
+      if (id === eqId.value) return
+      router.push(`/equipment/${id}/schedule`)
     }
 
     const language = ref(window.currentLang || 'en')
@@ -120,10 +143,33 @@ export default {
 
     onMounted(() => {
       window.scrollTo({ top: 0, left: 0 })
-      loadData()
+      loadData(route.params.id)
       window.addEventListener('languagechange', handleLangChange)
     })
     onUnmounted(() => window.removeEventListener('languagechange', handleLangChange))
+
+    // Watch for route id changes
+    watch(() => route.params.id, (newId, oldId) => {
+      if (newId && newId !== oldId) {
+        window.scrollTo({ top: 0, left: 0 })
+        loadData(newId)
+      }
+    })
+
+    const onWheelScroll = (event) => {
+      const el = event.currentTarget
+      if (el && el.scrollLeft !== undefined) {
+        el.scrollLeft += event.deltaY
+      }
+    }
+
+    const scrollContainer = ref(null)
+    function scrollLeft() {
+      if (scrollContainer.value) scrollContainer.value.scrollLeft -= 200
+    }
+    function scrollRight() {
+      if (scrollContainer.value) scrollContainer.value.scrollLeft += 200
+    }
 
     return {
       t,
@@ -135,7 +181,14 @@ export default {
       isSelected,
       confirmBooking,
       goBack,
-      equipmentName
+      equipmentName,
+      equipmentOptions,
+      goToEquipment,
+      eqId,
+      onWheelScroll,
+      scrollLeft,
+      scrollRight,
+      scrollContainer
     }
   }
 }
