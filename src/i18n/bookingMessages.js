@@ -6,7 +6,7 @@ export default {
     back: 'Back',
     equipmentSchedule: 'Equipment Schedule',
     available: 'Available',
-    time: 'Time',
+    time: 'Time Slot',
     fullyBooked: 'Fully Booked',
     bookingNow: 'Booking Now',
     mon: 'MON',

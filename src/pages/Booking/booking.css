@@ -1,1 +1,19 @@
-/* Booking page styles */ 
+/* Booking page styles */
+.equipment-card {
+  /* Smooth transition for transform and color changes */
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  /* ensure it can overlay neighbours when scaled */
+  position: relative;
+}
+
+/* glow overlay removed per request */
+
+.equipment-card:hover {
+  /* More dramatic lift and scale */
+  transform: translateY(-14px) scale(1.25);
+  /* Lighten the card background a bit */
+  background-color: var(--bg-4);
+  /* Add a stronger shadow for depth without purple glow */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}

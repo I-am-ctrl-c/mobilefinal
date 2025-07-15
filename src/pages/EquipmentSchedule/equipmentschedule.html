@@ -39,7 +39,7 @@
     
     <!-- Schedule Table -->
     <div class="overflow-x-auto">
-      <table class="w-full border-collapse border border-gray-300 schedule-table">
+      <table class="w-full border-collapse border-2 border-gray-300 dark:border-font-7 schedule-table">
         <thead>
           <tr class="background-color-4">
             <th class="border border-gray-300 px-4 py-3 text-left font-color-8 min-w-[100px] max-w-[140px]">{{ t('time') }}</th>
@@ -64,7 +64,7 @@
                 :class="{}"
                 :class="{
                   'background-color-1 decoratePu-color-5 hover:background-color-2': availability[slotIndex] && availability[slotIndex][dayIndex] > 0,
-                  'background-color-5 font-color-4 hover:background-color-6': availability[slotIndex] && availability[slotIndex][dayIndex] === 0,
+                  'background-color-5 font-color-4 dark:text-font-7 hover:background-color-6': availability[slotIndex] && availability[slotIndex][dayIndex] === 0,
                   'background-color-2 font-color-4 hover:background-color-3': !availability[slotIndex] || !availability[slotIndex][dayIndex],
                   'text-white': isSelected(slotIndex, dayIndex)
                 }"
@@ -90,7 +90,7 @@
       </div>
       <div class="flex items-center gap-2">
         <div class="w-4 h-4 background-color-5 border border-gray-300"></div>
-        <span class="font-color-4">{{ t('fullyBooked') }}</span>
+        <span class="font-color-4 dark:text-font-7">{{ t('fullyBooked') }}</span>
       </div>
     </div>
 

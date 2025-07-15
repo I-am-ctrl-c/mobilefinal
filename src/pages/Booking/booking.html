@@ -68,15 +68,14 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
       <!-- 单个预约卡片：可调整圆角、阴影、背景色 -->
       <!-- rounded-lg: 圆角大小，shadow-md: 阴影效果，background-color-9: 背景色 -->
-      <div v-for="eq in equipments" :key="eq.id" class="rounded-lg overflow-hidden shadow-md background-color-9 max-w-md mx-auto">
+      <div v-for="eq in equipments" :key="eq.id" class="equipment-card rounded-lg overflow-hidden shadow-md transform hover:scale-105 transition duration-300 background-color-9 max-w-md mx-auto cursor-pointer" @click="goToDescription(eq.id)">
         <!-- 卡片图片：可调整高度、对象适配方式 -->
         <!-- h-48: 图片高度 (h-32=128px, h-48=192px, h-64=256px) -->
         <!-- object-cover: 保持比例裁剪，object-contain: 完整显示 -->
         <img
           :src="eq.imageUrl"
           :alt="eq.name"
-          class="w-full h-96 object-cover cursor-pointer hover:opacity-90 transition-opacity duration-200"
-          @click="goToDescription(eq.id)"
+          class="w-full h-96 object-cover hover:opacity-90 transition-opacity duration-200"
         />
 
         <!-- 卡片内容区域：可调整内边距、文字大小和颜色 -->
@@ -89,7 +88,7 @@
           <!-- 日期信息：可调整字体大小、颜色、间距 -->
           <!-- text-sm: 小字体，font-color-4: 文字颜色，mb-1: 底部间距 -->
           <p class="text-lg font-color-4" v-if="eq.description">{{ eq.description.slice(0, 80) }}...</p>
-          <button @click="$router.push(`/equipment/${eq.id}/schedule`)" class="mt-6 w-full bg-decorPu-5 hover:bg-decorPu-6 text-white py-3 rounded-full font-semibold text-xl transition-colors duration-200">
+          <button @click.stop="$router.push(`/equipment/${eq.id}/schedule`)" class="mt-6 w-full bg-decorPu-5 hover:bg-decorPu-6 text-white py-3 rounded-full font-semibold text-xl transition-colors duration-200">
             {{ t('bookingNow') }}
           </button>
         </div>
