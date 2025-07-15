@@ -6,6 +6,8 @@ import Booking from '../pages/Booking'
 import Workout from '../pages/Workout'
 import Profile from '../pages/Profile'
 import EquipmentSchedule from '../pages/EquipmentSchedule'
+import AuthPage from '../pages/Auth/index'
+
 
 import FAQ from '../pages/FAQ'
 import Upgrade from '../pages/Upgrade'
@@ -31,7 +33,7 @@ const routes = [
 
   { path: '/equipment/:id/schedule', component: EquipmentSchedule },
   // 登录页占位，后续实现真正的登录页面
-  { path: '/login', component: { template: '<div></div>' } },
+  { path: '/Auth', component: AuthPage },
   { path: '/video-player', component: () => import('../pages/Videos/VideoPlayer.vue') },
 ]
 
