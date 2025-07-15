@@ -6,33 +6,117 @@
 
 <NavBar />
 
-<main class="pt-16 min-h-screen">
-  <section class="h-48 w-full bg-cover bg-center flex items-center justify-center mt-6" style="background-image: url('/src/assets/images/Upgrade_banner.jpg')">
-    <h1 class="text-5xl font-bold text-white">{{ t('title') }}</h1>
-  </section>
+<!-- 支付二维码模态框 -->
+<div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-2xl shadow-xl p-6 w-[360px] text-center relative">
+    <!-- 关闭按钮 -->
+    <button id="closeModalBtn" class="absolute top-3 right-4 text-gray-400 hover:text-black text-2xl font-bold">×</button>
 
-  <section class="max-w-5xl mx-auto text-center px-4 mt-8">
-    <p class="text-font-6 text-lg">{{ t('subtitle') }}</p>
-  </section>
+    <!-- 标题 -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-1" id="paymentTitle">Scan to Pay</h2>
+    <p class="text-sm text-gray-500 mb-4" id="paymentSubtext">Use your mobile app to scan and complete payment</p>
 
-  <div class="info-box-wrapper">
-    <div class="info-box text-center">
-      <h3 class="metric-value">{{ t('basic') }}</h3>
-      <p class="metric-label">{{ t('desc1') }}</p>
+    <!-- 二维码 -->
+    <div class="border border-gray-300 rounded-lg p-2 inline-block bg-gray-50 shadow-sm">
+      <img src="/src/assets/images/QR.png" alt="QR Code" class="w-48 h-48 object-contain rounded-md" />
     </div>
-    <div class="info-box text-center">
-      <h3 class="metric-value">{{ t('premium') }}</h3>
-      <p class="metric-label">{{ t('desc2') }}</p>
-    </div>
-  </div>
 
-  <div class="text-center mt-10">
-    <button class="bg-decorPu-5 hover:bg-decorPu-6 text-white font-semibold px-6 py-3 rounded shadow transition">
-      {{ t('button') }}
+    <!-- 支付提示 -->
+    <p class="text-xs text-gray-400 mt-4" id="paymentHint">Please complete the payment within 5 minutes.</p>
+
+    <!-- 支付确认按钮（可选） -->
+    <button id="confirmPaymentBtn" class="mt-6 w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition">
+      I have completed payment
     </button>
   </div>
+</div>
+
+
+
+<main class="pt-16 min-h-screen background-color-1">
+  <!-- 顶部横幅背景 -->
+  <section class="h-48 w-full bg-cover bg-center flex items-center justify-center mt-6"
+           style="background-image: url('/src/assets/images/Upgrade.jpg')">
+    <div class="text-center">
+      <h1 class="text-5xl font-bold text-white">{{ t('title') }}</h1>
+    </div>
+  </section>
+
+  <!-- 优惠说明 -->
+  <section class="max-w-5xl mx-auto text-center px-4 mt-8">
+    <p class="text-lg font-color-6">{{ t('subtitle') }}</p>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row justify-center gap-8">
+    <!-- 卡片：Basic -->
+    <div class="background-color-3 shadow-xl rounded-2xl overflow-hidden w-full max-w-sm text-center border border-[var(--bg-4)]">
+      <div class="background-color-10 p-6 contrast-color-10 font-bold text-lg">{{ t('planBasic') }}</div>
+      <div class="py-4">
+        <p class="text-3xl font-bold decoratePu-color-5">9RM</p>
+        <p class="text-sm font-color-6">{{ t('monthly') }}</p>
+      </div>
+      <ul class="text-left px-8 space-y-3 text-sm mb-6">
+        <li class="font-color-8">✅ {{ t('benefit1') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit2') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit3') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit4') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit5') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit6') }}</li>
+        <li class="font-color-4 line-through">❌ {{ t('benefit7') }}</li>
+        <li class="font-color-4 line-through">❌ {{ t('benefit8') }}</li>
+      </ul>
+      <div class="pb-6">
+        <button class="background-color-10 contrast-color-10 px-6 py-2 rounded hover:brightness-110 font-bold" @click="openPaymentModal()">{{ t('join') }}</button>
+      </div>
+    </div>
+
+    <!-- 卡片：Pro -->
+    <div class="background-color-3 shadow-xl rounded-2xl overflow-hidden w-full max-w-sm text-center border border-[var(--bg-4)]">
+      <div class="background-color-10 p-6 contrast-color-10 font-bold text-lg">{{ t('planPro') }}</div>
+      <div class="py-4">
+        <p class="text-3xl font-bold decoratePu-color-5">24RM</p>
+        <p class="text-sm font-color-6">{{ t('quarterly') }}</p>
+      </div>
+      <ul class="text-left px-8 space-y-3 text-sm mb-6">
+        <li class="font-color-8">✅ {{ t('benefit1') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit2') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit3') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit4') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit5') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit6') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit7') }}</li>
+        <li class="font-color-4 line-through">❌ {{ t('benefit8') }}</li>
+      </ul>
+      <div class="pb-6">
+        <button class="background-color-10 contrast-color-10 px-6 py-2 rounded hover:brightness-110 font-bold" @click="openPaymentModal()">{{ t('join') }}</button>
+      </div>
+    </div>
+
+    <!-- 卡片：Premium -->
+    <div class="background-color-3 shadow-xl rounded-2xl overflow-hidden w-full max-w-sm text-center border border-[var(--bg-4)]">
+      <div class="background-color-10 p-6 contrast-color-10 font-bold text-lg">{{ t('planPremium') }}</div>
+      <div class="py-4">
+        <p class="text-3xl font-bold decoratePu-color-5">99RM</p>
+        <p class="text-sm font-color-6">{{ t('yearly') }}</p>
+      </div>
+      <ul class="text-left px-8 space-y-3 text-sm mb-6">
+        <li class="font-color-8">✅ {{ t('benefit1') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit2') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit3') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit4') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit5') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit6') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit7') }}</li>
+        <li class="font-color-8">✅ {{ t('benefit8') }}</li>
+      </ul>
+      <div class="pb-6">
+        <button class="background-color-10 contrast-color-10 px-6 py-2 rounded hover:brightness-110 font-bold" @click="openPaymentModal()">{{ t('join') }}</button>
+      </div>
+    </div>
+  </section>
 </main>
 
 <div class="pt-24">
   <Footer />
 </div>
+

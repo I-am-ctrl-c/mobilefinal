@@ -1,8 +1,91 @@
+<head>
+  <link rel="stylesheet" href="./upgrade.css">
+  <link rel="stylesheet" href="/src/assets/main.css">
+  <script src="./index.js" defer></script>
+</head>
+
 <NavBar />
-<main class="pt-16">
-<div class="text-font-10 text-3xl">FAQ</div>
-  
-<div class="pt-20">
+
+<main class="pt-16 min-h-screen background-color-1">
+  <section class="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-12">
+    
+  <!-- 左侧 FAQ -->
+  <div class="flex-1">
+    <h2 class="text-4xl font-bold text-center lg:text-left mb-8">{{ t('faqTitle') }}</h2>
+    <div class="space-y-4" id="faq-list">
+
+      <!-- FAQ item template -->
+      <!-- FAQ item -->
+      <div class="faq-item whitespace-pre-line space-y-2">
+        <div class="faq-toggle flex justify-between items-center px-6 py-4 bg-white text-black shadow-md rounded-full cursor-pointer transition-all duration-300">
+          <span class="faq-question font-semibold text-lg">{{ t('faq_booking_question') }}</span>
+          <button class="faq-btn bg-yellow-500 rounded-full w-8 h-8 flex justify-center items-center text-xl font-bold text-white">+</button>
+        </div>
+        <div class="faq-answer font-9 text-sm leading-relaxed hidden px-2 pl-6">
+          {{ t('faq_booking_answer') }}
+        </div>
+      </div>
+
+      <div class="faq-item whitespace-pre-line space-y-2">
+        <div class="faq-toggle flex justify-between items-center px-6 py-4 bg-white text-black shadow-md rounded-full cursor-pointer transition-all duration-300">
+          <span class="faq-question font-semibold text-lg">{{ t('faq_view_cancel_question') }}</span>
+          <button class="faq-btn bg-yellow-500 rounded-full w-8 h-8 flex justify-center items-center text-xl font-bold text-white">+</button>
+        </div>
+        <div class="faq-answer font-9 text-sm leading-relaxed hidden px-2 pl-6">
+          {{ t('faq_view_cancel_answer') }}
+        </div>
+      </div>
+
+      <!-- 加上 3、4、5... -->
+      <div class="faq-item whitespace-pre-line space-y-2">
+        <div class="faq-toggle flex justify-between items-center px-6 py-4 bg-white text-black shadow-md rounded-full cursor-pointer transition-all duration-300">
+          <span class="faq-question font-semibold text-lg">{{ t('faq_premium_question') }}</span>
+          <button class="faq-btn bg-yellow-500 rounded-full w-8 h-8 flex justify-center items-center text-xl font-bold text-white">+</button>
+        </div>
+        <div class="faq-answer font-9 text-sm leading-relaxed hidden px-2 pl-6">
+          {{ t('faq_premium_answer') }}
+        </div>
+      </div>
+
+      <div class="faq-item whitespace-pre-line space-y-2">
+        <div class="faq-toggle flex justify-between items-center px-6 py-4 bg-white text-black shadow-md rounded-full cursor-pointer transition-all duration-300">
+          <span class="faq-question font-semibold text-lg">{{ t('faq_personal_info_question') }}</span>
+          <button class="faq-btn bg-yellow-500 rounded-full w-8 h-8 flex justify-center items-center text-xl font-bold text-white">+</button>
+        </div>
+        <div class="faq-answer font-9 text-sm leading-relaxed hidden px-2 pl-6">
+          {{ t('faq_personal_info_answer') }}
+        </div>
+      </div>
+
+      <div class="faq-item whitespace-pre-line space-y-2">
+        <div class="faq-toggle flex justify-between items-center px-6 py-4 bg-white text-black shadow-md rounded-full cursor-pointer transition-all duration-300">
+          <span class="faq-question font-semibold text-lg">{{ t('faq_settings_question') }}</span>
+          <button class="faq-btn bg-yellow-500 rounded-full w-8 h-8 flex justify-center items-center text-xl font-bold text-white">+</button>
+        </div>
+        <div class="faq-answer font-9 text-sm leading-relaxed hidden px-2 pl-6">
+          {{ t('faq_settings_answer') }}
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+    <!-- 右侧表单 -->
+    <div class="flex-1 max-w-md mx-auto lg:mx-0 bg-white rounded-xl shadow-md p-8">
+      <h3 class="text-2xl font-bold mb-2 text-black">{{ t('faqSubTitle') }}</h3>
+      <p class="text-sm font-color-6 mb-6">{{ t('faqSubText') }}</p>
+      <form class="space-y-4">
+        <input type="text" :placeholder="t('name')" class="w-full px-4 py-2 border rounded-full text-black text-sm font-normal focus:outline-none focus:ring-2 focus:ring-purple-400" />
+        <input type="email":placeholder="t('email')" class="w-full px-4 py-2 border rounded-full text-black text-sm font-normal focus:outline-none focus:ring-2 focus:ring-purple-400" />
+        <input type="text":placeholder="t('subject')" class="w-full px-4 py-2 border rounded-full text-black text-sm font-normal focus:outline-none focus:ring-2 focus:ring-purple-400" />
+        <textarea rows="4":placeholder="t('message') " class="w-full px-4 py-2 border rounded-lg text-black text-sm font-normal focus:outline-none focus:ring-2 focus:ring-purple-400"></textarea>
+        <button type="submit" class="w-full py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold rounded-full hover:brightness-110">{{ t('send') }}</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<div class="pt-24">
   <Footer />
-</div> 
-</main> 
+</div>
+
