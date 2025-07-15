@@ -7,7 +7,7 @@ import Workout from '../pages/Workout'
 import Profile from '../pages/Profile'
 import EquipmentSchedule from '../pages/EquipmentSchedule'
 import AuthPage from '../pages/Auth/index'
-
+import Description from '../pages/Description'
 
 import FAQ from '../pages/FAQ'
 import Upgrade from '../pages/Upgrade'
@@ -32,9 +32,10 @@ const routes = [
   { path: '/upgrade', component: Upgrade },
 
   { path: '/equipment/:id/schedule', component: EquipmentSchedule },
+  { path: '/equipment/:id/description', component: Description },
   // 登录页占位，后续实现真正的登录页面
   { path: '/Auth', component: AuthPage },
-  { path: '/video-player', component: () => import('../pages/Videos/VideoPlayer.vue') },
+  { path: '/video-player', component: () => import('../pages/Videos/VideoPlayerComponent.js') },
 ]
 
 const router = createRouter({
