@@ -1,5 +1,5 @@
 /* Home Page styles */ 
-/* Purple Theme with Animations */
+/* Purple Theme with Enhanced Animations */
 
 @keyframes fadeIn {
   0% { opacity: 0; }
@@ -28,6 +28,61 @@
   }
 }
 
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+
 .animate-fade {
   animation: fadeIn 1s ease-in-out;
 }
@@ -44,22 +99,435 @@
   animation: slideUp 1s ease-out;
 }
 
-/* Outlined Button Style */
-.outlined-button {
-  background: transparent;
-  border: 2px solid #a855f7; /* purple-500 */
-  color: #ffffff;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 500;
+.animate-slide-left {
+  animation: slideInLeft 1s ease-out;
+}
+
+.animate-slide-right {
+  animation: slideInRight 1s ease-out;
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Enhanced Button Styles */
+.primary-button {
+  background: linear-gradient(135deg, var(--decorPu-5), var(--decorPu-7));
+  border: none;
+  color: var(--decorPu-1);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(150, 98, 241, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.primary-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.primary-button:hover::before {
+  left: 100%;
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(150, 98, 241, 0.4);
+  background: linear-gradient(135deg, var(--decorPu-4), var(--decorPu-6));
+}
+
+.primary-button:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 20px rgba(150, 98, 241, 0.3);
+}
+
+.outlined-button {
+  background: transparent;
+  border: 2px solid var(--decorPu-5);
+  color: var(--decorPu-1);
+  padding: 0.875rem 1.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.outlined-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--decorPu-5), var(--decorPu-7));
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.outlined-button:hover::before {
+  left: 0;
 }
 
 .outlined-button:hover {
-  background: #a855f7; /* purple-500 */
-  color: #ffffff;
-  box-shadow: 0 5px 15px rgba(168, 85, 247, 0.3);
+  color: var(--decorPu-1);
+  border-color: var(--decorPu-4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(150, 98, 241, 0.3);
 }
 
-/* You can continue adding Tailwind or custom styles here... */
+.outlined-button:active {
+  transform: translateY(0);
+}
+
+.secondary-button {
+  background: linear-gradient(135deg, var(--bg-8), var(--bg-9));
+  border: 2px solid var(--bg-6);
+  color: var(--font-2);
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.secondary-button:hover {
+  background: linear-gradient(135deg, var(--bg-7), var(--bg-8));
+  border-color: var(--bg-5);
+  color: var(--font-1);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, var(--bg-10), var(--bg-9));
+  position: relative;
+}
+
+.hero-slide {
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed;
+}
+
+.hero-slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(34, 35, 50, 0.8), rgba(150, 98, 241, 0.6));
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title {
+  background: linear-gradient(135deg, var(--font-1), var(--decorPu-4));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(150, 98, 241, 0.5);
+}
+
+.hero-subtitle {
+  color: var(--decorPu-3);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Navigation Arrows */
+.nav-arrow {
+  background: rgba(150, 98, 241, 0.2);
+  border: 2px solid #ffffff;
+  color: #ffffff!important;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.nav-arrow:hover {
+  background: var(--decorPu-5);
+  color: var(--font-1);
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(150, 98, 241, 0.4);
+}
+
+/* Dots Navigation */
+.dot-nav {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.dot-nav.active {
+  background: var(--decorPu-5);
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(150, 98, 241, 0.6);
+}
+
+.dot-nav:not(.active) {
+  background: rgba(245, 245, 245, 0.3);
+  border: 2px solid var(--decorPu-5);
+}
+
+.dot-nav:hover {
+  transform: scale(1.1);
+}
+
+/* Program Cards */
+.program-card {
+  background-size: cover !important;
+  background-position: center !important;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.program-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(34, 35, 50, 0.7), rgba(150, 98, 241, 0.5));
+  transition: all 0.3s ease;
+}
+
+.program-card:hover::before {
+  background: linear-gradient(135deg, rgba(34, 35, 50, 0.5), rgba(150, 98, 241, 0.7));
+}
+
+.program-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(150, 98, 241, 0.4);
+}
+
+.program-card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.program-title {
+  color: var(--font-1);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+  margin-bottom: 0.75rem;
+}
+
+.program-description {
+  color: var(--decorPu-2);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* About Section */
+.about-section {
+  background: linear-gradient(135deg, var(--bg-10), var(--bg-9), var(--bg-8));
+  position: relative;
+}
+
+.about-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="0.5" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+}
+
+.about-content {
+  position: relative;
+  z-index: 2;
+}
+
+.about-title {
+  background: linear-gradient(135deg, var(--font-1), var(--decorPu-4));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-text {
+  color: var(--font-2);
+  line-height: 1.8;
+}
+
+.about-description {
+  color: var(--font-3);
+  line-height: 1.7;
+}
+
+.about-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.about-image img {
+  transition: all 0.5s ease;
+  border-radius: 16px;
+}
+
+.about-image:hover img {
+  transform: scale(1.05);
+}
+
+.about-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(150, 98, 241, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.about-image:hover::after {
+  opacity: 1;
+}
+
+/* Programs Section */
+.programs-section {
+  background: linear-gradient(135deg, var(--decorPu-8), var(--decorPu-7), var(--decorPu-6));
+  position: relative;
+}
+
+.programs-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(150, 98, 241, 0.3) 0%, transparent 50%);
+}
+
+.programs-content {
+  position: relative;
+  z-index: 2;
+}
+
+.programs-title {
+  color: var(--font-1);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.programs-description {
+  color: var(--decorPu-1);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .primary-button,
+  .outlined-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .nav-arrow {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+  
+  .program-card {
+    margin-bottom: 1rem;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.25rem;
+  }
+}
+
+/* Loading States */
+.loading-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Scroll Animations */
+.scroll-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.scroll-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-slide-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: all 0.8s ease;
+}
+
+.scroll-slide-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scroll-slide-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.8s ease;
+}
+
+.scroll-slide-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
