@@ -73,10 +73,10 @@
       <button
         @click="confirmBooking"
         :disabled="!selectedSlot"
-        class="px-8 py-3 rounded font-bold transition-opacity duration-150"
+        class="px-12 py-4 rounded-full font-semibold text-xl transition-colors duration-200 shadow-lg"
         :class="{
-          'decoratePu-color-5 border border-decorPu-color-5 hover:opacity-90': selectedSlot,
-          'background-color-5 cursor-not-allowed': !selectedSlot
+          'bg-decorPu-5 hover:bg-decorPu-6 text-white': selectedSlot,
+          'bg-gray-400 text-white cursor-not-allowed': !selectedSlot
         }"
       >
         {{ t('bookingNow') }}

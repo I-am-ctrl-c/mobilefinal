@@ -194,11 +194,14 @@ export default class FirebaseService {
     return new Equipment({
       id: snap.id,
       name: data.name ?? '',
+      name_cn: data.name_cn ?? '',
       description: data.description ?? '',
+      description_cn: data.description_cn ?? '',
       imageUrl,
       videoUrl,
       available: (data.available ?? 0),
-      tags: data.tags ?? []
+      tags: data.tags ?? [],
+      tags_cn: data.tags_cn ?? []
     })
   }
 
@@ -293,11 +296,14 @@ export default class FirebaseService {
       return new Equipment({
         id: docSnap.id,
         name: data.name ?? '',
+        name_cn: data.name_cn ?? '',
         description: data.description ?? '',
+        description_cn: data.description_cn ?? '',
         imageUrl,
         videoUrl,
         available: data.available ?? 0,
-        tags: data.tags ?? []
+        tags: data.tags ?? [],
+        tags_cn: data.tags_cn ?? []
       })
     })
     return Promise.all(promises)
@@ -317,11 +323,14 @@ export default class FirebaseService {
         return new Equipment({
           id: docSnap.id,
           name: data.name ?? '',
+          name_cn: data.name_cn ?? '',
           description: data.description ?? '',
+          description_cn: data.description_cn ?? '',
           imageUrl,
           videoUrl,
           available: data.available ?? 0,
-          tags: data.tags ?? []
+          tags: data.tags ?? [],
+          tags_cn: data.tags_cn ?? []
         })
       })
       callback(await Promise.all(promises))
@@ -437,6 +446,33 @@ export default class FirebaseService {
     const snap = await getDocs(q)
     if (snap.empty) return null
     return snap.docs[0].data().caloriesGoal
+  }
+
+  /**
+   * Fetch dailyStats records for a given date range (inclusive).
+   * Returns an object keyed by ISO date string (YYYY-MM-DD).
+   *
+   * @param {string} userId
+   * @param {Date}   startDate
+   * @param {Date}   endDate
+   * @returns {Promise<Record<string, any>>}
+   */
+  async fetchDailyStatsRange(userId, startDate, endDate) {
+    const fromId = startDate.toISOString().split('T')[0]
+    const toId   = endDate.toISOString().split('T')[0]
+
+    const q = query(
+      collection(this._db, 'users', userId, 'dailyStats'),
+      where(FieldPath.documentId(), '>=', fromId),
+      where(FieldPath.documentId(), '<=', toId),
+      orderBy(FieldPath.documentId())
+    )
+
+    const snap = await getDocs(q)
+    /** @type {Record<string, any>} */
+    const map = {}
+    snap.docs.forEach(docSnap => { map[docSnap.id] = docSnap.data() })
+    return map
   }
 
   /**

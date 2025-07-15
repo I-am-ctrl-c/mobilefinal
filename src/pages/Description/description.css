@@ -1,0 +1,106 @@
+/* Description页面特定样式 */
+
+/* 器材图片区域 */
+.equipment-hero {
+  position: relative;
+  background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+}
+
+/* 描述卡片样式 */
+.description-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.description-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* 视频容器样式 */
+.video-container {
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.video-container video {
+  border-radius: 12px;
+}
+
+/* 标签样式 */
+.equipment-tag {
+  background: linear-gradient(135deg, var(--decorPu-5), var(--decorPu-6));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Booking按钮样式 */
+.booking-button {
+  background: linear-gradient(135deg, var(--decorPu-5), var(--decorPu-6));
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.booking-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.6);
+}
+
+.booking-button:active {
+  transform: translateY(0);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .equipment-hero h1 {
+    font-size: 2rem;
+  }
+
+  .equipment-hero .container {
+    padding-bottom: 1.5rem;
+  }
+
+  .booking-button {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+/* 加载动画 */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 加载状态样式 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(168, 85, 247, 0.2);
+  border-left: 4px solid var(--decorPu-5);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

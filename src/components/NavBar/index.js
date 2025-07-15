@@ -46,11 +46,15 @@ export default {
       localStorage.setItem('darkMode', isDarkMode.value)
     }
 
-    // Language state
-    const language = ref('en')
+    // Language state (persisted globally)
+    const savedLang = localStorage.getItem('language') || 'en'
+    const language = ref(savedLang)
+    // Ensure global var matches on init
+    window.currentLang = savedLang
     const toggleLanguage = () => {
       language.value = language.value === 'en' ? 'zh' : 'en'
       window.currentLang = language.value
+      localStorage.setItem('language', language.value)
       // force update (for demo, in real app use a reactive i18n plugin)
       window.dispatchEvent(new Event('languagechange'))
     }

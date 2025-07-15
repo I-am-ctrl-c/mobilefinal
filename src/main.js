@@ -28,7 +28,7 @@ window.$t = function (key, lang = window.currentLang || 'en') {
   return messages[lang]?.[key] || key
 }
 
-// Set default language
-window.currentLang = 'en'
+// Set default language (persisted)
+window.currentLang = localStorage.getItem('language') || 'en'
 
 createApp(App).use(router).mount('#app')

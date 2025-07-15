@@ -115,6 +115,7 @@ export default {
     const equipmentName = computed(() => equipment.value ? equipment.value.name : '')
 
     onMounted(() => {
+      window.scrollTo({ top: 0, left: 0 })
       loadData()
       window.addEventListener('languagechange', handleLangChange)
     })
