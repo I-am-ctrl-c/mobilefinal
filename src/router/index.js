@@ -26,13 +26,10 @@ const routes = [
   { path: '/booking', component: Booking },
   { path: '/workout', component: Workout },
   { path: '/profile', component: Profile },
-<<<<<<< HEAD
   { path: '/faq', component: FAQ },
   { path: '/upgrade', component: Upgrade },
 
-=======
   { path: '/equipment/:id/schedule', component: EquipmentSchedule },
->>>>>>> 99f86dae1fd156acc609c49742687b536d672cd8
   // 登录页占位，后续实现真正的登录页面
   { path: '/login', component: { template: '<div></div>' } },
   { path: '/video-player', component: () => import('../pages/Videos/VideoPlayer.vue') },
