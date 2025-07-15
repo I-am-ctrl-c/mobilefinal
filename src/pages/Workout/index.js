@@ -120,21 +120,7 @@ export default {
     })
 
     // —— Chart.js 数据准备 —— 
-    const weekLabels = computed(() =>
-      weeks[currentIndex.value].map(d =>
-        `${d.date.getMonth()+1}/${d.date.getDate()}`
-      )
-    )
-    const weekCalories = computed(() =>
-      weeks[currentIndex.value].map(() =>
-        Math.floor(Math.random() * 500) + 200
-      )
-    )
-    const weekWeights = computed(() =>
-      weeks[currentIndex.value].map((_, i) =>
-        70 + i * 0.2 + Math.random() * 0.3
-      )
-    )
+    
 
     onMounted(() => {
       // 渲染：SVG 环、BMI 计算器、活动弹窗
@@ -144,51 +130,27 @@ export default {
 
       // 等 DOM 真正挂载后再绘制图表
       nextTick(() => {
-        // —— Weekly Calorie Burn 柱状图 —— 
-        const barCtx = document
-          .getElementById('calorieBarChart')
-          .getContext('2d')
-        new Chart(barCtx, {
-          type: 'bar',
-          data: {
-            labels: weekLabels.value,
-            datasets: [{
-              label: 'Calories',
-              data: weekCalories.value,
-              backgroundColor: 'rgba(127,90,255,0.6)',
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } },
-            plugins: { legend: { display: false } }
-          }
-        })
+        const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+        const dataCal = [350,420,310,480,500,390,450]
+        const dataWgt = [70.2,70.0,69.8,69.9,69.7,69.5,69.6]
 
-        // —— Weekly Weight Trend 折线图 —— 
-        const lineCtx = document
-          .getElementById('weightLineChart')
-          .getContext('2d')
-        new Chart(lineCtx, {
-          type: 'line',
-          data: {
-            labels: weekLabels.value,
-            datasets: [{
-              label: 'Weight (kg)',
-              data: weekWeights.value,
-              borderWidth: 2,
-              tension: 0.3,
-              pointRadius: 3
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: false } },
-            plugins: { legend: { display: false } }
+        // 柱状图
+        new Chart(
+          document.getElementById('calorieBarChart').getContext('2d'),
+          { type:'bar',
+            data:{ labels, datasets:[{ data:dataCal, backgroundColor:'rgba(127,90,255,0.6)' }] },
+            options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } }, plugins:{ legend:{ display:false } } }
           }
-        })
+        )
+
+        // 折线图
+        new Chart(
+          document.getElementById('weightLineChart').getContext('2d'),
+          { type:'line',
+            data:{ labels, datasets:[{ data:dataWgt, borderColor:'rgba(127,90,255,1)', borderWidth:2, tension:0.3, pointRadius:4 }] },
+            options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:false } }, plugins:{ legend:{ display:false } } }
+          }
+        )
       })
     })
 
@@ -279,6 +241,7 @@ function setupBMICalculator() {
     r.textContent = `Your BMI: ${bmi.toFixed(1)}`;
     lbl.textContent = cat.label;
     lbl.style.color = cat.color;
+    lbl.style.textShadow = `0 0 4px ${cat.color}`;
 
     // 四等分区块内线性定位
     let left;

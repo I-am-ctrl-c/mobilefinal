@@ -51,15 +51,18 @@
  <!-- ✅ 信息框区域（应用 info-box） -->
  <div class="max-w-7xl mx-auto mt-8 px-4 flex flex-wrap gap-6 justify-between" style="height: 400px;">
   <!-- 替换原 Progress 框为圆环 -->
-  <div class="info-box text-center flex items-center justify-center">
-    <div
-      class="calorie-ring"
-      data-current="1200"
-      data-goal="1350"
-      data-size="190"
-      data-font="0.15"
-    ></div>
-  </div>
+  <div class="info-box">
+    <h2 class="text-xl font-semibold text-center mb-2">Calories</h2>
+      <div class="flex items-center justify-center">
+        <div
+          class="calorie-ring"
+          data-current="1200"
+          data-goal="1350"
+          data-size="190"
+          data-font="0.15"
+        ></div>
+      </div>
+    </div>
 
   
 
@@ -115,7 +118,7 @@
 
 <!-- ===== 替换 info-box 中 BMI 区块 ===== -->
 <!-- —— BMI info-box —— -->
-<div class="info-box text-center flex flex-col items-center gap-5" id="bmi-box" style="height:400px">
+<div class="info-box text-center flex flex-col items-center gap-5 pt-4" id="bmi-box" style="height:400px">
 
   <!-- BMI 数值 -->
   <p class="bmi-value-display-strong" id="bmiResult">Your BMI: --</p>
@@ -221,18 +224,24 @@
 
 
 <!-- —— Weekly Charts —— -->
+<!-- —— Weekly Charts —— -->
 <section class="max-w-7xl mx-auto mt-8 px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-  <!-- 柱状图框：周卡路里消耗 -->
-  <div class="info-box flex flex-col">
+  <div class="info-box p-4">
     <h3 class="text-xl font-semibold mb-2">Weekly Calorie Burn</h3>
-    <canvas id="calorieBarChart"></canvas>
+    <div class="chart-container">
+      <canvas id="calorieBarChart" width="600" height="240"></canvas>
+    </div>
   </div>
-  <!-- 折线图框：周体重变化 -->
-  <div class="info-box flex flex-col">
+  <div class="info-box p-4">
     <h3 class="text-xl font-semibold mb-2">Weekly Weight Trend</h3>
-    <canvas id="weightLineChart"></canvas>
+    <div class="chart-container">
+      <canvas id="weightLineChart" width="600" height="240"></canvas>
+    </div>
   </div>
 </section>
+
+
+
 
 
 
