@@ -34,7 +34,7 @@ const routes = [
   { path: '/equipment/:id/description', component: Description },
   // 登录页占位，后续实现真正的登录页面
   { path: '/login', component: { template: '<div></div>' } },
-  { path: '/video-player', component: () => import('../pages/Videos/VideoPlayer.vue') },
+  { path: '/video-player', component: () => import('../pages/Videos/VideoPlayerComponent.js') },
 ]
 
 const router = createRouter({
