@@ -2,7 +2,8 @@
   background-color: var(--bg-2);
   min-height: 100vh;
   padding-bottom: 3rem;
-  overflow-y: auto;
+  /* allow body scrolling instead of internal container */
+  overflow-y: visible;
 }
 
 .schedule-title {
@@ -80,7 +81,7 @@
 }
 
 .schedule-hero {
-  margin-top: 88px; /* 确保不盖住 NavBar，高度可调整 */
+  margin-top: 1.5rem; /* 与 Booking 页保持一致 (mt-6) */
   background-image: url('/src/assets/images/schedule-BG.jpg');
   background-repeat: no-repeat;
   background-size: cover;
