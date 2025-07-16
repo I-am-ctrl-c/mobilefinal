@@ -60,22 +60,23 @@
               class="border border-gray-300 p-0 h-14"
             >
               <button
-                class="flex items-center justify-center w-full h-full transition-all duration-150 cursor-pointer border-none hover:scale-105 hover:brightness-110 hover:ring-2 hover:ring-decorPu-5"
-                :class="{}"
-                :class="{
-                  'background-color-1 decoratePu-color-5 hover:background-color-2': availability[slotIndex] && availability[slotIndex][dayIndex] > 0,
-                  'background-color-5 font-color-4 dark:text-font-7 hover:background-color-6': availability[slotIndex] && availability[slotIndex][dayIndex] === 0,
-                  'background-color-2 font-color-4 hover:background-color-3': !availability[slotIndex] || !availability[slotIndex][dayIndex],
-                  'text-white': isSelected(slotIndex, dayIndex)
-                }"
+                v-if="availability[slotIndex] && availability[slotIndex][dayIndex] > 0"
+                class="flex items-center justify-center w-full h-full transition-all duration-150 cursor-pointer border-none hover:scale-105 hover:brightness-110 hover:ring-2 hover:ring-decorPu-5 background-color-1 decoratePu-color-5 hover:background-color-2"
+                :class="{ 'text-white': isSelected(slotIndex, dayIndex) }"
                 :style="isSelected(slotIndex, dayIndex) ? { 'background-color': 'var(--decorPu-5)' } : {}"
                 @click="selectSlot(slotIndex, dayIndex)"
+              >
+                <span>{{ availability[slotIndex][dayIndex] }}</span>
+              </button>
+              <div
+                v-else
+                class="flex items-center justify-center w-full h-full background-color-5 font-color-4 dark:text-font-7 cursor-not-allowed"
               >
                 <span v-if="availability[slotIndex] && availability[slotIndex][dayIndex] !== undefined">
                   {{ availability[slotIndex][dayIndex] }}
                 </span>
                 <span v-else>-</span>
-              </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -107,6 +108,26 @@
       >
         {{ t('bookingNow') }}
       </button>
+    </div>
+  </div>
+  
+  <!-- Booking Confirmation Modal -->
+  <div v-if="showConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+      <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">{{ t('confirmBooking') }}</h3>
+      <div class="mb-4 text-gray-700 dark:text-gray-300">
+        <p><strong>{{ t('equipment') }}:</strong> {{ equipmentName }}</p>
+        <p><strong>{{ t('date') }}:</strong> {{ confirmationDetails.date }}</p>
+        <p><strong>{{ t('time') }}:</strong> {{ confirmationDetails.time }}</p>
+      </div>
+      <div class="flex gap-3">
+        <button @click="confirmBookingFinal" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors">
+          {{ t('confirm') }}
+        </button>
+        <button @click="cancelBooking" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors">
+          {{ t('cancel') }}
+        </button>
+      </div>
     </div>
   </div>
   

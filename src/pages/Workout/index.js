@@ -6,7 +6,8 @@ import Footer from '../../components/Footer'
 import workoutImg from '../../assets/images/Workout.jpg'
 import workoutImg2 from '../../assets/images/Workout2.jpg'
 import './workout.css'
-import FirebaseService from '../../services/firebaseService.js'
+import FirebaseService from '../../services/firebaseService.js' // still used for write operations
+import WorkoutMetrics from '../../services/workoutMetricsService.js'
 
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import Chart from 'chart.js/auto'
@@ -21,11 +22,12 @@ export default {
     const workoutImg2Ref = ref(workoutImg2)
 
     // ── Firebase backend ──
-    const service = FirebaseService.getInstance()
+    const metrics  = WorkoutMetrics.getInstance()       // high-level cached reads
     const uid = window.currentUserId || 'demoUser'
 
-    // 当前选中日期的卡路里信息（用于顶部环形图）
+    // 当前选中日期卡路里环 & 本周累计大环
     const selectedCalories = ref({ current: 0, goal: 2000 })
+    const weeklyTotals     = ref({ current: 0, goal: 0 })
 
     // 图表实例引用
     let calorieChart = null
@@ -83,30 +85,69 @@ export default {
     function dateId(d) { return d.toISOString().split('T')[0] }
 
     async function loadSelectedDateStats() {
-      const stats = await service.fetchDailyStats(uid, new Date(selectedDate.value))
+      const daily = await metrics.getDaily(uid, new Date(selectedDate.value))
       selectedCalories.value = {
-        current: stats?.caloriesCurrent ?? 0,
-        goal:    stats?.caloriesGoal    ?? 2000
+        current: daily.caloriesCurrent,
+        goal:    daily.caloriesGoal
       }
+
+      // ── NEW: Prefill BMI inputs & activities list ──
+      const heightInputEl  = document.getElementById('heightInput')
+      const weightInputEl  = document.getElementById('weightInput')
+      if (heightInputEl && weightInputEl && daily.bmi) {
+        heightInputEl.value = daily.bmi.height ?? ''
+        weightInputEl.value = daily.bmi.weight ?? ''
+      }
+
+      // Trigger BMI UI refresh (function exported from setupBMICalculator)
+      if (typeof window.triggerBMIUpdate === 'function') {
+        window.triggerBMIUpdate()
+      } else {
+        // fallback – dispatch input events to invoke listener inside setupBMICalculator
+        heightInputEl && heightInputEl.dispatchEvent(new Event('input'))
+        weightInputEl && weightInputEl.dispatchEvent(new Event('input'))
+      }
+
+      // Activities
+      const listEl = document.getElementById('activityList')
+      if (listEl) {
+        listEl.innerHTML = ''
+        ;(daily.activities ?? []).forEach(act => {
+          const card = document.createElement('div')
+          card.className = 'activity-card'
+          card.innerHTML = `
+            <div class="flex items-center">
+              <span class="icon">${act.icon || '🏃'}</span>
+              <span>${act.name}</span>
+            </div>
+            <span>${act.duration} min</span>
+          `
+          listEl.appendChild(card)
+        })
+      }
+
       await nextTick(renderCalorieRings)
     }
 
     async function loadWeekStats() {
       const range = weeks[currentIndex.value]
       if (!range) return
-      const map = await service.fetchDailyStatsRange(uid, range.start, range.end)
 
-      const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
-      const dataCal = []
-      const dataWgt = []
+      const weekArr = await metrics.getWeekArray(uid, range.start)
 
-      const cur = new Date(range.start)
-      for (let i = 0; i < 7; i++) {
-        const stats = map[dateId(cur)] || {}
-        dataCal.push(stats.caloriesCurrent ?? 0)
-        dataWgt.push(stats.bmi?.weight ?? null)
-        cur.setDate(cur.getDate() + 1)
-      }
+      const labels  = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+      const dataCal = weekArr.map(d => d.caloriesCurrent ?? 0)
+      const dataWgt = weekArr.map(d => d.bmi?.weight ?? null)
+
+      // 周累计
+      const totals = weekArr.reduce((acc,d)=>{
+        acc.current += d.caloriesCurrent || 0
+        acc.goal    += d.caloriesGoal    || 0
+        return acc
+      }, {current:0, goal:0})
+      weeklyTotals.value = totals
+
+      await nextTick(renderCalorieRings)
 
       if (calorieChart) {
         calorieChart.data.labels = labels
@@ -121,21 +162,15 @@ export default {
     }
 
     async function loadMonthStats() {
-      const y = currentMonth.value.getFullYear()
-      const m = currentMonth.value.getMonth()
-      const first = new Date(y, m, 1)
-      const last  = new Date(y, m + 1, 0)
-      const map = await service.fetchDailyStatsRange(uid, first, last)
+      const map = await metrics.getMonthMap(uid, currentMonth.value)
 
       calendar.value.forEach(week => {
         week.forEach(day => {
           const stats = map[dateId(day.date)] || {}
           day.current = stats.caloriesCurrent ?? 0
-          day.goal    = stats.caloriesGoal    ?? 2000
+          day.goal    = stats.caloriesGoal    ?? 0
         })
       })
-
-      await nextTick(renderCalorieRings)
     }
 
     // 监听选择变更
@@ -148,30 +183,25 @@ export default {
       currentMonth.value.toLocaleString('en-US', { month: 'long', year: 'numeric' })
     )
     const generateCalendar = () => {
-      const y = currentMonth.value.getFullYear()
-      const m = currentMonth.value.getMonth()
-      const first = new Date(y, m, 1)
-      const offset = (first.getDay() + 6) % 7  // 周一=0
-      const start = new Date(first)
+      const year     = currentMonth.value.getFullYear()
+      const monthIdx = currentMonth.value.getMonth()
+
+      const firstOfMonth = new Date(year, monthIdx, 1)
+      // Calendar starts on Monday; compute offset from Monday (0)
+      const offset = (firstOfMonth.getDay() + 6) % 7
+      const start  = new Date(firstOfMonth)
       start.setDate(start.getDate() - offset)
+
       const cal = []
       let cursor = new Date(start)
       for (let w = 0; w < 6; w++) {
         const week = []
         for (let d = 0; d < 7; d++) {
-          let cur = 0, goalVal = 2000
-          // 演示：2025年7月随机几天有数据
-          if (y === 2025 && m === 6) {
-            const samples = [3,7,12,19,25]
-            if (samples.includes(cursor.getDate())) {
-              cur = Math.floor(Math.random()*801) + 200
-            }
-          }
           week.push({
             date: new Date(cursor),
-            inMonth: cursor.getMonth() === m,
-            current: cur,
-            goal: goalVal
+            inMonth: cursor.getMonth() === monthIdx,
+            current: 0,
+            goal:    100 // default goal to ensure some visual ring
           })
           cursor.setDate(cursor.getDate() + 1)
         }
@@ -193,7 +223,15 @@ export default {
     watch(currentMonth, async () => {
       calendar.value = generateCalendar()
       await loadMonthStats()
+      await nextTick()            // 等待 DOM 更新
+      renderCalorieRings()        // 重新绘制所有环
     })
+
+    // 深度监听 calendar 数据变动（如 loadMonthStats 更新 current/goal）
+    watch(calendar, async () => {
+      await nextTick()
+      renderCalorieRings()
+    }, { deep: true })
 
     // —— Chart.js 数据准备 ——
 
@@ -207,8 +245,8 @@ export default {
       // 等 DOM 真正挂载后再绘制图表
       nextTick(() => {
         const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
-        const dataCal = [350,420,310,480,500,390,450]
-        const dataWgt = [70.2,70.0,69.8,69.9,69.7,69.5,69.6]
+        const dataCal = new Array(7).fill(0)
+        const dataWgt = new Array(7).fill(null)
 
         // 柱状图
         calorieChart = new Chart(
@@ -241,7 +279,7 @@ export default {
       weekDisplay, prevWeek, nextWeek,
       selectedDate, minDate, maxDate, showDatePicker, selectedDateDisplay,
       monthDisplay, calendar, prevMonth, nextMonth,
-      selectedCalories
+      selectedCalories, weeklyTotals
     }
   }
 }
@@ -341,6 +379,17 @@ function setupBMICalculator() {
       left = 75 + t * 25;
     }
     ptr.style.left = `${left}%`;
+
+    // ── NEW: Persist BMI to Firebase ──
+    if (height && weight) {
+      const bmiVal = parseFloat(bmi.toFixed(1))
+      const uid = window.currentUserId || 'demoUser'
+      const dateStr = document.querySelector('input[type="date"]')?.value
+      const dateObj = dateStr ? new Date(dateStr) : new Date()
+      FirebaseService.getInstance()
+        .updateBMIDoubleAndPropagate(uid, dateObj, height, weight, bmiVal)
+        .catch(console.error)
+    }
   }
 
   function getCat(bmi) {
@@ -353,6 +402,9 @@ function setupBMICalculator() {
   h.addEventListener('input', update);
   w.addEventListener('input', update);  // 加上体重监听
   update(); // 初始触发一次
+
+  // Export for external trigger (e.g., when inputs programmatically set)
+  window.triggerBMIUpdate = update;
 }
 
 function setupActivityModal() {
@@ -379,7 +431,7 @@ function setupActivityModal() {
     });
   });
 
-  saveBtn.onclick = () => {
+  saveBtn.onclick = async () => {
     const name = nameInput.value.trim();
     const duration = durationInput.value.trim();
 
@@ -398,6 +450,26 @@ function setupActivityModal() {
       <span>${duration} min</span>
     `;
     list.appendChild(card);
+
+    // ── NEW: Persist full activity list to Firebase ──
+    const acts = []
+    list.querySelectorAll('.activity-card').forEach(c => {
+      const icon  = c.querySelector('.icon')?.textContent || '🏃'
+      const spans = c.querySelectorAll('span')
+      const actName = spans[1]?.textContent?.trim() || ''
+      const durTxt  = spans[spans.length - 1]?.textContent || '0'
+      const dur     = parseInt(durTxt)
+      acts.push({ name: actName, duration: dur, icon })
+    })
+
+    try {
+      const uid = window.currentUserId || 'demoUser'
+      const dateStr = document.querySelector('input[type="date"]')?.value
+      const dateObj = dateStr ? new Date(dateStr) : new Date()
+      await FirebaseService.getInstance().updateActivities(uid, dateObj, acts)
+    } catch (e) {
+      console.error('[Workout] Failed to update activities', e)
+    }
 
     // 清空 + 关闭弹窗
     nameInput.value = "";

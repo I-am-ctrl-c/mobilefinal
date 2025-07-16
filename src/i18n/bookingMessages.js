@@ -16,6 +16,11 @@ export default {
     fri: 'FRI',
     sat: 'SAT',
     sun: 'SUN',
+    confirm: 'Confirm',
+    confirmBooking: 'Confirm Booking',
+    cancel: 'Cancel',
+    equipment: 'Equipment',
+    date: 'Date',
   },
   zh: {
     title: '开始您的预定',
@@ -34,5 +39,10 @@ export default {
     fri: '周五',
     sat: '周六',
     sun: '周日',
+    confirm: '确认',
+    confirmBooking: '确认预定',
+    cancel: '取消',
+    equipment: '器材',
+    date: '日期',
   }
 }

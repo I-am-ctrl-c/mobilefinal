@@ -14,12 +14,12 @@ import Upgrade from '../pages/Upgrade'
 
 // 简易登录态检查，可根据项目需要替换为真正的验证逻辑
 function isLoggedIn() {
-  // 这里暂时返回true
-  return true;
+  // 简易检查：localStorage 中存在 userId 即视为已登录
+  return Boolean(localStorage.getItem('userId'))
 }
 
 // 需要登录才能访问的路由集合，后续可在此处增删
-const protectedPaths = ['/workout', '/schedule', '/booking', '/profile']
+const protectedPaths = ['/workout', '/schedule', '/profile']
 
 const routes = [
   { path: '/', redirect: '/home' },  // 🔁 默认重定向到 /home
@@ -33,23 +33,37 @@ const routes = [
 
   { path: '/equipment/:id/schedule', component: EquipmentSchedule },
   { path: '/equipment/:id/description', component: Description },
-  // 登录页占位，后续实现真正的登录页面
-  { path: '/Auth', component: AuthPage },
+  // 登录 / 注册页面
+  { path: '/login', component: AuthPage },
+  // 兼容旧路径 /Auth
+  { path: '/Auth', redirect: '/login' },
   { path: '/video-player', component: () => import('../pages/Videos/VideoPlayerComponent.js') },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  // Ensure each route navigation scrolls to top
+  scrollBehavior() {
+    return { left: 0, top: 0 }
+  }
 })
 
 // 全局前置守卫：若目标路由需要登录且当前未登录，则跳转至 /login
 router.beforeEach((to, _from, next) => {
+  // 检查精确路径匹配
   if (protectedPaths.includes(to.path) && !isLoggedIn()) {
     next('/login')
-  } else {
-    next()
+    return
   }
+
+  // 检查动态路由 /equipment/:id/schedule
+  if (to.path.match(/^\/equipment\/.*\/schedule$/) && !isLoggedIn()) {
+    next('/login')
+    return
+  }
+
+  next()
 })
 
 export default router

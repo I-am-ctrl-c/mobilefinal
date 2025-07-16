@@ -7,6 +7,7 @@ import { useRoute, useRouter } from 'vue-router'
 import FirebaseService from '../../services/firebaseService.js'
 import messages from '../../i18n/messages.js'
 import bookingMessages from '../../i18n/bookingMessages.js'
+import Booking from '../../models/Booking.js'
 
 export default {
   name: 'EquipmentSchedulePage',
@@ -37,6 +38,10 @@ export default {
     // Selected slot: { slotIndex, dayIndex }
     const selectedSlot = ref(null)
 
+    // Booking confirmation modal
+    const showConfirmationModal = ref(false)
+    const confirmationDetails = ref({})
+
     function selectSlot(slotIndex, dayIndex) {
       selectedSlot.value = { slotIndex, dayIndex }
     }
@@ -49,21 +54,92 @@ export default {
       )
     }
 
+    // Check if user can book (placeholder function)
+    function canUserBook() {
+      // TODO: Implement actual booking permission logic
+      // For now, just check if user is logged in
+      return Boolean(localStorage.getItem('userId'))
+    }
+
     function confirmBooking() {
       if (!selectedSlot.value) return // ignore if none selected
+
+      // Check booking permission
+      if (!canUserBook()) {
+        alert('Please login to book equipment')
+        router.push('/login')
+        return
+      }
 
       const day = days[selectedSlot.value.dayIndex]
       const slotHour = timeSlots[selectedSlot.value.slotIndex]
 
-      // In a full implementation, we'd create a booking or navigate with details
-      router.push({
-        path: '/booking',
-        query: {
-          eqId,
-          date: day.date.toISOString(),
-          hour: slotHour
+      // Show confirmation modal
+      const weekdayKey = day.date.toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase()
+      const formattedDate = language.value === 'zh'
+        ? `${t(weekdayKey)} ${day.date.getFullYear()}/${day.date.getMonth() + 1}/${day.date.getDate()}`
+        : day.date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })
+
+      confirmationDetails.value = {
+        date: formattedDate,
+        time: `${slotHour}:00-${slotHour + 1}:00`,
+        slotIndex: selectedSlot.value.slotIndex,
+        dayIndex: selectedSlot.value.dayIndex
+      }
+      showConfirmationModal.value = true
+    }
+
+    async function confirmBookingFinal() {
+      try {
+        const userId = localStorage.getItem('userId')
+        if (!userId) {
+          alert('Please login to book equipment')
+          router.push('/login')
+          return
         }
-      })
+
+        const day = days[confirmationDetails.value.dayIndex]
+        const slotHour = timeSlots[confirmationDetails.value.slotIndex]
+
+        // Create booking times
+        const startTime = new Date(day.date)
+        startTime.setHours(slotHour, 0, 0, 0)
+
+        const endTime = new Date(day.date)
+        endTime.setHours(slotHour + 1, 0, 0, 0)
+
+        // Create booking object
+        const booking = new Booking({
+          userId: userId,
+          equipmentId: eqId.value,
+          startTime: startTime,
+          endTime: endTime,
+          status: 'active'
+        })
+
+        // Save to Firebase
+        const service = FirebaseService.getInstance()
+        await service.addBooking(booking)
+
+        // Close modal and redirect to booking page
+        showConfirmationModal.value = false
+
+        // Redirect to booking page
+        router.push('/booking')
+
+      } catch (error) {
+        console.error('Booking failed:', error)
+        alert('Booking failed. Please try again.')
+      }
+    }
+
+    function cancelBooking() {
+      showConfirmationModal.value = false
     }
 
     function goBack() {
@@ -74,9 +150,21 @@ export default {
     const availability = computed(() => {
       if (!capacity.value) return []
       const matrix = Array.from({ length: timeSlots.length }, () => Array(days.length).fill(capacity.value))
+
       bookings.value.forEach(bk => {
         const start = bk.startTime
-        const dayIdx = Math.floor((start - days[0].date) / 86400000)
+
+        // Debug logging
+        console.log('Booking start:', start.toISOString())
+        console.log('Days[0]:', days[0].date.toISOString())
+
+        // Use date comparison instead of time difference to avoid timezone issues
+        const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+        const firstDayDate = new Date(days[0].date.getFullYear(), days[0].date.getMonth(), days[0].date.getDate())
+        const dayIdx = Math.floor((startDate - firstDayDate) / 86400000)
+
+        console.log('Calculated dayIdx:', dayIdx, 'for booking on', startDate.toISOString())
+
         if (dayIdx < 0 || dayIdx >= days.length) return
         const hour = start.getHours()
         const slotIdx = hour - 8
@@ -91,6 +179,9 @@ export default {
 
     async function loadData(id) {
       const service = FirebaseService.getInstance()
+
+      // Reset selected slot when loading new data
+      selectedSlot.value = null
 
       // Load current equipment details
       equipment.value = await service.getEquipment(id)
@@ -152,6 +243,8 @@ export default {
     watch(() => route.params.id, (newId, oldId) => {
       if (newId && newId !== oldId) {
         window.scrollTo({ top: 0, left: 0 })
+        // Reset selected slot when switching equipment
+        selectedSlot.value = null
         loadData(newId)
       }
     })
@@ -188,7 +281,11 @@ export default {
       onWheelScroll,
       scrollLeft,
       scrollRight,
-      scrollContainer
+      scrollContainer,
+      showConfirmationModal,
+      confirmationDetails,
+      confirmBookingFinal,
+      cancelBooking
     }
   }
 }

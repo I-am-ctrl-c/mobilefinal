@@ -170,8 +170,8 @@
     <!-- flex-shrink-0 保证在行不下时单独换行 -->
     <div
       class="calorie-ring flex-shrink-0"
-      data-current="6530"
-      data-goal="9300"
+      :data-current="weeklyTotals.current"
+      :data-goal="weeklyTotals.goal"
       data-size="200"
       data-font="0.15"
     ></div>
@@ -203,7 +203,7 @@
       <!-- ✅ 数据块展示 -->
       <div class="flex flex-wrap gap-x-10 gap-y-6 mt-6">
         <div>
-          <p class="text-decorPu-5 text-3xl font-bold">6530/9300</p>
+          <p class="text-decorPu-5 text-3xl font-bold">{{ weeklyTotals.current }}/{{ weeklyTotals.goal }}</p>
           <p class="text-font-10 text-sm font-medium mt-1">Progress</p>
         </div>
         <div>

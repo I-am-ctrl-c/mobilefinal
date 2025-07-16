@@ -1,10 +1,11 @@
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router' // 添加 useRouter
 import navTemplate from './navbar.html?raw'
 import './navbar.css'
 import logoDark from '../../assets/images/xgymlogo.png'
 import logoLight from '../../assets/images/xgymlogo_b.png'
 import messages from '../../i18n/messages.js'
+import FirebaseService from '../../services/firebaseService.js'
 
 export default {
   name: 'NavBarComponent',
@@ -66,15 +67,37 @@ export default {
       controlsMenuOpen.value = !controlsMenuOpen.value
     }
 
-    // Placeholder user info
-    const user = {
-      name: 'John Doe',
+    // Reactive user info – will be populated from Firestore (if logged in)
+    const user = reactive({
+      name: '',
       avatar: 'https://i.pravatar.cc/32'
+    })
+
+    // Load current user from Firestore using localStorage userId
+    const loadUser = async () => {
+      const uid = localStorage.getItem('userId')
+      if (!uid) {
+        user.name = 'Guest'
+        return
+      }
+      try {
+        const service = FirebaseService.getInstance()
+        const userData = await service.getUser(uid)
+        user.name = userData.name || 'User'
+        // Optionally use avatar from Firestore if available later
+      } catch (err) {
+        console.error('[NavBar] Failed to fetch user data', err)
+      }
     }
 
-    //  新增：点击头像跳转到登录页面
-    const goToLogin = () => {
-      router.push('/auth')
+    // 点击头像 / 用户名：已登录跳转 Profile，否则跳转 Login
+    const handleUserClick = () => {
+      const uid = localStorage.getItem('userId')
+      if (uid) {
+        router.push('/profile')
+      } else {
+        router.push('/login')
+      }
     }
 
     const handleScroll = () => {
@@ -89,6 +112,7 @@ export default {
       if (isDarkMode.value) root.classList.add('dark')
       else root.classList.remove('dark')
       window.addEventListener('scroll', handleScroll)
+      loadUser()
     })
     onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
@@ -105,7 +129,7 @@ export default {
       controlsMenuOpen,
       toggleControlsMenu,
       t,
-      goToLogin // 暴露方法以供模板使用
+      handleUserClick // 暴露方法以供模板使用
     }
   }
 }
