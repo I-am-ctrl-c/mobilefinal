@@ -1,7 +1,9 @@
 <header
   :class="[ 
     'fixed top-0 left-0 w-full z-50 transition-all duration-300',
-    isScrolled ? 'bg-white dark:bg-black shadow-md text-font-10' : 'bg-transparent text-white'
+    isScrolled
+      ? 'bg-white dark:bg-black shadow-md text-font-10'
+      : (isDarkMode ? 'bg-transparent text-white' : 'bg-transparent text-font-10')
   ]"
 >
   <nav class="w-full grid grid-cols-2 lg:grid-cols-3 items-center px-8 md:px-6 sm:px-4 py-6 md:py-5 sm:py-4 text-xl lg:text-xl md:text-lg sm:text-base">
@@ -23,7 +25,12 @@
           :class="[
             isActive(item.path)
               ? 'text-primaryPurple border-primaryPurple'
-              : (isScrolled ? 'text-font-10' : 'text-white') + ' border-transparent hover:text-primaryPurple hover:border-primaryPurple'
+              : (
+                  isScrolled
+                    ? 'text-font-10'
+                    : (isDarkMode ? 'text-white' : 'text-font-10')
+                ) +
+                ' border-transparent hover:text-primaryPurple hover:border-primaryPurple'
           ]"
         >
           {{ t(item.key) }}
@@ -32,7 +39,7 @@
     </ul>
 
     <!-- Right section: Controls -->
-    <div :class="['flex items-center justify-end space-x-4 md:space-x-5 justify-self-end pr-0 relative', isScrolled ? 'text-font-10' : 'text-white']">
+    <div :class="['flex items-center justify-end space-x-4 md:space-x-5 justify-self-end pr-0 relative', isScrolled ? 'text-font-10' : (isDarkMode ? 'text-white' : 'text-font-10')]">
       <!-- Control buttons for lg and above -->
       <div class="hidden lg:flex items-center space-x-4">
         <!-- Theme toggle -->
