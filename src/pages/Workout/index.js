@@ -80,6 +80,41 @@ export default {
       if (idx !== -1) currentIndex.value = idx
     })
 
+    const showCalorieEditor = ref(false)
+const calorieEditorCurrent = ref(0)
+const calorieEditorGoal = ref(0)
+
+const openCalorieEditor = () => {
+  calorieEditorCurrent.value = selectedCalories.value.current
+  calorieEditorGoal.value = selectedCalories.value.goal
+  showCalorieEditor.value = true
+}
+const saveCalorieEdit = async () => {
+  const uid = window.currentUserId || 'demoUser'
+  const dateStr = selectedDate.value
+  const dateObj = new Date(dateStr)
+  const current = parseInt(calorieEditorCurrent.value)
+  const goal = parseInt(calorieEditorGoal.value)
+
+    // 1. 更新当前选中圈的数据
+    selectedCalories.value = { current, goal }
+    showCalorieEditor.value = false
+  
+    // 2. 持久化到 Firebase
+    await FirebaseService.getInstance().updateCalories(uid, dateObj, current, goal)
+  
+    // 3. 同步更新月度日历的数据源 dailyStats
+    //    这样模板里 :data-current/:data-goal 会自动变更
+    dailyStats.value[dateStr] = {
+      caloriesCurrent: current,
+      caloriesGoal:    goal
+    }
+  
+    // 4. 重新渲染所有圆环
+    await nextTick(renderCalorieRings)
+}
+
+
     /* ─────────────────────────── Firebase 数据加载 ─────────────────────────── */
 
     function dateId(d) { return d.toISOString().split('T')[0] }
@@ -209,23 +244,30 @@ export default {
       }
       return cal
     }
-    const calendar = ref(generateCalendar())
-    const prevMonth = () => {
-      const d = new Date(currentMonth.value)
-      d.setMonth(d.getMonth() - 1)
-      if (d >= new Date(2020, 0, 1)) currentMonth.value = d
+    // in setup()
+const calendar = ref(generateCalendar())
+const dailyStats = ref({})      // { "2025-07-17": { caloriesCurrent, caloriesGoal }, … }
+const monthWeeks = computed(() => calendar.value)
+
+watch(currentMonth, async () => {
+  // Regenerate the grid
+  calendar.value = generateCalendar()
+
+  // Pull down your firebase month map
+  const map = await metrics.getMonthMap(uid, currentMonth.value)
+  // Normalize the key to YYYY‑MM‑DD
+  dailyStats.value = Object.entries(map).reduce((acc, [isoDate, stats]) => {
+    acc[isoDate] = {
+      caloriesCurrent: stats.caloriesCurrent || 0,
+      caloriesGoal:    stats.caloriesGoal    || 0
     }
-    const nextMonth = () => {
-      const d = new Date(currentMonth.value)
-      d.setMonth(d.getMonth() + 1)
-      if (d <= new Date()) currentMonth.value = d
-    }
-    watch(currentMonth, async () => {
-      calendar.value = generateCalendar()
-      await loadMonthStats()
-      await nextTick()            // 等待 DOM 更新
-      renderCalorieRings()        // 重新绘制所有环
-    })
+    return acc
+  }, {})
+
+  await nextTick()
+  renderCalorieRings()
+})
+
 
     // 深度监听 calendar 数据变动（如 loadMonthStats 更新 current/goal）
     watch(calendar, async () => {
@@ -241,6 +283,8 @@ export default {
       renderCalorieRings()
       setupBMICalculator()
       setupActivityModal()
+      document.getElementById('calorieRingContainer')?.addEventListener('click', openCalorieEditor)
+
 
       // 等 DOM 真正挂载后再绘制图表
       nextTick(() => {
@@ -278,8 +322,13 @@ export default {
       workoutImg2: workoutImg2Ref,
       weekDisplay, prevWeek, nextWeek,
       selectedDate, minDate, maxDate, showDatePicker, selectedDateDisplay,
-      monthDisplay, calendar, prevMonth, nextMonth,
-      selectedCalories, weeklyTotals
+      monthDisplay, calendar,  monthWeeks,
+      dailyStats,
+      selectedCalories, weeklyTotals,showCalorieEditor,
+      calorieEditorCurrent,
+      calorieEditorGoal,
+      saveCalorieEdit
+      
     }
   }
 }
