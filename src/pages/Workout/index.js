@@ -61,6 +61,19 @@ export default {
     const prevWeek = () => { if (currentIndex.value > 0) currentIndex.value-- }
     const nextWeek = () => { if (currentIndex.value < weeks.length-1) currentIndex.value++ }
 
+    // —— 月份切换 —— 
+const prevMonth = () => {
+  const y = currentMonth.value.getFullYear()
+  const m = currentMonth.value.getMonth()
+  currentMonth.value = new Date(y, m - 1, 1)
+}
+const nextMonth = () => {
+  const y = currentMonth.value.getFullYear()
+  const m = currentMonth.value.getMonth()
+  currentMonth.value = new Date(y, m + 1, 1)
+}
+
+
     // —— Date Picker ——
     const formatDate = d => {
       const y  = d.getFullYear()
@@ -113,7 +126,7 @@ const saveCalorieEdit = async () => {
     // 4. 重新渲染所有圆环
     await nextTick(renderCalorieRings)
 }
-
+const topActivities = ref([])
 
     /* ─────────────────────────── Firebase 数据加载 ─────────────────────────── */
 
@@ -181,6 +194,17 @@ const saveCalorieEdit = async () => {
         return acc
       }, {current:0, goal:0})
       weeklyTotals.value = totals
+           // —— 新增：汇总本周所有活动并取前两位 —— 
+           const activityMap = {}
+           weekArr.forEach(d => {
+             (d.activities || []).forEach(a => {
+               activityMap[a.name] = (activityMap[a.name] || 0) + (a.duration || 0)
+             })
+           })
+           const sorted = Object.entries(activityMap)
+             .map(([name, duration]) => ({ name, duration }))
+             .sort((a, b) => b.duration - a.duration)
+           topActivities.value = sorted.slice(0, 2)
 
       await nextTick(renderCalorieRings)
 
@@ -198,15 +222,26 @@ const saveCalorieEdit = async () => {
 
     async function loadMonthStats() {
       const map = await metrics.getMonthMap(uid, currentMonth.value)
-
-      calendar.value.forEach(week => {
+    
+      // 1. 构建 dailyStats 给模板用
+      dailyStats.value = Object.entries(map).reduce((acc, [iso, s]) => {
+        acc[iso] = {
+          caloriesCurrent: s.caloriesCurrent ?? 0,
+          caloriesGoal:    s.caloriesGoal    ?? 100
+        }
+        return acc
+      }, {})
+    
+      // 2. （可选）同步更新 calendar.value，让深度 watch 能检测到变化
+      calendar.value.forEach(week =>
         week.forEach(day => {
-          const stats = map[dateId(day.date)] || {}
-          day.current = stats.caloriesCurrent ?? 0
-          day.goal    = stats.caloriesGoal    ?? 0
+          const stat = dailyStats.value[dateId(day.date)] || {}
+          day.current = stat.caloriesCurrent
+          day.goal    = stat.caloriesGoal
         })
-      })
+      )
     }
+    
 
     // 监听选择变更
     watch(selectedDate, loadSelectedDateStats)
@@ -249,25 +284,25 @@ const calendar = ref(generateCalendar())
 const dailyStats = ref({})      // { "2025-07-17": { caloriesCurrent, caloriesGoal }, … }
 const monthWeeks = computed(() => calendar.value)
 
+// —— 月度日历：切换月份时 立即重拉数据 & 渲染 —— 
 watch(currentMonth, async () => {
-  // Regenerate the grid
+  // 1. 重新生成格子
   calendar.value = generateCalendar()
-
-  // Pull down your firebase month map
+  // 2. 按 ISO 日期拉取当月所有 stats
   const map = await metrics.getMonthMap(uid, currentMonth.value)
-  // Normalize the key to YYYY‑MM‑DD
-  dailyStats.value = Object.entries(map).reduce((acc, [isoDate, stats]) => {
-    acc[isoDate] = {
-      caloriesCurrent: stats.caloriesCurrent || 0,
-      caloriesGoal:    stats.caloriesGoal    || 0
+  // 3. 构建 dailyStats：{ "2025-07-19": { caloriesCurrent, caloriesGoal }, … }
+  dailyStats.value = Object.entries(map).reduce((acc, [iso, s]) => {
+    acc[iso] = {
+      caloriesCurrent: s.caloriesCurrent || 0,
+      caloriesGoal:    s.caloriesGoal    || 100
     }
     return acc
   }, {})
+  // 4. 渲染所有日历上的圆环
+  await nextTick(renderCalorieRings)
+}, { immediate: true })
 
-  await nextTick()
-  renderCalorieRings()
-})
-
+  
 
     // 深度监听 calendar 数据变动（如 loadMonthStats 更新 current/goal）
     watch(calendar, async () => {
@@ -327,7 +362,10 @@ watch(currentMonth, async () => {
       selectedCalories, weeklyTotals,showCalorieEditor,
       calorieEditorCurrent,
       calorieEditorGoal,
-      saveCalorieEdit
+      saveCalorieEdit,  
+      prevMonth,
+      nextMonth,
+      topActivities,
       
     }
   }
