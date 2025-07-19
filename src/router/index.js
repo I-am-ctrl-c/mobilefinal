@@ -9,6 +9,7 @@ import EquipmentSchedule from '../pages/EquipmentSchedule'
 import AuthPage from '../pages/Auth/index'
 import Description from '../pages/Description'
 
+
 import FAQ from '../pages/FAQ'
 import Upgrade from '../pages/Upgrade'
 
