@@ -32,7 +32,9 @@ export default class WorkoutMetricsService {
 
   /** Format Date → `YYYY-MM-DD` string */
   _dateId(d) {
-    return d.toISOString().split('T')[0]
+    // Convert to local YYYY-MM-DD, compensating timezone offset
+    const tzOffsetMs = d.getTimezoneOffset() * 60000
+    return new Date(d.getTime() - tzOffsetMs).toISOString().split('T')[0]
   }
 
   _rangeKey(uid, from, to) {

@@ -326,7 +326,7 @@
            <td
              v-for="(day,dIdx) in week"
              :key="dIdx"
-             :data-date="day.date.toISOString().split('T')[0]"
+             :data-date="(() => { const tzOffsetMs = day.date.getTimezoneOffset() * 60000; return new Date(day.date.getTime() - tzOffsetMs).toISOString().split('T')[0]; })()"
              class="calendar-cell"
            >
           <div v-if="day.inMonth">
@@ -335,8 +335,8 @@
             <!-- 卡路里环 -->
             <div
             class="calorie-ring mx-auto"
-              :data-current="dailyStats[day.date.toISOString().split('T')[0]]?.caloriesCurrent||0"
-              :data-goal="   dailyStats[day.date.toISOString().split('T')[0]]?.caloriesGoal   ||100"
+              :data-current="(() => { const tzOffsetMs = day.date.getTimezoneOffset() * 60000; const dateStr = new Date(day.date.getTime() - tzOffsetMs).toISOString().split('T')[0]; return dailyStats[dateStr]?.caloriesCurrent||0; })()"
+              :data-goal="   (() => { const tzOffsetMs = day.date.getTimezoneOffset() * 60000; const dateStr = new Date(day.date.getTime() - tzOffsetMs).toISOString().split('T')[0]; return dailyStats[dateStr]?.caloriesGoal   ||100; })()"
             data-size="110"    
             data-font="0.15"   
           ></div>

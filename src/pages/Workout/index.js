@@ -61,7 +61,7 @@ export default {
     const prevWeek = () => { if (currentIndex.value > 0) currentIndex.value-- }
     const nextWeek = () => { if (currentIndex.value < weeks.length-1) currentIndex.value++ }
 
-    // —— 月份切换 —— 
+    // —— 月份切换 ——
 const prevMonth = () => {
   const y = currentMonth.value.getFullYear()
   const m = currentMonth.value.getMonth()
@@ -112,17 +112,17 @@ const saveCalorieEdit = async () => {
     // 1. 更新当前选中圈的数据
     selectedCalories.value = { current, goal }
     showCalorieEditor.value = false
-  
+
     // 2. 持久化到 Firebase
     await FirebaseService.getInstance().updateCalories(uid, dateObj, current, goal)
-  
+
     // 3. 同步更新月度日历的数据源 dailyStats
     //    这样模板里 :data-current/:data-goal 会自动变更
     dailyStats.value[dateStr] = {
       caloriesCurrent: current,
       caloriesGoal:    goal
     }
-  
+
     // 4. 重新渲染所有圆环
     await nextTick(renderCalorieRings)
 }
@@ -130,7 +130,11 @@ const topActivities = ref([])
 
     /* ─────────────────────────── Firebase 数据加载 ─────────────────────────── */
 
-    function dateId(d) { return d.toISOString().split('T')[0] }
+    function dateId(d) {
+      // Convert to local YYYY-MM-DD, compensating timezone offset
+      const tzOffsetMs = d.getTimezoneOffset() * 60000
+      return new Date(d.getTime() - tzOffsetMs).toISOString().split('T')[0]
+    }
 
     async function loadSelectedDateStats() {
       const daily = await metrics.getDaily(uid, new Date(selectedDate.value))
@@ -194,7 +198,7 @@ const topActivities = ref([])
         return acc
       }, {current:0, goal:0})
       weeklyTotals.value = totals
-           // —— 新增：汇总本周所有活动并取前两位 —— 
+           // —— 新增：汇总本周所有活动并取前两位 ——
            const activityMap = {}
            weekArr.forEach(d => {
              (d.activities || []).forEach(a => {
@@ -222,7 +226,7 @@ const topActivities = ref([])
 
     async function loadMonthStats() {
       const map = await metrics.getMonthMap(uid, currentMonth.value)
-    
+
       // 1. 构建 dailyStats 给模板用
       dailyStats.value = Object.entries(map).reduce((acc, [iso, s]) => {
         acc[iso] = {
@@ -231,7 +235,7 @@ const topActivities = ref([])
         }
         return acc
       }, {})
-    
+
       // 2. （可选）同步更新 calendar.value，让深度 watch 能检测到变化
       calendar.value.forEach(week =>
         week.forEach(day => {
@@ -241,14 +245,16 @@ const topActivities = ref([])
         })
       )
     }
-    
+
 
     // 监听选择变更
     watch(selectedDate, loadSelectedDateStats)
     watch(currentIndex, loadWeekStats)
 
     // —— Monthly Calendar ——
-    const currentMonth = ref(new Date(2025, 6, 1))
+    // Default to the current calendar month
+    const today = new Date()
+    const currentMonth = ref(new Date(today.getFullYear(), today.getMonth(), 1))
     const monthDisplay = computed(() =>
       currentMonth.value.toLocaleString('en-US', { month: 'long', year: 'numeric' })
     )
@@ -284,7 +290,7 @@ const calendar = ref(generateCalendar())
 const dailyStats = ref({})      // { "2025-07-17": { caloriesCurrent, caloriesGoal }, … }
 const monthWeeks = computed(() => calendar.value)
 
-// —— 月度日历：切换月份时 立即重拉数据 & 渲染 —— 
+// —— 月度日历：切换月份时 立即重拉数据 & 渲染 ——
 watch(currentMonth, async () => {
   // 1. 重新生成格子
   calendar.value = generateCalendar()
@@ -302,7 +308,7 @@ watch(currentMonth, async () => {
   await nextTick(renderCalorieRings)
 }, { immediate: true })
 
-  
+
 
     // 深度监听 calendar 数据变动（如 loadMonthStats 更新 current/goal）
     watch(calendar, async () => {
@@ -362,11 +368,11 @@ watch(currentMonth, async () => {
       selectedCalories, weeklyTotals,showCalorieEditor,
       calorieEditorCurrent,
       calorieEditorGoal,
-      saveCalorieEdit,  
+      saveCalorieEdit,
       prevMonth,
       nextMonth,
       topActivities,
-      
+
     }
   }
 }

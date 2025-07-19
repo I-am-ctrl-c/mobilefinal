@@ -31,4 +31,7 @@ window.$t = function (key, lang = window.currentLang || 'en') {
 // Set default language (persisted)
 window.currentLang = localStorage.getItem('language') || 'en'
 
+// Set global current user ID (if logged in) for easy access across modules
+window.currentUserId = localStorage.getItem('userId') || null
+
 createApp(App).use(router).mount('#app')
