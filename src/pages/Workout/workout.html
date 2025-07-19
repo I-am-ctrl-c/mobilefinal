@@ -64,28 +64,29 @@
 
 
  <!-- ✅ 信息框区域（应用 info-box） -->
- <div class="max-w-7xl mx-auto mt-8 px-4 flex flex-wrap gap-6 justify-between" style="height: 400px;">
+ <div class="max-w-7xl mx-auto mt-8 mb-12 px-4 flex flex-wrap gap-6 justify-between h-[330px]">
   <!-- 替换原 Progress 框为圆环 -->
-  <div class="info-box">
-    <h2 class="text-xl font-semibold text-center mb-2">Calories</h2>
-      <div class="flex items-center justify-center">
-        <div
-          id="calorieRingContainer"
-          class="calorie-ring"
-          :data-current="selectedCalories.current"
-          :data-goal="selectedCalories.goal"
-          data-size="190"
-          data-font="0.15"
-        ></div>
+  <div class="info-box h-full">
+    <h2 class="bmi-value-display-strong text-center">Calories</h2>
+    <div class="flex flex-col items-center">
+      <div
+        id="calorieRingContainer"
+        class="calorie-ring"
+        :data-current="selectedCalories.current"
+        :data-goal="selectedCalories.goal"
+        data-size="190"
+        data-font="0.15"
+      ></div>
+      <!-- 自定义子文本，使用 Tailwind 或你的变量 -->
 
-
-      </div>
+    </div>
+    
     </div>
 
   
 
 <!-- —— Activities info-box —— -->
-<div class="info-box flex flex-col" id="activity-box" style="height:400px;">
+<div class="info-box flex flex-col h-full" id="activity-box">
     <div class="relative w-full mb-4 flex justify-center items-center">
        <!-- 复用 BMI 标题样式 -->
       <h2 class="bmi-value-display-strong">Activities</h2>
@@ -123,8 +124,9 @@
     </div>
 
     <div class="flex justify-end gap-4 mt-4">
-      <button id="cancelActivity" class="modal-cancel">Cancel</button>
-      <button id="saveActivity" class="modal-save">Save</button>
+          <button id="deleteActivity" class="modal-delete hidden text-red-600">Delete</button>
+          <button id="cancelActivity" class="modal-cancel">Cancel</button>         
+           <button id="saveActivity" class="modal-save">Save</button>
     </div>
   </div>
 </div>
@@ -154,7 +156,7 @@
 
 <!-- ===== 替换 info-box 中 BMI 区块 ===== -->
 <!-- —— BMI info-box —— -->
-<div class="info-box text-center flex flex-col items-center gap-5 pt-4" id="bmi-box" style="height:400px">
+<div class="info-box text-center flex flex-col items-center gap-8 pt-6 h-full" id="bmi-box">
 
   <!-- BMI 数值 -->
   <p class="bmi-value-display-strong" id="bmiResult">Your BMI: --</p>
@@ -194,7 +196,7 @@
 
 
 
-<div class="max-w-7xl mx-auto mt-8 mb-8 px-4 grid grid-cols-1 md:grid-cols-2 gap-14 items-start">
+<div class="max-w-7xl mx-auto mt-16 mb-8 px-4 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
   <!-- 左侧：图片＋圆环 -->
   <div class="flex flex-wrap items-center gap-x-16">
     <!-- 响应式：小屏 100% 宽度，大于 md 固定 240px -->
@@ -224,11 +226,43 @@
             Week in {{ weekDisplay }}
           </h2>
         </div>
-        <div class="flex space-x-3">
-          <button @click="prevWeek" class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition">⬅️</button>
-          <button @click="nextWeek" class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition">➡️</button>
-        </div>
-      </div>
+        <div class="flex flex-col items-end space-y-2">
+          <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">Change Week</p>
+          <div class="flex space-x-3">
+          <button
+     @click="prevWeek"
+     class="text-font-10 bg-transparent border-0 p-2 rounded hover:bg-decorPu-5 hover:text-white transition"
+   >
+     <svg xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          viewBox="0 0 24 24">
+       <path d="M15 19l-7-7 7-7" />
+     </svg>
+   </button>
+   <button
+     @click="nextWeek"
+     class="text-font-10 bg-transparent border-0 p-2 rounded hover:bg-decorPu-5 hover:text-white transition"
+   >
+     <svg xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          viewBox="0 0 24 24">
+       <path d="M9 5l7 7-7 7" />
+     </svg>
+   </button>
+  </div>
+  </div>
+  </div>
+
 
       <p class="text-font-6 leading-relaxed">
         Lorem ipsum dolor sit amet consectetur. Lectus ac sed purus ultrices
@@ -269,8 +303,7 @@
 
 
 <!-- —— Weekly Charts —— -->
-<!-- —— Weekly Charts —— -->
-<section class="max-w-7xl mx-auto mt-8 px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+<section class="max-w-7xl mx-auto mt-12 px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
   <div class="info-box p-4">
     <h3 class="text-xl font-semibold mb-2">Weekly Calorie Burn</h3>
     <div class="chart-container">
@@ -296,15 +329,37 @@
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-3xl md:text-5xl font-bold leading-relaxed">{{ monthDisplay }}</h2>
     <div class="flex space-x-3">
-      <button
-        @click="prevMonth"
-        class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition"
-      >⬅️</button>
-      <button
-        @click="nextMonth"
-        class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition"
-      >➡️</button>
-    </div>
+         <button
+           @click="prevMonth"
+           class="text-font-10 bg-transparent border-0 p-2 rounded hover:bg-decorPu-5 hover:text-white transition"
+         >
+           <svg xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                viewBox="0 0 24 24">
+             <path d="M15 19l-7-7 7-7" />
+           </svg>
+         </button>
+         <button
+           @click="nextMonth"
+           class="text-font-10 bg-transparent border-0 p-2 rounded hover:bg-decorPu-5 hover:text-white transition"
+         >
+           <svg xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                viewBox="0 0 24 24">
+             <path d="M9 5l7 7-7 7" />
+           </svg>
+         </button>
+       </div>
   </div>
 
   <!-- 日历表格 -->
@@ -370,6 +425,6 @@
 
 </main>
 
-<div class="pt-24">
+<div class="pt-0">
   <Footer />
 </div>

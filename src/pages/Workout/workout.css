@@ -20,17 +20,22 @@
 }
 
 .ring-label {
-  font-size: 0.8rem;
-}
-
-.ring-subtext {
   position: absolute;
-  top: calc(100% + 0.5rem);
+  top: calc(100% + 15rem);  /* 或者试试 2rem */
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.85rem;
+  font-size: 0.875rem;        /* text-sm */
   color: var(--font-10);
 }
+
+
+.ring-subtext {
+  position: absolute;             /* 保持绝对定位 */
+  top: calc(100% + 2rem) !important;  /* 下移 2rem（根据需求可微调） */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .calorie-ring {
   --ring-size: 260px;
   display: inline-block;
@@ -42,12 +47,7 @@
 }
 
 
-.ring-subtext {
-  margin-top: 12px; /* 圆环下方留空 */
-  font-size: 16px;
-  color: var(--font-10);
-  text-align: center;
-}
+
 
 /*workout 图片布局*/
 /* 外层布局容器，左右排列 */
