@@ -9,7 +9,6 @@ export default {
     monthly: 'Monthly Subscription',
     quarterly: 'Quarterly Subscription',
     yearly: 'Yearly Subscription (Save 30%)',
-    join: 'Join Now',
 
     benefit1: 'AI Coach Smart Plans',
     benefit2: 'Voice Companion',
@@ -26,7 +25,7 @@ export default {
     confirmPayment: "I have completed payment",
     paymentSuccess: "Payment failed. Please contact the team leader at: DMT2209246@xmu.edu.my."
   },
-  
+
   zh: {
     title: '升级选项',
     subtitle: '享受高级功能与灵活订阅计划',
@@ -37,7 +36,6 @@ export default {
     monthly: '月度订阅',
     quarterly: '季度订阅',
     yearly: '年度订阅（节省30%）',
-    join: '立即加入',
 
     benefit1: 'AI教练智能计划',
     benefit2: 'AI语音助手',
@@ -53,6 +51,6 @@ export default {
     paymentHint: "5分钟内完成支付",
     confirmPayment: "我已完成支付",
     paymentSuccess: "支付失败，请联系组长邮箱：DMT2209246@xmu.edu.my"
-    
+
   }
 }

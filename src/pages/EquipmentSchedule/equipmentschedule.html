@@ -9,11 +9,37 @@
     <button @click="goBack" class="mb-4 inline-flex items-center gap-1 font-bold decoratePu-color-5 hover:underline">
       ← {{ t('back') }}
     </button>
-    <h1 class="text-3xl font-bold mb-6">{{ t('equipmentSchedule') }}: {{ equipmentName }}</h1>
+    <h1 class="text-3xl font-bold mb-4">{{ t('equipmentSchedule') }}: {{ equipmentName }}</h1>
+
+    <!-- Equipments selector row (horizontal scroll with arrows) -->
+    <div class="mb-6 flex items-center gap-2">
+      <!-- Left arrow -->
+      <button @click="scrollLeft" class="p-2 rounded-full background-color-1 hover:bg-decorPu-6 text-font-8 hover:text-white transition-colors duration-150">
+        ‹
+      </button>
+      <!-- Scrollable container -->
+      <div ref="scrollContainer" class="flex-1 overflow-x-auto whitespace-nowrap equipment-scroll" @wheel.prevent="onWheelScroll">
+        <div class="inline-flex gap-3 pr-2">
+          <button
+            v-for="eq in equipmentOptions"
+            :key="eq.id"
+            @click="goToEquipment(eq.id)"
+            class="px-3 py-1 rounded-full border cursor-pointer transition-colors duration-150 flex-shrink-0"
+            :class="eq.id === eqId ? 'bg-decorPu-5 text-white border-transparent' : 'background-color-1 text-font-8 hover:bg-decorPu-6 hover:text-white'"
+          >
+            {{ eq.label }}
+          </button>
+        </div>
+      </div>
+      <!-- Right arrow -->
+      <button @click="scrollRight" class="p-2 rounded-full background-color-1 hover:bg-decorPu-6 text-font-8 hover:text-white transition-colors duration-150">
+        ›
+      </button>
+    </div>
     
     <!-- Schedule Table -->
     <div class="overflow-x-auto">
-      <table class="w-full border-collapse border border-gray-300 schedule-table">
+      <table class="w-full border-collapse border-2 border-gray-300 dark:border-font-7 schedule-table">
         <thead>
           <tr class="background-color-4">
             <th class="border border-gray-300 px-4 py-3 text-left font-color-8 min-w-[100px] max-w-[140px]">{{ t('time') }}</th>
@@ -34,22 +60,23 @@
               class="border border-gray-300 p-0 h-14"
             >
               <button
-                class="flex items-center justify-center w-full h-full transition-colors duration-150 cursor-pointer border-none"
-                :class="{}"
-                :class="{
-                  'background-color-1 decoratePu-color-5 hover:background-color-2': availability[slotIndex] && availability[slotIndex][dayIndex] > 0,
-                  'background-color-5 font-color-4 hover:background-color-6': availability[slotIndex] && availability[slotIndex][dayIndex] === 0,
-                  'background-color-2 font-color-4 hover:background-color-3': !availability[slotIndex] || !availability[slotIndex][dayIndex],
-                  'text-white': isSelected(slotIndex, dayIndex)
-                }"
+                v-if="availability[slotIndex] && availability[slotIndex][dayIndex] > 0"
+                class="flex items-center justify-center w-full h-full transition-all duration-150 cursor-pointer border-none hover:scale-105 hover:brightness-110 hover:ring-2 hover:ring-decorPu-5 background-color-1 decoratePu-color-5 hover:background-color-2"
+                :class="{ 'text-white': isSelected(slotIndex, dayIndex) }"
                 :style="isSelected(slotIndex, dayIndex) ? { 'background-color': 'var(--decorPu-5)' } : {}"
                 @click="selectSlot(slotIndex, dayIndex)"
+              >
+                <span>{{ availability[slotIndex][dayIndex] }}</span>
+              </button>
+              <div
+                v-else
+                class="flex items-center justify-center w-full h-full background-color-5 font-color-4 dark:text-font-7 cursor-not-allowed"
               >
                 <span v-if="availability[slotIndex] && availability[slotIndex][dayIndex] !== undefined">
                   {{ availability[slotIndex][dayIndex] }}
                 </span>
                 <span v-else>-</span>
-              </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -64,7 +91,7 @@
       </div>
       <div class="flex items-center gap-2">
         <div class="w-4 h-4 background-color-5 border border-gray-300"></div>
-        <span class="font-color-4">{{ t('fullyBooked') }}</span>
+        <span class="font-color-4 dark:text-font-7">{{ t('fullyBooked') }}</span>
       </div>
     </div>
 
@@ -73,14 +100,34 @@
       <button
         @click="confirmBooking"
         :disabled="!selectedSlot"
-        class="px-8 py-3 rounded font-bold transition-opacity duration-150"
+        class="px-12 py-4 rounded-full font-semibold text-xl transition-colors duration-200 shadow-lg"
         :class="{
-          'decoratePu-color-5 border border-decorPu-color-5 hover:opacity-90': selectedSlot,
-          'background-color-5 cursor-not-allowed': !selectedSlot
+          'bg-decorPu-5 hover:bg-decorPu-6 text-white': selectedSlot,
+          'bg-gray-400 text-white cursor-not-allowed': !selectedSlot
         }"
       >
         {{ t('bookingNow') }}
       </button>
+    </div>
+  </div>
+  
+  <!-- Booking Confirmation Modal -->
+  <div v-if="showConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+      <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">{{ t('confirmBooking') }}</h3>
+      <div class="mb-4 text-gray-700 dark:text-gray-300">
+        <p><strong>{{ t('equipment') }}:</strong> {{ equipmentName }}</p>
+        <p><strong>{{ t('date') }}:</strong> {{ confirmationDetails.date }}</p>
+        <p><strong>{{ t('time') }}:</strong> {{ confirmationDetails.time }}</p>
+      </div>
+      <div class="flex gap-3">
+        <button @click="confirmBookingFinal" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors">
+          {{ t('confirm') }}
+        </button>
+        <button @click="cancelBooking" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors">
+          {{ t('cancel') }}
+        </button>
+      </div>
     </div>
   </div>
   

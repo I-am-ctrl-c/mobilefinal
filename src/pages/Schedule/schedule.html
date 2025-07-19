@@ -1,8 +1,67 @@
+<head>
+  <link rel="stylesheet" href="./schedule.css">
+  <link rel="stylesheet" href="/src/assets/main.css">
+  <script src="./index.js" defer></script>
+</head>
 <NavBar />
-<main class="pt-16">
-<div class="text-font-10 text-3xl">This is the Schedule Page</div>
-  
-<div class="pt-20">
-  <Footer />
+
+<main class="schedule-page-wrapper pt-16 min-h-screen">
+  <!-- Hero Section with background image -->
+  <section class="schedule-hero">
+    <div class="overlay">
+      <h1 class="hero-title">Your Booking Schedule</h1>
+    </div>
+  </section>
+
+<!-- 这是表格区域 -->
+<div class="table-container overflow-x-auto max-w-5xl mx-auto mt-12">
+  <table class="schedule-table w-full text-left rounded-lg overflow-hidden">
+    <thead class="table-header bg-[var(--decorPu-1)] text-white">
+      <tr>
+        <th class="px-4 py-3">Equipment</th>
+        <th class="px-4 py-3">Start Time</th>
+        <th class="px-4 py-3">End Time</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 如果没有数据 -->
+      <tr v-if="paginatedBookings().length === 0">
+        <td colspan="5" class="text-center py-6 text-[var(--font-10)] text-lg">
+          No bookings found
+        </td>
+      </tr>
+
+      <!-- 如果有数据 -->
+      <tr v-else v-for="booking in paginatedBookings()" :key="booking.id" class="hover:bg-[var(--bg)] border-b border-[var(--bg-3)]">
+        <td class="px-4 py-3 flex items-center gap-2">
+          <img :src="equipmentMap[booking.equipmentId]?.imageUrl" alt="equipment" class="w-10 h-10 rounded-md object-cover" />
+          <div>
+            <div class="font-semibold text-[var(--font-10)]">{{ equipmentMap[booking.equipmentId]?.name || 'Unknown' }}</div>
+            <div class="text-sm text-[var(--font-8)]">{{ equipmentMap[booking.equipmentId]?.tags?.join(', ') }}</div>
+          </div>
+        </td>
+        <td class="px-4 py-3">{{ formatDate(booking.startTime) }}</td>
+        <td class="px-4 py-3">{{ formatDate(booking.endTime) }}</td>
+        <td class="px-4 py-3 capitalize">{{ booking.status }}</td>
+        <td class="px-4 py-3">
+          <button @click="toggleBookingStatus(booking)"
+            :class="booking.status === 'cancelled' ? 'restore-btn' : 'cancel-btn'">
+            {{ booking.status === 'cancelled' ? 'Restore' : 'Cancel' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
+
+
+
+  <div class="pagination-controls flex justify-center mt-8 gap-4">
+    <button @click="prevPage" class="pagination-btn">Previous</button>
+    <button @click="nextPage" class="pagination-btn">Next</button>
+  </div>
 </main>
+
+<Footer />

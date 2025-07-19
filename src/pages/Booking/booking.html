@@ -9,7 +9,7 @@
 
 <!-- 主容器：设置顶部内边距避免被导航栏遮挡，使用背景色和最小高度 -->
 <main class="pt-16 min-h-screen">
-  
+
   <!-- 标题横幅区域：可调整高度、背景图片、文字大小和颜色 -->
   <!-- 调整 h-48 可以改变横幅高度 (h-32=128px, h-48=192px, h-64=256px) -->
   <!-- 调整 text-5xl 可以改变标题字体大小 (text-3xl, text-4xl, text-5xl, text-6xl) -->
@@ -21,14 +21,14 @@
   <!-- container mx-auto: 居中容器，可改为 w-full 或自定义宽度 -->
   <!-- py-8: 上下内边距，px-4: 左右内边距 -->
   <section class="container mx-auto py-8 px-4">
-    
+
     <!-- 搜索框区域 -->
     <div class="mb-8">
       <div class="max-w-xl mx-auto">
         <div class="relative">
-          <input 
-            type="text" 
-            :placeholder="t('sub_title2')" 
+          <input
+            type="text"
+            :placeholder="t('searchingbar')" 
             class="w-full p-4 pl-12 rounded-lg background-color-9 font-color-1 border border-font-7 focus:outline-none focus:border-decorPu-5 transition-colors"
             v-model="searchQuery"
           />
@@ -44,20 +44,20 @@
       <!-- 左侧Tag筛选栏 -->
       <div class="lg:w-40 flex-shrink-0">
         <div class="sticky top-24">
-          <h3 class="text-lg font-semibold mb-4">{{ t('sub_title1') }}</h3>
+          <h3 class="text-lg font-semibold mb-4">{{ t('equipmenttype') }}</h3>
           <div class="space-y-2">
-            <button 
-              v-for="tag in tags" 
+            <button
+              v-for="tag in tags"
               :key="tag.name"
               @click="toggleTag(tag.name)"
               class="w-full text-left px-4 py-3 rounded-lg transition-all duration-200"
               :class="[
-                selectedCategory === tag.name 
-                  ? 'background-color-8 font-color-1 border-l-4 border-decorPu-5' 
+                selectedCategory === tag.name
+                  ? 'background-color-8 font-color-1 border-l-4 border-decorPu-5'
                   : 'background-color-9 font-color-4 hover:background-color-8 hover:font-color-1'
               ]"
             >
-              {{ tag.name }}
+              {{ tag.label }}
             </button>
           </div>
         </div>
@@ -68,24 +68,28 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
       <!-- 单个预约卡片：可调整圆角、阴影、背景色 -->
       <!-- rounded-lg: 圆角大小，shadow-md: 阴影效果，background-color-9: 背景色 -->
-      <div v-for="eq in equipments" :key="eq.id" class="rounded-lg overflow-hidden shadow-md background-color-9 max-w-md mx-auto">
+      <div v-for="eq in equipments" :key="eq.id" class="equipment-card rounded-lg overflow-hidden shadow-md transform hover:scale-105 transition duration-300 background-color-9 max-w-md mx-auto cursor-pointer" @click="goToDescription(eq.id)">
         <!-- 卡片图片：可调整高度、对象适配方式 -->
         <!-- h-48: 图片高度 (h-32=128px, h-48=192px, h-64=256px) -->
         <!-- object-cover: 保持比例裁剪，object-contain: 完整显示 -->
-        <img :src="eq.imageUrl" :alt="eq.name" class="w-full h-96 object-cover" />
-        
+        <img
+          :src="eq.imageUrl"
+          :alt="eq.name"
+          class="w-full h-96 object-cover hover:opacity-90 transition-opacity duration-200"
+        />
+
         <!-- 卡片内容区域：可调整内边距、文字大小和颜色 -->
         <!-- p-4: 内边距，可调整 p-2, p-3, p-4, p-6 等 -->
         <div class="p-4">
           <!-- 设备名称：可调整字体大小、粗细、颜色、底部间距 -->
           <!-- text-xl: 字体大小，font-semibold: 字体粗细，mb-2: 底部间距 -->
           <h3 class="text-3xl font-bold font-color-1 mb-4">{{ eq.name }}</h3>
-          
+
           <!-- 日期信息：可调整字体大小、颜色、间距 -->
           <!-- text-sm: 小字体，font-color-4: 文字颜色，mb-1: 底部间距 -->
           <p class="text-lg font-color-4" v-if="eq.description">{{ eq.description.slice(0, 80) }}...</p>
-          <button @click="$router.push(`/equipment/${eq.id}/schedule`)" class="mt-6 w-full bg-decorPu-5 hover:bg-decorPu-6 text-white py-3 rounded-full font-semibold text-xl transition-colors duration-200">
-            Booking
+          <button @click.stop="$router.push(`/equipment/${eq.id}/schedule`)" class="mt-6 w-full bg-decorPu-5 hover:bg-decorPu-6 text-white py-3 rounded-full font-semibold text-xl transition-colors duration-200">
+            {{ t('bookingNow') }}
           </button>
         </div>
       </div>
@@ -97,4 +101,4 @@
 
 <div class="pt-24">
   <Footer />
-</div> 
+</div>

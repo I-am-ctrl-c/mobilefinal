@@ -31,7 +31,7 @@ import {
   Timestamp,
   onSnapshot,
   writeBatch,
-  FieldPath
+  documentId
 } from 'firebase/firestore'
 
 import {
@@ -194,11 +194,14 @@ export default class FirebaseService {
     return new Equipment({
       id: snap.id,
       name: data.name ?? '',
+      name_cn: data.name_cn ?? '',
       description: data.description ?? '',
+      description_cn: data.description_cn ?? '',
       imageUrl,
       videoUrl,
       available: (data.available ?? 0),
-      tags: data.tags ?? []
+      tags: data.tags ?? [],
+      tags_cn: data.tags_cn ?? []
     })
   }
 
@@ -293,11 +296,14 @@ export default class FirebaseService {
       return new Equipment({
         id: docSnap.id,
         name: data.name ?? '',
+        name_cn: data.name_cn ?? '',
         description: data.description ?? '',
+        description_cn: data.description_cn ?? '',
         imageUrl,
         videoUrl,
         available: data.available ?? 0,
-        tags: data.tags ?? []
+        tags: data.tags ?? [],
+        tags_cn: data.tags_cn ?? []
       })
     })
     return Promise.all(promises)
@@ -317,11 +323,14 @@ export default class FirebaseService {
         return new Equipment({
           id: docSnap.id,
           name: data.name ?? '',
+          name_cn: data.name_cn ?? '',
           description: data.description ?? '',
+          description_cn: data.description_cn ?? '',
           imageUrl,
           videoUrl,
           available: data.available ?? 0,
-          tags: data.tags ?? []
+          tags: data.tags ?? [],
+          tags_cn: data.tags_cn ?? []
         })
       })
       callback(await Promise.all(promises))
@@ -331,7 +340,10 @@ export default class FirebaseService {
   /** ─────────────────────────── Daily Stats ─────────────────────────── */
 
   _dailyStatsRef(userId, date) {
-    const dateStr = date.toISOString().split('T')[0]
+    // Convert to YYYY-MM-DD in local date (timezone aware)
+    const tzOffsetMs = date.getTimezoneOffset() * 60000;
+    const localDateStr = new Date(date.getTime() - tzOffsetMs).toISOString().split('T')[0];
+    const dateStr = localDateStr;
     return doc(this._db, 'users', userId, 'dailyStats', dateStr)
   }
 
@@ -361,8 +373,8 @@ export default class FirebaseService {
     const dateStr = date.toISOString().split('T')[0]
     const q = query(
       collection(this._db, 'users', userId, 'dailyStats'),
-      where(FieldPath.documentId(), '<=', dateStr),
-      orderBy(FieldPath.documentId(), 'desc'),
+      where(documentId(), '<=', dateStr),
+      orderBy(documentId(), 'desc'),
       limit(1)
     )
     const snap = await getDocs(q)
@@ -383,7 +395,7 @@ export default class FirebaseService {
   async _propagateBMIForward(uid, fromDate, bmiData) {
     const fromId = fromDate.toISOString().split('T')[0]
     const col = collection(this._db, 'users', uid, 'dailyStats')
-    const q = query(col, where(FieldPath.documentId(), '>', fromId), orderBy(FieldPath.documentId()))
+    const q = query(col, where(documentId(), '>', fromId), orderBy(documentId()))
     const snap = await getDocs(q)
     const batch = writeBatch(this._db)
     for (const docSnap of snap.docs) {
@@ -409,7 +421,7 @@ export default class FirebaseService {
   async _propagateGoalForward(uid, fromDate, goal, overwriteFuture = false) {
     const fromId = fromDate.toISOString().split('T')[0]
     const col = collection(this._db, 'users', uid, 'dailyStats')
-    const q = query(col, where(FieldPath.documentId(), '>', fromId), orderBy(FieldPath.documentId()))
+    const q = query(col, where(documentId(), '>', fromId), orderBy(documentId()))
     const snap = await getDocs(q)
     const batch = writeBatch(this._db)
     for (const docSnap of snap.docs) {
@@ -429,14 +441,41 @@ export default class FirebaseService {
     const dateStr = date.toISOString().split('T')[0]
     const q = query(
       collection(this._db, 'users', uid, 'dailyStats'),
-      where(FieldPath.documentId(), '<=', dateStr),
+      where(documentId(), '<=', dateStr),
       where('caloriesGoal', '>', 0),
-      orderBy(FieldPath.documentId(), 'desc'),
+      orderBy(documentId(), 'desc'),
       limit(1)
     )
     const snap = await getDocs(q)
     if (snap.empty) return null
     return snap.docs[0].data().caloriesGoal
+  }
+
+  /**
+   * Fetch dailyStats records for a given date range (inclusive).
+   * Returns an object keyed by ISO date string (YYYY-MM-DD).
+   *
+   * @param {string} userId
+   * @param {Date}   startDate
+   * @param {Date}   endDate
+   * @returns {Promise<Record<string, any>>}
+   */
+  async fetchDailyStatsRange(userId, startDate, endDate) {
+    const fromId = startDate.toISOString().split('T')[0]
+    const toId   = endDate.toISOString().split('T')[0]
+
+    const q = query(
+      collection(this._db, 'users', userId, 'dailyStats'),
+      where(documentId(), '>=', fromId),
+      where(documentId(), '<=', toId),
+      orderBy(documentId())
+    )
+
+    const snap = await getDocs(q)
+    /** @type {Record<string, any>} */
+    const map = {}
+    snap.docs.forEach(docSnap => { map[docSnap.id] = docSnap.data() })
+    return map
   }
 
   /**

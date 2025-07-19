@@ -1,0 +1,223 @@
+
+/* -------- 登录页整体容器 -------- */
+.login-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-image: url('/src/assets/images/LoginBG1.jpg');
+  background-size: cover;
+  font-family: 'Noto Sans', sans-serif;
+  color: var(--font-10);
+  position: relative;
+}
+
+/* 可选：白色蒙层提升可读性 */
+.login-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85); /* 深色模式可变为 rgba(0, 0, 0, 0.5) */
+  backdrop-filter: blur(2px);
+  z-index: 0;
+}
+
+.dark .login-wrapper::before {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* -------- 左边 Logo 区域 -------- */
+.login-left,
+.login-right {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.login-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-logo {
+  max-width: 60%;
+  height: auto;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+}
+
+/* -------- 右边表单区域 -------- */
+.login-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* 表单整体卡片 */
+.login-form {
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--bg-1);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--bg-4);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+.dark .login-form {
+  background-color: var(--bg-3);
+  border-color: var(--bg-6);
+}
+
+/* 表单标题 */
+.form-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--font-10);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* 输入区域样式 */
+.input-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--font-8);
+}
+
+.input-group input,
+.input-group select {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--bg-5);
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: var(--bg-2);
+  color: var(--font-10);
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: var(--decorPu-5);
+}
+
+/* 登录按钮 */
+.auth-btn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--decorPu-5);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.auth-btn:hover {
+  background-color: var(--decorPu-6);
+}
+
+/* 切换登录/注册提示 */
+.toggle-link {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--font-7);
+  text-align: center;
+}
+
+.auth-toggle-link {
+  color: var(--decorPu-5);
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.25rem;
+  transition: color 0.3s;
+}
+
+.auth-toggle-link:hover {
+  color: var(--decorPu-6);
+}
+
+/* 错误信息提示 */
+.form-message {
+  margin-top: 1rem;
+  color: red;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* 隐藏输入项 */
+.hidden {
+  display: none;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+  }
+
+.login-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('src\assets\images\xgymlogo.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+  .login-right {
+    padding: 1.5rem;
+  }
+
+  .login-form {
+    max-width: 90%;
+    padding: 2rem;
+  }
+  .password-group {
+  position: relative;
+}
+
+.password-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.password-wrapper input {
+  flex: 1;
+  padding-right: 2rem;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--font-6);
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: var(--font-9);
+}
+
+.toggle-password.visible {
+  color: var(--decorPu-6);
+}
+
+}

@@ -22,23 +22,29 @@ export default class Equipment {
   constructor({
     id,
     name = '',
+    name_cn = '',
     type = '',
     available = 1,
     description = '',
+    description_cn = '',
     imageUrl = '',
     videoUrl = '',
     tags = [],
+    tags_cn = [],
     isAvailable = true,
     lastService = new Date()
   } = {}) {
     this.id = id ?? Equipment.generateId(name)
     this.name = name
+    this.name_cn = name_cn
     this.type = type
     this.available = available
     this.description = description
+    this.description_cn = description_cn
     this.imageUrl = imageUrl
     this.videoUrl = videoUrl
     this.tags = tags
+    this.tags_cn = tags_cn
     this.isAvailable = isAvailable
     // Ensure lastService is a Date instance
     this.lastService = lastService instanceof Date
@@ -82,12 +88,15 @@ export default class Equipment {
   toFirestore() {
     return {
       name: this.name,
+      name_cn: this.name_cn,
       type: this.type,
       available: this.available,
       description: this.description,
+      description_cn: this.description_cn,
       imageUrl: this.imageUrl,
       videoUrl: this.videoUrl,
       tags: this.tags,
+      tags_cn: this.tags_cn,
       isAvailable: this.isAvailable,
       lastService: Timestamp.fromDate(this.lastService)
     }
@@ -102,12 +111,15 @@ export default class Equipment {
     return new Equipment({
       id: doc.id,
       name: data.name,
+      name_cn: data.name_cn ?? '',
       type: data.type,
       available: data.available,
       description: data.description,
+      description_cn: data.description_cn ?? '',
       imageUrl: data.imageUrl,
       videoUrl: data.videoUrl,
       tags: data.tags ?? [],
+      tags_cn: data.tags_cn ?? [],
       isAvailable: data.isAvailable,
       lastService: data.lastService?.toDate?.() || new Date()
     })

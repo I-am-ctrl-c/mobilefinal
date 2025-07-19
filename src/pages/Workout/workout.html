@@ -20,22 +20,37 @@
 
 <!-- —— Date 选择 —— -->
 <div class="max-w-7xl mx-auto mt-8 px-4">
-  <div class="flex items-center justify-between mb-4">
+  <div class="flex items-center gap-3 relative">
     <div>
-      <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">
-        Date
-      </p>
+      <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">Date</p>
       <h2 class="text-3xl md:text-5xl font-bold leading-relaxed">
         {{ selectedDateDisplay }}
       </h2>
     </div>
-    <button
-      @click="showDatePicker = !showDatePicker"
-      class="text-font-10 border border-font-10 rounded p-1 hover:bg-decorPu-5 hover:text-white transition"
-    >
-      See more
-    </button>
-  </div>
+  
+    <!-- 图标按钮封装 -->
+    <div class="relative w-8 h-8" style="color: var(--font-8);">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 24 24"
+           fill="currentColor"
+           class="absolute inset-0 w-full h-full z-10 pointer-events-none">
+        <path fill="currentColor" d="M6 2a1 1 0 0 1 1 1v1h10V3a1 1 0 1 1 2 0v1h1.5a.5.5 0 0 1 .5.5V6H2V4.5A.5.5 0 0 1 2.5 4H4V3a1 1 0 0 1 2-1zM2 8v12.5a.5.5 0 0 0 .5.5h19a.5.5 0 0 0 .5-.5V8H2zm5 4h2v2H7v-2zm4 0h2v2h-2v-2z"/>
+      </svg>
+    
+      <input
+        type="date"
+        v-model="selectedDate"
+        :min="minDate"
+        :max="maxDate"
+        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+      />
+    </div>
+    
+    
+  
+  
+  
+  
   <div v-if="showDatePicker" class="mb-6">
     <input
       type="date"
@@ -55,12 +70,15 @@
     <h2 class="text-xl font-semibold text-center mb-2">Calories</h2>
       <div class="flex items-center justify-center">
         <div
+          id="calorieRingContainer"
           class="calorie-ring"
-          data-current="1200"
-          data-goal="1350"
+          :data-current="selectedCalories.current"
+          :data-goal="selectedCalories.goal"
           data-size="190"
           data-font="0.15"
         ></div>
+
+
       </div>
     </div>
 
@@ -107,6 +125,24 @@
     <div class="flex justify-end gap-4 mt-4">
       <button id="cancelActivity" class="modal-cancel">Cancel</button>
       <button id="saveActivity" class="modal-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ 编辑卡路里弹窗 -->
+<div id="calorieModal" class="activity-modal hidden">
+  <div class="activity-modal-content activity-modal-large">
+    <h2 class="text-xl font-bold text-center mb-4">Edit Calories</h2>
+
+    <label for="editCurrentCalories">Current Calories</label>
+    <input type="number" id="editCurrentCalories" class="modal-input" placeholder="e.g. 150" />
+
+    <label for="editGoalCalories">Goal Calories</label>
+    <input type="number" id="editGoalCalories" class="modal-input" placeholder="e.g. 500" />
+
+    <div class="flex justify-end gap-4 mt-4">
+      <button id="cancelCalorieEdit" class="modal-cancel">Cancel</button>
+      <button id="saveCalorieEdit" class="modal-save">Save</button>
     </div>
   </div>
 </div>
@@ -170,8 +206,8 @@
     <!-- flex-shrink-0 保证在行不下时单独换行 -->
     <div
       class="calorie-ring flex-shrink-0"
-      data-current="6530"
-      data-goal="9300"
+      :data-current="weeklyTotals.current"
+      :data-goal="weeklyTotals.goal"
       data-size="200"
       data-font="0.15"
     ></div>
@@ -201,24 +237,33 @@
       </p>
 
       <!-- ✅ 数据块展示 -->
-      <div class="flex flex-wrap gap-x-10 gap-y-6 mt-6">
-        <div>
-          <p class="text-decorPu-5 text-3xl font-bold">6530/9300</p>
-          <p class="text-font-10 text-sm font-medium mt-1">Progress</p>
-        </div>
-        <div>
-          <p class="text-decorPu-5 text-3xl font-bold">130</p>
-          <p class="text-font-10 text-sm font-medium mt-1">Run/min</p>
-        </div>
-        <div>
-          <p class="text-decorPu-5 text-3xl font-bold">60</p>
-          <p class="text-font-10 text-sm font-medium mt-1">Training/min</p>
-        </div>
-      </div>
+<!-- ✅ 数据块展示（Progress + 本周前两大活动） -->
+<div class="flex flex-wrap gap-x-10 gap-y-6 mt-6">
+  <!-- 本周进度 -->
+  <div>
+    <p class="text-decorPu-5 text-3xl font-bold">
+      {{ weeklyTotals.current }}/{{ weeklyTotals.goal }}
+    </p>
+    <p class="text-font-10 text-sm font-medium mt-1">Progress</p>
+  </div>
 
-      <button class="mt-8 bg-decorPu-5 hover:bg-decorPu-6 text-white font-semibold px-6 py-3 rounded shadow transition">
-        MORE ABOUT
-      </button>
+  <!-- 本周用时最长的前两项活动 -->
+  <div
+    v-for="(act, idx) in topActivities"
+    :key="idx"
+  >
+    <p class="text-decorPu-5 text-3xl font-bold">
+      {{ act.duration }} min
+    </p>
+    <p class="text-font-10 text-sm font-medium mt-1">
+      {{ act.name }}
+    </p>
+  </div>
+</div>
+
+
+
+      <button class="gradient-button">READ MORE</button>
     </div>
   </div>
 
@@ -277,21 +322,21 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(week, wi) in calendar" :key="wi">
-        <td
-          v-for="day in week"
-          :key="day.date.toISOString()"
-          class="border border-font-7 p-2 align-top"
-          :class="!day.inMonth && 'text-font-6'"
-        >
+      <tr v-for="(week, wIdx) in monthWeeks" :key="wIdx">
+           <td
+             v-for="(day,dIdx) in week"
+             :key="dIdx"
+             :data-date="(() => { const tzOffsetMs = day.date.getTimezoneOffset() * 60000; return new Date(day.date.getTime() - tzOffsetMs).toISOString().split('T')[0]; })()"
+             class="calendar-cell"
+           >
           <div v-if="day.inMonth">
             <!-- 日期数字 -->
             <div class="text-sm mb-1">{{ day.date.getDate() }}</div>
             <!-- 卡路里环 -->
             <div
             class="calorie-ring mx-auto"
-            :data-current="day.current"
-            :data-goal="day.goal"
+              :data-current="(() => { const tzOffsetMs = day.date.getTimezoneOffset() * 60000; const dateStr = new Date(day.date.getTime() - tzOffsetMs).toISOString().split('T')[0]; return dailyStats[dateStr]?.caloriesCurrent||0; })()"
+              :data-goal="   (() => { const tzOffsetMs = day.date.getTimezoneOffset() * 60000; const dateStr = new Date(day.date.getTime() - tzOffsetMs).toISOString().split('T')[0]; return dailyStats[dateStr]?.caloriesGoal   ||100; })()"
             data-size="110"    
             data-font="0.15"   
           ></div>
@@ -305,6 +350,23 @@
 
 
 </section>
+<!-- ✅ 编辑卡路里弹窗 -->
+<div v-if="showCalorieEditor" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white dark:bg-black rounded-xl p-6 w-80 shadow-xl">
+    <h3 class="text-lg font-bold text-center mb-4 text-font-10">Edit Calories</h3>
+    
+    <label class="block mb-2 text-sm text-font-10">Current Calories</label>
+    <input v-model="calorieEditorCurrent" type="number" class="w-full rounded p-2 mb-4 bg-gray-100 dark:bg-gray-800 text-font-10" />
+    
+    <label class="block mb-2 text-sm text-font-10">Goal Calories</label>
+    <input v-model="calorieEditorGoal" type="number" class="w-full rounded p-2 mb-4 bg-gray-100 dark:bg-gray-800 text-font-10" />
+    
+    <div class="flex justify-between">
+      <button @click="showCalorieEditor = false" class="px-4 py-1 rounded bg-gray-300 dark:bg-gray-700 text-font-10">Cancel</button>
+      <button @click="saveCalorieEdit" class="px-4 py-1 rounded bg-decorPu-5 text-white">Save</button>
+    </div>
+  </div>
+</div>
 
 </main>
 
