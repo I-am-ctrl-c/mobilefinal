@@ -1,8 +1,44 @@
+<head>
+  <link rel="stylesheet" href="./profile.css">
+  <link rel="stylesheet" href="/src/assets/main.css">
+  <script src="./index.js" defer></script>
+</head>
+
 <NavBar />
+
 <main class="pt-16">
-<div class="text-font-10 text-3xl">This is the Profile Page</div>
-  
-<div class="pt-20">
-  <Footer />
-</div> 
+<!-- 页面布局大框架 -->
+<div class="max-w-6xl mx-auto flex background-color-1 rounded-lg shadow-md border border-[var(--bg-4)] overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-64 background-color-3 flex flex-col">
+    <!-- 用户信息 -->
+    <div class="flex items-center gap-4 p-6 border-b border-[var(--bg-4)]">
+      <div class="w-16 h-16 bg-[var(--bg-4)] rounded-full"></div>
+      <div class="text-lg font-semibold font-color-9">名字</div>
+    </div>
+
+    <!-- 菜单按钮 -->
+    <nav class="flex flex-col text-sm font-medium">
+      <button class="menu-btn" data-tab="profile">个人资料</button>
+      <button class="menu-btn" data-tab="avatar">修改头像</button>
+      <button class="menu-btn" data-tab="password">密码安全</button>
+      <button class="text-left px-6 py-3 text-red-500">退出登录</button>
+    </nav>
+  </aside>
+
+<!-- 主内容区域 -->
+<div id="content-container" class="flex-1 p-8 overflow-auto">
+  <!-- 内容将通过JS动态加载到这里 -->
+</div>
+
+  </div>
 </main> 
+
+<div class="pt-24">
+  <Footer />
+</div>
+
+
+
+

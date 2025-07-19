@@ -1,0 +1,25 @@
+<div class="content-section">
+  <h2 class="text-2xl font-bold mb-6 font-color-9">修改头像</h2>
+  
+  <div class="flex flex-col items-center space-y-6">
+    <div class="w-32 h-32 rounded-full bg-gray-200 overflow-hidden">
+      <img id="avatar-preview" src="" alt="当前头像" class="w-full h-full object-cover">
+    </div>
+    
+    <input 
+      type="file" 
+      id="avatar-upload"
+      accept="image/*"
+      class="hidden"
+    >
+    
+    <button 
+      onclick="document.getElementById('avatar-upload').click()"
+      class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+    >
+      选择图片
+    </button>
+    
+    <p class="text-sm text-gray-500">支持 JPG, PNG 格式，大小不超过 2MB</p>
+  </div>
+</div>

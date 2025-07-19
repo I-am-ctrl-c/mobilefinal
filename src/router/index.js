@@ -7,6 +7,7 @@ import Workout from '../pages/Workout'
 import Profile from '../pages/Profile'
 import EquipmentSchedule from '../pages/EquipmentSchedule'
 
+
 import FAQ from '../pages/FAQ'
 import Upgrade from '../pages/Upgrade'
 
