@@ -7,14 +7,18 @@
 <NavBar />
 
 <main class="pt-16">
+  <!-- Profile 顶部横幅 -->
+  <section class="profile-banner">
+    <h1 class="profile-banner-title">更改您的信息</h1>
+  </section>
   <div class="max-w-6xl mx-auto flex background-color-1 rounded-lg shadow-md border border-[var(--bg-4)] overflow-hidden">
-
     <!-- Sidebar -->
     <aside class="w-64 background-color-3 flex flex-col">
       <div class="flex items-center gap-4 p-6 border-b border-[var(--bg-4)]">
-        <div class="w-16 h-16 bg-[var(--bg-4)] rounded-full"></div>
-        <div class="text-lg font-semibold font-color-9">用户名</div>
+        <img :src="userAvatar" class="w-16 h-16 rounded-full object-cover" />
+        <div class="text-lg font-semibold font-color-9">{{ userName }}</div>
       </div>
+    
       <nav class="flex flex-col text-sm font-medium">
         <button class="menu-btn" @click="switchTab('profile')">个人资料</button>
         <button class="menu-btn" @click="switchTab('avatar')">修改头像</button>
@@ -22,29 +26,78 @@
         <button class="text-left px-6 py-3 text-red-500" @click="logout">退出登录</button>
       </nav>
     </aside>
+    
 
     <!-- 主内容区域 -->
     <div class="flex-1 p-8 overflow-auto text-font-10">
-      <!-- Tab 1: Profile -->
-      <div v-if="currentTab === 'profile'">
-        <h2 class="text-2xl font-bold mb-4">个人资料</h2>
-        <p>这是用户基本资料展示区域。</p>
-      </div>
+    <!-- Tab 1: Profile -->
+    <div v-show="currentTab === 'profile'">
+      <h2 class="text-2xl font-bold mb-4">个人资料</h2>
 
-      <!-- Tab 2: Avatar -->
-      <div v-if="currentTab === 'avatar'">
-        <h2 class="text-2xl font-bold mb-4">修改头像</h2>
-        <input type="file" @change="handleAvatarUpload" />
-        <img id="avatarPreview" class="w-32 h-32 rounded-full mt-4" />
-      </div>
+      <form id="profileForm" class="space-y-4 max-w-md">
+        <div>
+          <label for="profileName" class="block mb-1 text-sm font-medium">昵称</label>
+          <input id="profileName" type="text" class="input-box w-full" />
+        </div>
+
+        <div>
+          <label for="profileAge" class="block mb-1 text-sm font-medium">年龄</label>
+          <input id="profileAge" type="number" class="input-box w-full" />
+        </div>
+
+        <div>
+          <label for="profileGender" class="block mb-1 text-sm font-medium">性别</label>
+          <select id="profileGender" class="input-box w-full">
+            <option value="male">男</option>
+            <option value="female">女</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="phoneInput" class="block mb-1 text-sm font-medium">联系电话</label>
+          <input id="phoneInput" type="tel" class="input-box w-full" />
+        </div>
+
+        <div>
+          <label for="profileIdentity" class="block mb-1 text-sm font-medium">身份</label>
+          <select id="profileIdentity" class="input-box w-full">
+            <option value="student">学生</option>
+            <option value="teacher">老师</option>
+            <option value="visitor">访客</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="profileAddress" class="block mb-1 text-sm font-medium">地址</label>
+          <input id="profileAddress" type="text" class="input-box w-full" />
+        </div>
+
+        
+
+        <div id="profileMessage" class="text-sm text-red-500"></div>
+
+        <button type="submit" class="btn-primary mt-4">保存更改</button>
+      </form>
+    </div>
+
+
+    <!-- Tab 2: Avatar -->
+    <div v-show="currentTab === 'avatar'">
+      <h2 class="text-2xl font-bold mb-4">修改头像</h2>
+      <input type="file" @change="handleAvatarUpload" accept="image/*" />
+      <img id="avatarPreview" class="w-32 h-32 rounded-full mt-4 avatar-preview" />
+    </div>
 
       <!-- Tab 3: Password -->
-      <div v-if="currentTab === 'password'">
-        <h2 class="text-2xl font-bold mb-4">修改密码</h2>
-        <input type="password" placeholder="新密码" class="input-box" />
-        <input type="password" placeholder="确认密码" class="input-box mt-2" />
-        <button class="btn-primary mt-4">提交</button>
-      </div>
+    <div v-show="currentTab === 'password'">
+      <h2 class="text-2xl font-bold mb-4">修改密码</h2>
+      <input id="oldPassword" type="password" placeholder="当前密码" class="input-box mt-2" />
+      <input id="newPassword" type="password" placeholder="新密码" class="input-box" />
+      <input id="confirmPassword" type="password" placeholder="确认密码" class="input-box mt-2" />
+      <div id="passwordMessage" class="text-sm text-red-500 mt-1"></div>
+      <button class="btn-primary mt-4" @click="handlePasswordChange">提交</button>
+    </div>
     </div>
   </div>
 </main>
