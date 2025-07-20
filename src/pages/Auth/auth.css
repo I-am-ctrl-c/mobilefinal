@@ -1,160 +1,384 @@
 
 /* -------- 登录页整体容器 -------- */
 .login-wrapper {
-  display: flex;
   min-height: 100vh;
   background-image: url('/src/assets/images/LoginBG1.jpg');
   background-size: cover;
+  background-position: center;
   font-family: 'Noto Sans', sans-serif;
   color: var(--font-10);
   position: relative;
-}
-
-/* 可选：白色蒙层提升可读性 */
-.login-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.85); /* 深色模式可变为 rgba(0, 0, 0, 0.5) */
-  backdrop-filter: blur(2px);
-  z-index: 0;
-}
-
-.dark .login-wrapper::before {
-  background: rgba(0, 0, 0, 0.5);
-}
-
-/* -------- 左边 Logo 区域 -------- */
-.login-left,
-.login-right {
-  flex: 1;
-  position: relative;
-  z-index: 1;
-}
-
-.login-left {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.login-logo {
-  max-width: 60%;
-  height: auto;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
-}
-
-/* -------- 右边表单区域 -------- */
-.login-right {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
 }
 
-/* 表单整体卡片 */
-.login-form {
+/* 背景蒙层 */
+.login-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4));
+  backdrop-filter: blur(3px);
+  z-index: 0;
+}
+
+/* 背景装饰 */
+.background-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 420px;
-  background-color: var(--bg-1);
-  padding: 2.5rem;
-  border-radius: 16px;
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.floating-elements {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.floating-icon {
+  position: absolute;
+  font-size: 2.5rem;
+  opacity: 0.3;
+  animation: float 8s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.floating-icon:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+.floating-icon:nth-child(2) { top: 25%; right: 15%; animation-delay: 1.5s; }
+.floating-icon:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 3s; }
+.floating-icon:nth-child(4) { bottom: 20%; right: 25%; animation-delay: 4.5s; }
+.floating-icon:nth-child(5) { top: 60%; left: 15%; animation-delay: 6s; }
+.floating-icon:nth-child(6) { top: 10%; left: 70%; animation-delay: 7.5s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+  25% { transform: translateY(-25px) rotate(5deg); opacity: 0.5; }
+  50% { transform: translateY(-15px) rotate(-3deg); opacity: 0.7; }
+  75% { transform: translateY(-20px) rotate(2deg); opacity: 0.6; }
+}
+
+/* 主要内容区域 */
+.main-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* 品牌区域 */
+.brand-section {
+  text-align: center;
+  margin-bottom: 1rem;
+  /* 移除向右偏移，设置为居中 */
+  transform: translateX(0);
+}
+
+.logo-container {
+  margin-bottom: 1rem;
+  /* 给logo容器单独设置位置，不影响下面的文字 */
+  transform: translateX(85px);
+}
+
+.logo-image {
+  max-width: 120px;
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+  transition: all 0.3s ease;
+  animation: logoFloat 4s ease-in-out infinite;
+}
+
+.logo-image:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.6));
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.brand-text {
+  margin-top: 1rem;
+}
+
+.brand-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  /* 修复颜色适配问题 - 使用CSS变量确保在白天和夜晚模式下都能正常显示 */
+  background: linear-gradient(135deg, var(--font-10), var(--decorPu-1));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  letter-spacing: 0.1em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.brand-subtitle {
+  font-size: 1.2rem;
+  /* 修复颜色适配问题 - 使用CSS变量 */
+  color: var(--font-8);
+  margin: 0.5rem 0 0 0;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+/* 登录卡片 */
+.auth-card {
+  /* 修复颜色适配问题 - 使用CSS变量 */
+  background: var(--bg-1);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   border: 1px solid var(--bg-4);
-  backdrop-filter: blur(4px);
+  max-width: 450px;
+  width: 100%;
   transition: all 0.3s ease;
 }
 
-.dark .login-form {
-  background-color: var(--bg-3);
-  border-color: var(--bg-6);
+.auth-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
 }
 
-/* 表单标题 */
+.card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
 .form-title {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--font-10);
-  margin-bottom: 1.5rem;
-  text-align: center;
+  margin: 0 0 0.5rem 0;
 }
 
-/* 输入区域样式 */
-.input-group {
-  margin-bottom: 1rem;
+.form-subtitle {
+  font-size: 1rem;
+  color: var(--font-8);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* 表单样式 */
+.auth-form {
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .input-group label {
   font-size: 0.9rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: var(--font-8);
+  font-weight: 600;
+  color: var(--font-9);
+  margin-left: 0.5rem;
 }
 
-.input-group input,
-.input-group select {
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--bg-5);
-  border-radius: 8px;
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 2px solid var(--bg-5);
+  border-radius: 12px;
   font-size: 1rem;
-  background-color: var(--bg-2);
+  /* 修复颜色适配问题 - 使用CSS变量 */
+  background: var(--bg-2);
   color: var(--font-10);
   outline: none;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
 }
 
-.input-group input:focus,
-.input-group select:focus {
-  border-color: var(--decorPu-5);
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+  border-color: var(--decorPu-1);
+  background: var(--bg-1);
+  box-shadow: 0 0 0 4px rgba(var(--decorPu-1-rgb), 0.1);
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  font-size: 1.2rem;
+  color: var(--font-7);
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.input-wrapper input:focus + .input-icon,
+.input-wrapper select:focus + .input-icon {
+  color: var(--decorPu-1);
+}
+
+.toggle-password {
+  position: absolute;
+  right: 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--font-7);
+  transition: color 0.3s ease;
+  user-select: none;
+}
+
+.toggle-password:hover {
+  color: var(--decorPu-1);
+}
+
+.toggle-password.visible {
+  color: var(--decorPu-1);
 }
 
 /* 登录按钮 */
 .auth-btn {
   margin-top: 1rem;
   width: 100%;
-  padding: 0.75rem;
-  background-color: var(--decorPu-5);
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--decorPu-1), var(--decorPu-3));
   color: white;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.auth-btn:hover::before {
+  left: 100%;
 }
 
 .auth-btn:hover {
-  background-color: var(--decorPu-6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(var(--decorPu-1-rgb), 0.3);
 }
 
-/* 切换登录/注册提示 */
-.toggle-link {
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: var(--font-7);
+.btn-icon {
+  transition: transform 0.3s ease;
+}
+
+.auth-btn:hover .btn-icon {
+  transform: translateX(4px);
+}
+
+/* 表单底部 */
+.form-footer {
+  margin-top: 2rem;
   text-align: center;
+}
+
+.toggle-link {
+  font-size: 0.9rem;
+  /* 调整切换文字颜色，使其更显眼 */
+  color: var(--font-6);
+  margin: 0 0 1rem 0;
 }
 
 .auth-toggle-link {
-  color: var(--decorPu-5);
-  font-weight: 600;
+  /* 使用更亮更显眼的颜色 */
+  color: #3b82f6;
+  font-weight: 700;
   cursor: pointer;
   margin-left: 0.25rem;
-  transition: color 0.3s;
+  transition: all 0.3s ease;
+  text-decoration: underline;
+  text-decoration-color: #3b82f6;
+  text-underline-offset: 2px;
 }
 
 .auth-toggle-link:hover {
-  color: var(--decorPu-6);
+  color: #1d4ed8;
+  text-decoration-color: #1d4ed8;
+  transform: translateY(-1px);
 }
 
-/* 错误信息提示 */
 .form-message {
-  margin-top: 1rem;
-  color: red;
+  color: #ef4444;
   font-size: 0.9rem;
+  margin: 0;
+  min-height: 1.2rem;
+}
+
+/* 激励文字区域 */
+.motivational-section {
   text-align: center;
+  margin-top: 2rem;
+}
+
+.motivational-text {
+  position: relative;
+  height: 80px;
+  overflow: hidden;
+}
+
+.text-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.text-slide.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.text-slide h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  /* 修复颜色适配问题 - 使用CSS变量 */
+  color: var(--font-9);
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.text-slide p {
+  font-size: 1rem;
+  /* 修复颜色适配问题 - 使用CSS变量 */
+  color: var(--font-7);
+  margin: 0;
+  font-weight: 400;
 }
 
 /* 隐藏输入项 */
@@ -162,62 +386,78 @@
   display: none;
 }
 
-/* 响应式优化 */
+/* 响应式设计 */
 @media (max-width: 768px) {
   .login-wrapper {
-    flex-direction: column;
+    padding: 1rem;
   }
 
-.login-left {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-image: url('src\assets\images\xgymlogo.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  .main-content {
+    gap: 1.5rem;
+  }
+
+  .brand-section {
+    /* 在所有屏幕尺寸下都保持居中 */
+    transform: translateX(0);
+  }
+
+  .brand-title {
+    font-size: 2.5rem;
+  }
+
+  .brand-subtitle {
+    font-size: 1rem;
+  }
+
+  .auth-card {
+    padding: 2rem;
+    max-width: 100%;
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+  }
+
+  .floating-icon {
+    font-size: 2rem;
+  }
 }
 
-  .login-right {
+@media (max-width: 480px) {
+  .login-wrapper {
+    padding: 0.5rem;
+  }
+
+  .auth-card {
     padding: 1.5rem;
   }
 
-  .login-form {
-    max-width: 90%;
-    padding: 2rem;
+  .brand-section {
+    /* 保持居中显示 */
+    transform: translateX(0);
   }
-  .password-group {
-  position: relative;
-}
 
-.password-wrapper {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
+  .brand-title {
+    font-size: 2rem;
+  }
 
-.password-wrapper input {
-  flex: 1;
-  padding-right: 2rem;
-}
+  .logo-image {
+    max-width: 100px;
+  }
 
-.toggle-password {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.1rem;
-  cursor: pointer;
-  color: var(--font-6);
-  transition: color 0.2s;
-}
+  .floating-elements {
+    display: none;
+  }
 
-.toggle-password:hover {
-  color: var(--font-9);
-}
+  .motivational-text {
+    height: 60px;
+  }
 
-.toggle-password.visible {
-  color: var(--decorPu-6);
-}
+  .text-slide h3 {
+    font-size: 1.1rem;
+  }
 
+  .text-slide p {
+    font-size: 0.9rem;
+  }
 }
