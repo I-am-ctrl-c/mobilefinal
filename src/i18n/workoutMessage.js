@@ -40,7 +40,8 @@ export default {
     normal: 'Normal',
     overweight: 'Overweight',
     obesity:'Obesity',
-    weekIn:'Week In'
+    weekIn:'Week In',
+    Sentence:'Keep up the pace, gradually move toward higher goals, and build a stronger self with every step.'
   },
   zh: {
     date: '日期',
@@ -81,6 +82,7 @@ export default {
     normal: '正常',
     overweight: '超重',
     obesity:'肥胖',
-    weekIn:'周'
+    weekIn:'周',
+    Sentence:'保持节奏，逐步迈向更高目标，每一步都在构建更强的自己。'
   }
 }
