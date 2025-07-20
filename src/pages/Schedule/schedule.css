@@ -2,87 +2,14 @@
   background-color: var(--bg-2);
   min-height: 100vh;
   padding-bottom: 3rem;
-  /* allow body scrolling instead of internal container */
-  overflow-y: visible;
-}
-
-.schedule-title {
-  margin-top: 1rem;
-  color: var(--font-10);
-}
-
-.no-bookings {
-  font-size: 1.25rem;
-  color: var(--font-10);
-}
-
-.schedule-table {
-  border-collapse: collapse;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.table-header th {
-  background-color: var(--decorPu-1);
-  color: white;
-  font-weight: 600;
-}
-
-.schedule-table td[colspan="5"] {
-  font-size: 1.25rem;
-  color: var(--font-10);
-  text-align: center;
-  padding: 2rem 1rem;
-}
-.schedule-table th {
-  padding: 0.75rem 1rem;
-  color: var(--font-10);
-  vertical-align: middle;
-}
-
-.schedule-table tr:nth-child(even) {
-  background-color: var(--bg);
-}
-
-.cancel-btn {
-  background-color: var(--decorPu-4);
-  color: white;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-.cancel-btn:hover {
-  background-color: var(--decorPu-5);
-}
-
-.restore-btn {
-  background-color: var(--contrast);
-  color: white;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-.restore-btn:hover {
-  background-color: var(--font-8);
-}
-
-.pagination-controls .pagination-btn {
-  padding: 0.5rem 1.2rem;
-  border-radius: 6px;
-  background-color: var(--decorPu-3);
-  color: white;
-  transition: background 0.3s;
-}
-
-.pagination-controls .pagination-btn:hover {
-  background-color: var(--decorPu-5);
+  /* 确保内容足够时页面可以滚动 */
+  overflow-y: auto;
 }
 
 .schedule-hero {
   margin-top: 1.5rem; /* 与 Booking 页保持一致 (mt-6) */
-  background-image: url('/src/assets/images/schedule-BG.jpg');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                   url('/src/assets/images/schedule-BG.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -92,7 +19,6 @@
   align-items: center;
   justify-content: center;
 }
-
 
 .schedule-hero .overlay {
   background-color: rgba(0, 0, 0, 0.4); /* 黑色遮罩 */
@@ -106,7 +32,450 @@
 .schedule-hero .hero-title {
   color: white;
   font-size: 3rem;
-  font-weight: bold;
+  font-weight: 800;
+  letter-spacing: 0.15em;
   text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(0,0,0,0.7);
 }
 
+/* 表格样式 */
+.schedule-table {
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--bg-3);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.table-header th {
+  background-color: var(--decorPu-1);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1rem;
+  text-align: left;
+}
+
+.schedule-table td {
+  padding: 1rem;
+  color: var(--font-9);
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* 隔行颜色 */
+.schedule-table tr:nth-child(even) {
+  background-color: rgba(255,255,255,0.02);
+}
+
+/* 按钮样式 */
+.cancel-btn {
+  background-color: var(--decorPu-4);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background-color: var(--decorPu-5);
+}
+
+.cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.restore-btn {
+  background-color: var(--contrast);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.restore-btn:hover:not(:disabled) {
+  background-color: #44bd32;
+}
+
+.restore-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 分页样式 */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 1.5rem;
+}
+
+.pagination-controls .pagination-btn {
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  background-color: var(--decorPu-3);
+  color: white;
+  transition: background 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.pagination-controls .pagination-btn:hover:not(:disabled) {
+  background-color: var(--decorPu-5);
+}
+
+.pagination-controls .pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  font-size: 1rem;
+  color: var(--font-8);
+  font-weight: 500;
+}
+
+/* 筛选栏样式 */
+.filter-container {
+  margin: 2rem auto;
+}
+
+.filter-bar {
+  background: var(--bg-3);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.filter-bar:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.filter-btn {
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background-color: var(--bg-2);
+  color: var(--font-9);
+}
+
+.filter-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background-color: var(--bg);
+}
+
+/* 状态特定的颜色 */
+.filter-btn.active {
+  background-color: var(--decorPu-1) !important;
+  color: white !important;
+}
+
+/* 不同状态的颜色变体 */
+.filter-btn[data-status="active"].active {
+  background-color: #10b981 !important; /* 绿色 */
+}
+
+.filter-btn[data-status="completed"].active {
+  background-color: #3b82f6 !important; /* 蓝色 */
+}
+
+.filter-btn[data-status="cancelled"].active {
+  background-color: #ef4444 !important; /* 红色 */
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .filter-bar {
+    padding: 1rem;
+  }
+
+  .filter-bar .flex {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .filter-btn {
+    min-width: 70px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .schedule-hero .hero-title {
+    font-size: 2rem;
+  }
+}
+
+/* 分析图表样式 */
+.analytics-container {
+  margin: 3rem auto;
+}
+
+.analytics-header h2 {
+  background: linear-gradient(135deg, var(--decorPu-1), var(--decorPu-3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.period-selector {
+  margin: 2rem 0;
+}
+
+.period-btn {
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.period-btn:hover {
+  transform: translateY(-1px);
+}
+
+.analytics-grid {
+  margin-top: 2rem;
+}
+
+.analytics-card {
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.analytics-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  border-color: var(--decorPu-1);
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 1rem;
+}
+
+.icon-wrapper {
+  transition: all 0.3s ease;
+}
+
+.analytics-card:hover .icon-wrapper {
+  transform: scale(1.1);
+}
+
+/* 设备统计样式 */
+.equipment-item {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.2s ease;
+}
+
+.equipment-item:hover {
+  background-color: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.rank-badge {
+  transition: all 0.3s ease;
+}
+
+.equipment-item:hover .rank-badge {
+  transform: scale(1.1);
+}
+
+/* 时间偏好样式 */
+.time-slot {
+  transition: all 0.3s ease;
+}
+
+.progress-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: relative;
+  transition: width 0.8s ease;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 身体部位样式 */
+.body-part-item {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.2s ease;
+}
+
+.body-part-item:hover {
+  background-color: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.part-icon {
+  transition: all 0.3s ease;
+}
+
+.body-part-item:hover .part-icon {
+  transform: scale(1.2);
+}
+
+/* 每周活动图表样式 */
+.weekly-chart {
+  padding: 1rem 0;
+}
+
+.chart-container {
+  position: relative;
+}
+
+.chart-bar {
+  flex: 1;
+  transition: all 0.3s ease;
+}
+
+.chart-bar:hover {
+  transform: scale(1.05);
+}
+
+.bar {
+  min-width: 20px;
+  transition: all 0.5s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, transparent, rgba(255,255,255,0.2));
+}
+
+.bar-value {
+  font-weight: 600;
+  color: var(--decorPu-1);
+}
+
+/* 总结统计样式 */
+.summary-stats .stat-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.2s ease;
+}
+
+.summary-stats .stat-item:hover {
+  background-color: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.stat-value {
+  transition: all 0.3s ease;
+}
+
+.summary-stats .stat-item:hover .stat-value {
+  transform: scale(1.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analytics-card.lg\\:col-span-2 {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-card.lg\\:col-span-2 {
+    grid-column: span 1;
+  }
+
+  .period-btn {
+    min-width: 80px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .analytics-header h2 {
+    font-size: 2rem;
+  }
+
+  .chart-container {
+    height: 24px;
+  }
+
+  .bar {
+    min-width: 16px;
+  }
+}
+
+/* 空状态样式 */
+.empty-state {
+  padding: 3rem 1rem;
+}
+
+.empty-icon {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.btn-primary {
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
