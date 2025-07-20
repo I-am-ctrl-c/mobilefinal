@@ -9,12 +9,12 @@
 
 </head>
 
-<NavBar />
+<NavBar id="mainNav" />
 <main class="pt-16">
 <div class="w-full aspect-[21/5] relative mt-6 overflow-hidden">
   <img :src="workoutImg" class="w-full h-full object-cover" alt="Workout Image" />
   <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
-    <h2 class="text-white text-4xl font-bold px-6 py-2 rounded">Your Workout Recording</h2>
+    <h2 class="text-white text-4xl font-bold px-6 py-2 rounded">{{ t('title') }}</h2>
   </div>
 </div>
 
@@ -22,7 +22,7 @@
 <div class="max-w-7xl mx-auto mt-8 px-4">
   <div class="flex items-center gap-3 relative">
     <div>
-      <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">Date</p>
+      <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">{{ t('date') }}</p>
       <h2 class="text-3xl md:text-5xl font-bold leading-relaxed">
         {{ selectedDateDisplay }}
       </h2>
@@ -67,7 +67,7 @@
  <div class="max-w-7xl mx-auto mt-8 mb-12 px-4 flex flex-wrap gap-6 justify-between h-[330px]">
   <!-- 替换原 Progress 框为圆环 -->
   <div class="info-box h-full">
-    <h2 class="bmi-value-display-strong text-center">Calories</h2>
+    <h2 class="bmi-value-display-strong text-center">{{ t('calories') }}</h2>
     <div class="flex flex-col items-center">
       <div
         id="calorieRingContainer"
@@ -89,7 +89,7 @@
 <div class="info-box flex flex-col h-full" id="activity-box">
     <div class="relative w-full mb-4 flex justify-center items-center">
        <!-- 复用 BMI 标题样式 -->
-      <h2 class="bmi-value-display-strong">Activities</h2>
+      <h2 class="bmi-value-display-strong">{{ t('activities') }}</h2>
       <!-- 加号按钮固定在右上角 -->
       <button
          id="addActivityBtn"
@@ -105,15 +105,15 @@
 <!-- Add Activity Modal -->
 <div id="activityModal" class="activity-modal hidden">
   <div class="activity-modal-content activity-modal-large">
-    <h2 class="text-xl font-bold text-center mb-4">Add Activity</h2>
+    <h2 class="text-xl font-bold text-center mb-4"> {{ editingCard ? t('editActivity') : t('addActivity') }}</h2>
 
-    <label for="activityName">Name</label>
+    <label for="activityName">{{ t('name') }}</label>
     <input type="text" id="activityName" class="modal-input" placeholder="e.g. Running" />
 
-    <label for="activityDuration">Duration (minutes)</label>
+    <label for="activityDuration">{{ t('duration') }}</label>
     <input type="number" id="activityDuration" class="modal-input" placeholder="e.g. 30" />
 
-    <label>Choose an icon</label>
+    <label>{{ t('chooseIcon') }}</label>
     <div class="icon-grid">
       <div class="icon-btn icon-option" data-icon="🏃">🏃</div>
       <div class="icon-btn icon-option" data-icon="🧘">🧘</div>
@@ -124,9 +124,9 @@
     </div>
 
     <div class="flex justify-end gap-4 mt-4">
-          <button id="deleteActivity" class="modal-delete hidden text-red-600">Delete</button>
-          <button id="cancelActivity" class="modal-cancel">Cancel</button>         
-           <button id="saveActivity" class="modal-save">Save</button>
+          <button id="deleteActivity" class="modal-delete hidden text-red-600">{{ t('delete') }}</button>
+          <button id="cancelActivity" class="modal-cancel">{{ t('cancel') }}</button>         
+           <button id="saveActivity" class="modal-save">{{ t('save') }}</button>
     </div>
   </div>
 </div>
@@ -134,17 +134,17 @@
 <!-- ✅ 编辑卡路里弹窗 -->
 <div id="calorieModal" class="activity-modal hidden">
   <div class="activity-modal-content activity-modal-large">
-    <h2 class="text-xl font-bold text-center mb-4">Edit Calories</h2>
+    <h2 class="text-xl font-bold text-center mb-4">{{ editingCard ? t('editActivity') : t('addActivity') }}</h2>
 
-    <label for="editCurrentCalories">Current Calories</label>
+    <label for="editCurrentCalories">{{ t('currentCalorie') }}</label>
     <input type="number" id="editCurrentCalories" class="modal-input" placeholder="e.g. 150" />
 
-    <label for="editGoalCalories">Goal Calories</label>
+    <label for="editGoalCalories">{{ t('goalCalorie') }}</label>
     <input type="number" id="editGoalCalories" class="modal-input" placeholder="e.g. 500" />
 
     <div class="flex justify-end gap-4 mt-4">
-      <button id="cancelCalorieEdit" class="modal-cancel">Cancel</button>
-      <button id="saveCalorieEdit" class="modal-save">Save</button>
+      <button id="cancelCalorieEdit" class="modal-cancel">{{ t('cancel') }}</button>
+      <button id="saveCalorieEdit" class="modal-save">{{ t('save') }}</button>
     </div>
   </div>
 </div>
@@ -159,16 +159,16 @@
 <div class="info-box text-center flex flex-col items-center gap-8 pt-6 h-full" id="bmi-box">
 
   <!-- BMI 数值 -->
-  <p class="bmi-value-display-strong" id="bmiResult">Your BMI: --</p>
+  <p class="bmi-value-display-strong" id="bmiResult"> {{ t('yourBMI') }}</p>
 
   <!-- 输入 -->
   <div class="flex gap-6">
     <div class="bmi-input-group">
-      <label class="bmi-label">cm</label>
+      <label class="bmi-label">{{ t('cm') }}</label>
       <input id="heightInput" type="number" class="bmi-input" />
     </div>
     <div class="bmi-input-group">
-      <label class="bmi-label">kg</label>
+      <label class="bmi-label">{{ t('kg') }}</label>
       <input id="weightInput" type="number" class="bmi-input" />
     </div>
   </div>
@@ -221,13 +221,13 @@
     <div class="space-y-8">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">Achievement</p>
+          <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">{{ t('achievement') }}</p>
           <h2 class="text-3xl md:text-5xl font-bold leading-relaxed">
-            Week in {{ weekDisplay }}
+            {{ t('weekIn') }}{{ weekDisplay }}
           </h2>
         </div>
         <div class="flex flex-col items-end space-y-2">
-          <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">Change Week</p>
+          <p class="text-sm text-decorPu-5 uppercase font-semibold tracking-wide">{{ t('changeWeek') }}</p>
           <div class="flex space-x-3">
           <button
      @click="prevWeek"
@@ -297,21 +297,23 @@
 
 
 
-      <button class="gradient-button">READ MORE</button>
+      <button @click="scrollToCharts" class="gradient-button">
+        {{ t('readMore') }}
+        </button>
     </div>
   </div>
 
 
 <!-- —— Weekly Charts —— -->
-<section class="max-w-7xl mx-auto mt-12 px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+<section id="weeklyCharts" class="max-w-7xl mx-auto mt-12 px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
   <div class="info-box p-4">
-    <h3 class="text-xl font-semibold mb-2">Weekly Calorie Burn</h3>
+    <h3 class="text-xl font-semibold mb-2">{{ t('weeklyCalorieBurn') }}</h3>
     <div class="chart-container">
       <canvas id="calorieBarChart" width="600" height="240"></canvas>
     </div>
   </div>
   <div class="info-box p-4">
-    <h3 class="text-xl font-semibold mb-2">Weekly Weight Trend</h3>
+    <h3 class="text-xl font-semibold mb-2"> {{ t('weeklyWeightTrend') }}</h3>
     <div class="chart-container">
       <canvas id="weightLineChart" width="600" height="240"></canvas>
     </div>
@@ -367,13 +369,13 @@
   <table class="w-full table-fixed border-collapse text-center calendar-table">
     <thead>
       <tr>
-        <th class="py-2 font-semibold">Mon</th>
-        <th class="py-2 font-semibold">Tue</th>
-        <th class="py-2 font-semibold">Wed</th>
-        <th class="py-2 font-semibold">Thu</th>
-        <th class="py-2 font-semibold">Fri</th>
-        <th class="py-2 font-semibold">Sat</th>
-        <th class="py-2 font-semibold">Sun</th>
+        <th class="py-2 font-semibold">{{ t('mon') }}</th>
+        <th class="py-2 font-semibold">{{ t('tue') }}</th>
+        <th class="py-2 font-semibold">{{ t('wed') }}</th>
+        <th class="py-2 font-semibold">{{ t('thu') }}</th>
+        <th class="py-2 font-semibold">{{ t('fri') }}</th>
+        <th class="py-2 font-semibold">{{ t('sat') }}</th>
+        <th class="py-2 font-semibold">{{ t('sun') }}</th>
       </tr>
     </thead>
     <tbody>
@@ -408,17 +410,17 @@
 <!-- ✅ 编辑卡路里弹窗 -->
 <div v-if="showCalorieEditor" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white dark:bg-black rounded-xl p-6 w-80 shadow-xl">
-    <h3 class="text-lg font-bold text-center mb-4 text-font-10">Edit Calories</h3>
+    <h3 class="text-lg font-bold text-center mb-4 text-font-10">{{ t('editCalorie') }}</h3>
     
-    <label class="block mb-2 text-sm text-font-10">Current Calories</label>
+    <label class="block mb-2 text-sm text-font-10">{{ t('currentCalorie') }}</label>
     <input v-model="calorieEditorCurrent" type="number" class="w-full rounded p-2 mb-4 bg-gray-100 dark:bg-gray-800 text-font-10" />
     
-    <label class="block mb-2 text-sm text-font-10">Goal Calories</label>
+    <label class="block mb-2 text-sm text-font-10">{{ t('goalCalorie') }}</label>
     <input v-model="calorieEditorGoal" type="number" class="w-full rounded p-2 mb-4 bg-gray-100 dark:bg-gray-800 text-font-10" />
     
     <div class="flex justify-between">
-      <button @click="showCalorieEditor = false" class="px-4 py-1 rounded bg-gray-300 dark:bg-gray-700 text-font-10">Cancel</button>
-      <button @click="saveCalorieEdit" class="px-4 py-1 rounded bg-decorPu-5 text-white">Save</button>
+      <button @click="showCalorieEditor = false" class="px-4 py-1 rounded bg-gray-300 dark:bg-gray-700 text-font-10">{{ t('cancel') }}</button>
+      <button @click="saveCalorieEdit" class="px-4 py-1 rounded bg-decorPu-5 text-white">{{ t('save') }}</button>
     </div>
   </div>
 </div>

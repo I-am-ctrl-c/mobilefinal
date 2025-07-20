@@ -358,10 +358,35 @@
   padding: 0.6rem;         /* 单元格内边距 */
 }
 /* —— 日历整体高度限制 —— */
+/* 默认不显示滚动条，禁止滚动 */
 .calendar-container {
-  max-height: 800px;  /* 整个日历最多高 600px，超出自动滚动 */
-  overflow-y: auto;
+  max-height: 800px;
+  overflow-y: hidden;
+  /* Firefox */
+  scrollbar-width: none;
 }
+/* 悬停时才允许滚动并显示滚动条 */
+.calendar-container:hover {
+  overflow-y: auto;
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--font-6) transparent;
+}
+/* Chrome/Safari/WebKit */
+.calendar-container::-webkit-scrollbar {
+  width: 0;
+}
+.calendar-container:hover::-webkit-scrollbar {
+  width: 8px;
+}
+.calendar-container:hover::-webkit-scrollbar-thumb {
+  background-color: var(--font-6);
+  border-radius: 4px;
+}
+.calendar-container:hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 
 /* 折线柱状图表 */
 .chart-container {
