@@ -8,9 +8,27 @@ import workoutImg2 from '../../assets/images/Workout2.jpg'
 import './workout.css'
 import FirebaseService from '../../services/firebaseService.js' // still used for write operations
 import WorkoutMetrics from '../../services/workoutMetricsService.js'
+import './workout.css'
 
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import Chart from 'chart.js/auto'
+
+let calorieChart, weightChart;
+function updateChartTheme() {
+  const axisColor = getComputedStyle(document.documentElement)
+                       .getPropertyValue('--contrast-2')
+                       .trim();
+  if (calorieChart) {
+    calorieChart.options.scales.x.ticks.color = axisColor;
+    calorieChart.options.scales.y.ticks.color = axisColor;
+    calorieChart.update();
+  }
+  if (weightChart) {
+    weightChart.options.scales.x.ticks.color = axisColor;
+    weightChart.options.scales.y.ticks.color = axisColor;
+    weightChart.update();
+  }
+}
 
 export default {
   name: 'WorkoutPage',
@@ -29,9 +47,6 @@ export default {
     const selectedCalories = ref({ current: 0, goal: 2000 })
     const weeklyTotals     = ref({ current: 0, goal: 0 })
 
-    // 图表实例引用
-    let calorieChart = null
-    let weightChart  = null
 
     // —— 周列表 & 切换逻辑 ——
     const generateWeekRanges = () => {
@@ -68,6 +83,16 @@ const prevMonth = () => {
   currentMonth.value = new Date(y, m - 1, 1)
 }
 const nextMonth = () => {
+  // 如果已经是本月，就别往后跳了
+  const now = new Date()
+  const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  if (
+    currentMonth.value.getFullYear() === firstOfThisMonth.getFullYear() &&
+    currentMonth.value.getMonth()    === firstOfThisMonth.getMonth()
+  ) {
+    return
+  }
+  // 否则正常跳到下一个月
   const y = currentMonth.value.getFullYear()
   const m = currentMonth.value.getMonth()
   currentMonth.value = new Date(y, m + 1, 1)
@@ -251,6 +276,8 @@ const topActivities = ref([])
     watch(selectedDate, loadSelectedDateStats)
     watch(currentIndex, loadWeekStats)
 
+    
+
     // —— Monthly Calendar ——
     // Default to the current calendar month
     const today = new Date()
@@ -326,30 +353,92 @@ watch(currentMonth, async () => {
       setupActivityModal()
       document.getElementById('calorieRingContainer')?.addEventListener('click', openCalorieEditor)
 
-
+      const styles     = getComputedStyle(document.documentElement);
+      const axisColor  = styles.getPropertyValue('--font-10').trim();
       // 等 DOM 真正挂载后再绘制图表
       nextTick(() => {
         const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
         const dataCal = new Array(7).fill(0)
         const dataWgt = new Array(7).fill(null)
 
+        
+
         // 柱状图
         calorieChart = new Chart(
-          document.getElementById('calorieBarChart').getContext('2d'),
-          { type:'bar',
-            data:{ labels, datasets:[{ data:dataCal, backgroundColor:'rgba(127,90,255,0.6)' }] },
-            options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } }, plugins:{ legend:{ display:false } } }
-          }
-        )
+                document.getElementById('calorieBarChart').getContext('2d'),
+                {
+                  type: 'bar',
+                  data: {
+                    labels,
+                    datasets: [{
+                      data: dataCal,
+                      backgroundColor: 'rgba(127,90,255,0.6)'
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      x: {
+                        ticks: { color: axisColor },
+                        grid:  { display:false }
+                      },
+                      y: {
+                        beginAtZero: true,
+                        ticks: { color: axisColor },
+                        grid:  { display:false }
+                      }
+                    },
+                    plugins: { legend: { display: false } }
+                  }
+                }
+              )
 
         // 折线图
         weightChart = new Chart(
-          document.getElementById('weightLineChart').getContext('2d'),
-          { type:'line',
-            data:{ labels, datasets:[{ data:dataWgt, borderColor:'rgba(127,90,255,1)', borderWidth:2, tension:0.3, pointRadius:4 }] },
-            options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:false } }, plugins:{ legend:{ display:false } } }
-          }
-        )
+                document.getElementById('weightLineChart').getContext('2d'),
+                {
+                  type: 'line',
+                  data: {
+                    labels,
+                    datasets: [{
+                      data: dataWgt,
+                      borderColor: 'rgba(127,90,255,1)',
+                      borderWidth: 2,
+                      tension: 0.3,
+                      pointRadius: 4
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      x: {
+                        ticks: { color: axisColor },
+                        grid:  { display:false }
+                      },
+                      y: {
+                        beginAtZero: false,
+                        ticks: { color: axisColor },
+                        grid:  { display:false }
+                      }
+                    },
+                    plugins: { legend: { display: false } }
+                  }
+                }
+              )
+              updateChartTheme();
+
+              // ④ 监听 <html> 的 class 变化（dark/light 切换时触发）
+              const observer = new MutationObserver(muts => {
+                muts.forEach(m => {
+                  if (m.attributeName === 'class') {
+                    updateChartTheme();
+                  }
+                });
+              });
+              observer.observe(document.documentElement, { attributes: true });
+         
 
         // 初始加载
         loadSelectedDateStats()
@@ -430,6 +519,8 @@ function renderCalorieRings(defaultSize = 240, defaultFontRatio = 0.16) {
   })
 }
 
+
+
 function setupBMICalculator() {
   const h = document.getElementById('heightInput');
   const w = document.getElementById('weightInput');
@@ -500,74 +591,150 @@ function setupBMICalculator() {
   window.triggerBMIUpdate = update;
 }
 
+// src/pages/Workout/index.js
+
 function setupActivityModal() {
   let selectedIcon = "🏃";
+  let editingCard = null;
 
-  const openBtn = document.getElementById("addActivityBtn");
-  const modal = document.getElementById("activityModal");
-  const cancelBtn = document.getElementById("cancelActivity");
-  const saveBtn = document.getElementById("saveActivity");
-
-  const nameInput = document.getElementById("activityName");
+  const openBtn       = document.getElementById("addActivityBtn");
+  const modal         = document.getElementById("activityModal");
+  const cancelBtn     = document.getElementById("cancelActivity");
+  const deleteBtn     = document.getElementById("deleteActivity"); 
+  const saveBtn       = document.getElementById("saveActivity");
+  const nameInput     = document.getElementById("activityName");
   const durationInput = document.getElementById("activityDuration");
-  const iconOptions = document.querySelectorAll(".icon-option");
-  const list = document.getElementById("activityList");
+  const iconOptions   = document.querySelectorAll(".icon-option");
+  const list          = document.getElementById("activityList");
+  const titleEl       = modal.querySelector("h2");  // 弹窗标题
 
-  openBtn.onclick = () => modal.classList.remove("hidden");
-  cancelBtn.onclick = () => modal.classList.add("hidden");
+  // —— 打开“添加”模式 ——
+  openBtn.onclick = () => {
+    editingCard = null;
+    titleEl.textContent = "Add Activity";
+    nameInput.value     = "";
+    durationInput.value = "";
+    selectedIcon        = "🏃";
+    iconOptions.forEach(b => b.classList.remove("ring-2", "selected"));
+    modal.classList.remove("hidden");
+  };
 
+  // —— 取消/关闭 ——
+  cancelBtn.onclick = () => {
+    modal.classList.add("hidden");
+    editingCard = null;
+  };
+
+    // —— 点击 Delete —— 
+  deleteBtn.onclick = async () => {
+    if (!editingCard) return;
+    // 从 DOM 中移除
+    editingCard.remove();
+    // 同步剩余活动到 Firestore
+    const remaining = Array.from(list.querySelectorAll(".activity-card")).map(c => {
+      const icon = c.querySelector(".icon").textContent;
+      const spans = c.querySelectorAll("span");
+      const name = spans[1].textContent.trim();
+      const dur  = parseInt(spans[spans.length-1].textContent);
+      return { name, duration: dur, icon };
+    });
+    try {
+      const uid     = window.currentUserId || "demoUser";
+      const dateStr = document.querySelector('input[type="date"]').value;
+      await FirebaseService.getInstance()
+        .updateActivities(uid, new Date(dateStr), remaining);
+    } catch (err) {
+      console.error("Failed to delete activity:", err);
+    }
+    // 关闭弹窗
+    modal.classList.add("hidden");
+    editingCard = null;
+  };
+
+  // —— 选择图标 ——（保持原有逻辑不变）
   iconOptions.forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.onclick = () => {
       selectedIcon = btn.dataset.icon;
       iconOptions.forEach(b => b.classList.remove("ring-2", "selected"));
       btn.classList.add("ring-2", "selected");
-    });
+    };
   });
 
-  saveBtn.onclick = async () => {
-    const name = nameInput.value.trim();
-    const duration = durationInput.value.trim();
+  // —— 点击已有条目进入“编辑”模式 ——
+  list.addEventListener("click", e => {
+    const card = e.target.closest(".activity-card");
+    if (!card) return;
 
+    editingCard = card;
+    titleEl.textContent = "Edit Activity";
+
+    // 预填入弹窗表单
+    const iconSpan = card.querySelector(".icon");
+    selectedIcon = iconSpan.textContent;
+    iconOptions.forEach(b => b.classList.remove("ring-2", "selected"));
+    const hit = Array.from(iconOptions).find(b => b.dataset.icon === selectedIcon);
+    if (hit) hit.classList.add("ring-2", "selected");
+
+    const spans = card.querySelectorAll("span");
+    nameInput.value     = spans[1].textContent.trim();
+    durationInput.value = spans[spans.length-1].textContent.replace(/\D/g, "");
+    modal.classList.remove("hidden");
+    deleteBtn.classList.remove("hidden");   // 显示 Delete
+  });
+
+  // —— 保存：区分新增 vs 编辑 —— 
+  saveBtn.onclick = async () => {
+    const name     = nameInput.value.trim();
+    const duration = durationInput.value.trim();
     if (!name || !duration) {
       alert("Please enter name and duration");
       return;
     }
 
-    const card = document.createElement("div");
-    card.className = "activity-card";
-    card.innerHTML = `
-      <div class="flex items-center">
-        <span class="icon">${selectedIcon}</span>
-        <span>${name}</span>
-      </div>
-      <span>${duration} min</span>
-    `;
-    list.appendChild(card);
-
-    // ── NEW: Persist full activity list to Firebase ──
-    const acts = []
-    list.querySelectorAll('.activity-card').forEach(c => {
-      const icon  = c.querySelector('.icon')?.textContent || '🏃'
-      const spans = c.querySelectorAll('span')
-      const actName = spans[1]?.textContent?.trim() || ''
-      const durTxt  = spans[spans.length - 1]?.textContent || '0'
-      const dur     = parseInt(durTxt)
-      acts.push({ name: actName, duration: dur, icon })
-    })
-
-    try {
-      const uid = window.currentUserId || 'demoUser'
-      const dateStr = document.querySelector('input[type="date"]')?.value
-      const dateObj = dateStr ? new Date(dateStr) : new Date()
-      await FirebaseService.getInstance().updateActivities(uid, dateObj, acts)
-    } catch (e) {
-      console.error('[Workout] Failed to update activities', e)
+    if (editingCard) {
+      // 编辑已有卡片
+      editingCard.querySelector(".icon").textContent = selectedIcon;
+      editingCard.querySelectorAll("span")[1].textContent = name;
+      const durSpan = editingCard.querySelectorAll("span")
+                           [editingCard.querySelectorAll("span").length - 1];
+      durSpan.textContent = `${duration} min`;
+    } else {
+      // 新增卡片
+      const card = document.createElement("div");
+      card.className = "activity-card";
+      card.innerHTML = `
+        <div class="flex items-center">
+          <span class="icon">${selectedIcon}</span>
+          <span>${name}</span>
+        </div>
+        <span>${duration} min</span>
+      `;
+      list.appendChild(card);
     }
 
-    // 清空 + 关闭弹窗
-    nameInput.value = "";
-    durationInput.value = "";
+    // —— 持久化所有活动到 Firebase ——
+    const acts = Array.from(list.querySelectorAll(".activity-card")).map(c => {
+      const icon   = c.querySelector(".icon").textContent;
+      const spans  = c.querySelectorAll("span");
+      const actName= spans[1].textContent.trim();
+      const durTxt = spans[spans.length-1].textContent;
+      return { name: actName, duration: parseInt(durTxt), icon };
+    });
+    try {
+      const uid     = window.currentUserId || "demoUser";
+      const dateStr = document.querySelector('input[type="date"]').value;
+      const dateObj = dateStr ? new Date(dateStr) : new Date();
+      await FirebaseService.getInstance()
+        .updateActivities(uid, dateObj, acts);
+    } catch (err) {
+      console.error("Failed to update activities:", err);
+    }
+
+    // —— 重置并关闭 ——
     modal.classList.add("hidden");
+    editingCard = null;
   };
+  
 }
+
 
