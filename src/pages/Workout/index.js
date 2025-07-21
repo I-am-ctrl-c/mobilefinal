@@ -60,8 +60,8 @@ export default {
  // ① 新增：更新图表标签的函数
      function updateChartLabels() {
         const newLabels = [
-          t('mon'), t('tue'), t('wed'),
-          t('thu'), t('fri'), t('sat'), t('sun')
+          t('sun'),t('mon'), t('tue'), t('wed'),
+          t('thu'), t('fri'), t('sat')
         ]
         if (calorieChart) {
           calorieChart.data.labels = newLabels
