@@ -261,19 +261,36 @@ export default {
       console.log('Received bookings from stream:', bookings.length, 'items');
       console.log('Raw bookings data:', bookings);
 
+      const now = new Date();
+      const service = FirebaseService.getInstance();
       // 3. 转换时间戳并排序
       this.bookings = bookings
         .map(booking => {
           try {
+            // 时间戳转换
+            const startTime = booking.startTime instanceof Date
+              ? booking.startTime
+              : booking.startTime.toDate();
+            const endTime = booking.endTime instanceof Date
+              ? booking.endTime
+              : booking.endTime.toDate();
+            // 自动完成逻辑
+            if (booking.status === 'active' && endTime < now) {
+              // 前端显示变 complete
+              booking.status = 'completed';
+              // 同步写回数据库
+              const updatedBooking = new Booking({
+                ...booking,
+                startTime,
+                endTime,
+                status: 'completed',
+              });
+              service.updateBooking(updatedBooking);
+            }
             return {
               ...booking,
-              // 确保时间戳正确转换
-              startTime: booking.startTime instanceof Date
-                ? booking.startTime
-                : booking.startTime.toDate(),
-              endTime: booking.endTime instanceof Date
-                ? booking.endTime
-                : booking.endTime.toDate()
+              startTime,
+              endTime
             };
           } catch (e) {
             console.error("Error processing booking:", booking, e);
