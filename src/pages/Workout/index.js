@@ -57,9 +57,30 @@ export default {
 
     const language = ref(window.currentLang || 'en')
     const t = key => messages[language.value]?.[key] || key
-    function handleLangChange() {
-      language.value = window.currentLang
-    }   
+ // ① 新增：更新图表标签的函数
+     function updateChartLabels() {
+        const newLabels = [
+          t('mon'), t('tue'), t('wed'),
+          t('thu'), t('fri'), t('sat'), t('sun')
+        ]
+        if (calorieChart) {
+          calorieChart.data.labels = newLabels
+          calorieChart.update()
+        }
+        if (weightChart) {
+          weightChart.data.labels = newLabels
+          weightChart.update()
+        }
+      }
+  
+      // ② 修改：语言切换时也更新图表标签
+      function handleLangChange() {
+        language.value = window.currentLang
+        updateChartLabels()
+        if (window.triggerBMIUpdate) {
+          window.triggerBMIUpdate();   // refresh that “Your BMI” text + category under it
+        }
+      }  
 
     // 图片引用
     const workoutImgRef  = ref(workoutImg)
@@ -238,7 +259,10 @@ const topActivities = ref([])
 
       const weekArr = await metrics.getWeekArray(uid, range.start)
 
-      const labels  = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+      const labels = [
+        t('mon'), t('tue'), t('wed'), t('thu'),
+        t('fri'), t('sat'), t('sun')
+      ]
       const dataCal = weekArr.map(d => d.caloriesCurrent ?? 0)
       const dataWgt = weekArr.map(d => d.bmi?.weight ?? null)
 
@@ -296,6 +320,8 @@ const topActivities = ref([])
         })
       )
     }
+
+    
 
 
     // 监听选择变更
@@ -376,7 +402,7 @@ watch(currentMonth, async () => {
       // 渲染：SVG 环、BMI 计算器、活动弹窗
       renderCalorieRings()
       setupBMICalculator(t)
-      setupActivityModal()
+      setupActivityModal(t)
       document.getElementById('calorieRingContainer')?.addEventListener('click', openCalorieEditor)
       window.addEventListener('languagechange', handleLangChange)
 
@@ -414,9 +440,13 @@ watch(currentMonth, async () => {
                       },
                       y: {
                         beginAtZero: true,
-                        ticks: { color: axisColor },
-                        grid:  { display:false }
+                        ticks: {
+                          color: axisColor,
+                          callback: val => val + ' kcal'
+                        },
+                        grid: { display: false }
                       }
+                      
                     },
                     plugins: { legend: { display: false } }
                   }
@@ -448,15 +478,22 @@ watch(currentMonth, async () => {
                       },
                       y: {
                         beginAtZero: false,
-                        ticks: { color: axisColor },
-                        grid:  { display:false }
+                        ticks: {
+                          color: axisColor,
+                          callback: val => val + ' kg'
+                        },
+                        grid: { display: false }
                       }
+                      
                     },
                     plugins: { legend: { display: false } }
                   }
                 }
               )
               updateChartTheme();
+              updateChartLabels()
+            
+            
 
               // ④ 监听 <html> 的 class 变化（dark/light 切换时触发）
               const observer = new MutationObserver(muts => {
@@ -578,7 +615,8 @@ function setupBMICalculator(t) {
 
     // 更新文字与颜色
         // 更新文字与颜色，用 t(...) 拿翻译
-    r.textContent = `Your BMI: ${bmi.toFixed(1)}`;
+        r.textContent = `${t('yourBMI')}: ${bmi.toFixed(1)}`;
+
     lbl.textContent = t(cat.key);
     lbl.style.color = cat.color;
     lbl.style.textShadow = `0 0 4px ${cat.color}`;
@@ -629,7 +667,15 @@ function setupBMICalculator(t) {
 
 // src/pages/Workout/index.js
 
-function setupActivityModal() {
+function setupActivityModal(t) {
+
+  // 用当前模式（add/edit）动态更新弹窗标题
+  function updateModalTitle() {
+    const key = editingCard ? 'editActivity' : 'addActivity';
+    titleEl.textContent = t(key);
+  }
+
+
   let selectedIcon = "🏃";
   let editingCard = null;
 
@@ -644,10 +690,11 @@ function setupActivityModal() {
   const list          = document.getElementById("activityList");
   const titleEl       = modal.querySelector("h2");  // 弹窗标题
 
+  
   // —— 打开“添加”模式 ——
   openBtn.onclick = () => {
     editingCard = null;
-    titleEl.textContent = "Add Activity";
+    updateModalTitle();
     nameInput.value     = "";
     durationInput.value = "";
     selectedIcon        = "🏃";
@@ -702,7 +749,7 @@ function setupActivityModal() {
     if (!card) return;
 
     editingCard = card;
-    titleEl.textContent = "Edit Activity";
+    updateModalTitle();
 
     // 预填入弹窗表单
     const iconSpan = card.querySelector(".icon");
