@@ -1,11 +1,14 @@
 import { ref, computed, onMounted, onUnmounted, reactive } from 'vue'
-import { useRoute, useRouter } from 'vue-router' // 添加 useRouter
+import { useRoute, useRouter } from 'vue-router'
 import navTemplate from './navbar.html?raw'
 import './navbar.css'
 import logoDark from '../../assets/images/xgymlogo.png'
 import logoLight from '../../assets/images/xgymlogo_b.png'
+import defaultAvatar from '../../assets/images/default-avatar.jpg'
 import messages from '../../i18n/messages.js'
 import FirebaseService from '../../services/firebaseService.js'
+import { getAuth } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
 
 export default {
   name: 'NavBarComponent',
@@ -13,7 +16,7 @@ export default {
   setup() {
     const isScrolled = ref(false)
     const route = useRoute()
-    const router = useRouter() // 获取 router 实例
+    const router = useRouter()
 
     const navItems = [
       { key: 'home', path: '/home' },
@@ -23,74 +26,68 @@ export default {
       { key: 'profile', path: '/profile' }
     ]
 
-    // translation helper
     const t = (key) => {
       const lang = language.value
       return messages[lang]?.[key] || key
     }
 
-    // Dark mode state (persisted)
     const isDarkMode = ref(
       localStorage.getItem('darkMode') === 'true' ||
         document.documentElement.classList.contains('dark')
     )
-    // Dynamic logo based on theme
     const logoUrl = computed(() => (isDarkMode.value ? logoDark : logoLight))
 
     const toggleDarkMode = () => {
       isDarkMode.value = !isDarkMode.value
       const root = document.documentElement
-      if (isDarkMode.value) {
-        root.classList.add('dark')
-      } else {
-        root.classList.remove('dark')
-      }
+      root.classList.toggle('dark', isDarkMode.value)
       localStorage.setItem('darkMode', isDarkMode.value)
     }
 
-    // Language state (persisted globally)
     const savedLang = localStorage.getItem('language') || 'en'
     const language = ref(savedLang)
-    // Ensure global var matches on init
     window.currentLang = savedLang
+
     const toggleLanguage = () => {
       language.value = language.value === 'en' ? 'zh' : 'en'
       window.currentLang = language.value
       localStorage.setItem('language', language.value)
-      // force update (for demo, in real app use a reactive i18n plugin)
       window.dispatchEvent(new Event('languagechange'))
     }
 
-    // Small screen controls dropdown
     const controlsMenuOpen = ref(false)
     const toggleControlsMenu = () => {
       controlsMenuOpen.value = !controlsMenuOpen.value
     }
 
-    // Reactive user info – will be populated from Firestore (if logged in)
     const user = reactive({
       name: '',
-      avatar: 'https://i.pravatar.cc/32'
+      avatar: defaultAvatar
     })
 
-    // Load current user from Firestore using localStorage userId
     const loadUser = async () => {
       const uid = localStorage.getItem('userId')
       if (!uid) {
         user.name = 'Guest'
+        user.avatar = defaultAvatar
         return
       }
       try {
         const service = FirebaseService.getInstance()
-        const userData = await service.getUser(uid)
-        user.name = userData.name || 'User'
-        // Optionally use avatar from Firestore if available later
+        const userDoc = doc(service.db, 'users', uid)
+        const userSnap = await getDoc(userDoc)
+        
+        if (userSnap.exists()) {
+          const userData = userSnap.data()
+          user.name = userData.name || 'User'
+          user.avatar = userData.avatar || defaultAvatar
+          console.log('[NavBar] loaded avatar:', user.avatar)
+        }
       } catch (err) {
         console.error('[NavBar] Failed to fetch user data', err)
       }
     }
 
-    // 点击头像 / 用户名：已登录跳转 Profile，否则跳转 Login
     const handleUserClick = () => {
       const uid = localStorage.getItem('userId')
       if (uid) {
@@ -107,14 +104,26 @@ export default {
     const isActive = (path) => route.path === path
 
     onMounted(() => {
-      // ensure root class matches stored value on mount
       const root = document.documentElement
-      if (isDarkMode.value) root.classList.add('dark')
-      else root.classList.remove('dark')
+      root.classList.toggle('dark', isDarkMode.value)
+
       window.addEventListener('scroll', handleScroll)
       loadUser()
+
+      // ✅ 监听头像更新事件
+      window.addEventListener('user-avatar-updated', (e) => {
+        const newAvatar = e.detail?.avatar
+        if (newAvatar) {
+          user.avatar = newAvatar
+          console.log('[NavBar] updated avatar via event:', newAvatar)
+        }
+      })
     })
-    onUnmounted(() => window.removeEventListener('scroll', handleScroll))
+
+    onUnmounted(() => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('user-avatar-updated', loadUser)
+    })
 
     return {
       logoUrl,
@@ -129,7 +138,7 @@ export default {
       controlsMenuOpen,
       toggleControlsMenu,
       t,
-      handleUserClick // 暴露方法以供模板使用
+      handleUserClick
     }
   }
 }

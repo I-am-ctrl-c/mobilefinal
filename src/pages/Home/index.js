@@ -3,6 +3,7 @@ import Footer from '../../components/Footer'
 import NavBar from '../../components/NavBar'
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import homeMessages from '../../i18n/home.js'
 
 export default {
   name: 'HomePage',
@@ -10,6 +11,10 @@ export default {
   template: homeTemplate,
   setup() {
     const router = useRouter()
+    const lang = ref('en')
+    
+    // 翻译函数
+    const t = (key) => homeMessages[lang.value]?.[key] || key
 
     // Hero Slider State
     const currentSlide = ref(0)
@@ -96,10 +101,6 @@ export default {
       router.push('/booking')
     }
 
-    const goToSchedule = () => {
-      router.push('/schedule')
-    }
-
     const goToProfile = () => {
       router.push('/profile')
     }
@@ -118,20 +119,10 @@ export default {
           query: { 
             url: videoLinks[type],
             type: type,
-            title: getVideoTitle(type)
+            title: homeMessages[lang.value].videoTitles[type] || 'Workout Video'
           } 
         })
       }
-    }
-
-    const getVideoTitle = (type) => {
-      const titles = {
-        arm: 'CrossFit Level 1 - Arms Training',
-        leg: 'Bootcamp - Legs Workout',
-        back: 'Energy Blast - Back Training',
-        chest: 'Chest Power - Upper Body'
-      }
-      return titles[type] || 'Workout Video'
     }
 
     // Smooth Scrolling
@@ -220,40 +211,16 @@ export default {
       })
     }
 
-    // Error Handling
-    const handleImageError = (event) => {
-      console.warn('Image failed to load:', event.target.src)
-      event.target.src = '/src/assets/images/placeholder.jpg'
-    }
-
-    // Performance Optimization
-    const debounce = (func, wait) => {
-      let timeout
-      return function executedFunction(...args) {
-        const later = () => {
-          clearTimeout(timeout)
-          func(...args)
-        }
-        clearTimeout(timeout)
-        timeout = setTimeout(later, wait)
-      }
-    }
-
-    const throttle = (func, limit) => {
-      let inThrottle
-      return function() {
-        const args = arguments
-        const context = this
-        if (!inThrottle) {
-          func.apply(context, args)
-          inThrottle = true
-          setTimeout(() => inThrottle = false, limit)
-        }
-      }
-    }
-
     // Lifecycle Hooks
     onMounted(async () => {
+      // 初始化语言设置
+      lang.value = window.currentLang || 'en'
+      
+      // 监听语言变化事件
+      window.addEventListener('languagechange', () => {
+        lang.value = window.currentLang || 'en'
+      })
+
       await nextTick()
       
       // Initialize features
@@ -310,12 +277,12 @@ export default {
       }
     })
 
-    // Return reactive properties and methods
     return {
       // State
       currentSlide,
       isTransitioning,
       visibleElements,
+      lang,
       
       // Hero Slider Methods
       nextSlide,
@@ -328,15 +295,13 @@ export default {
       goToVideo,
       scrollToSection,
       
-      // Utility Methods
-      handleImageError,
-      debounce: debounce,
-      throttle: throttle,
-      
       // Touch Methods
       handleTouchStart,
       handleTouchMove,
-      handleTouchEnd
+      handleTouchEnd,
+      
+      // Translation Function
+      t
     }
   }
 }

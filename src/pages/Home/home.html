@@ -18,11 +18,11 @@
           <div class="hero-content max-w-4xl">
             <h2 class="hero-subtitle text-xl md:text-2xl mb-6 font-semibold animate-slide-in text-white" 
                 :class="{ 'animate-slide-in': currentSlide === index }">
-              JOIN US NOW
+              {{ t('joinUs') }}
             </h2>
             <h1 class="hero-title text-4xl md:text-6xl lg:text-7xl font-bold mb-8 animate-fade-in text-white"
                 :class="{ 'animate-fade-in': currentSlide === index }">
-              FITNESS & SPORT
+              {{ t('fitnessSport') }}
             </h1>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 animate-slide-up"
                  :class="{ 'animate-slide-up': currentSlide === index }">
@@ -31,7 +31,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
-                  BOOK NOW
+                  {{ t('bookNow') }}
                 </span>
               </button>
               <button @click="goToProfile" class="outlined-button group">
@@ -39,7 +39,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                   </svg>
-                  LEARN MORE
+                  {{ t('learnMore') }}
                 </span>
               </button>
             </div>
@@ -83,13 +83,13 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         <div class="about-content scroll-slide-left">
           <h2 class="about-title text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            WELCOME TO XGYM
+            {{ t('welcomeToXgym') }}
           </h2>
           <p class="about-text text-lg md:text-xl mb-6 leading-relaxed">
-            XGYM is your all-in-one gym companion that cuts the wait. Fitness should feel good — not frustrating.
+            {{ t('xgymDescription1') }}
           </p>
           <p class="about-description mb-8 leading-relaxed">
-            No more wandering around looking for free equipment or wasting time in peak-hour chaos. With real-time updates and smart scheduling, you’re always one step ahead. 
+            {{ t('xgymDescription2') }}
           </p>
           <div class="flex flex-col sm:flex-row gap-4">
             <button @click="goToProfile" class="primary-button group">
@@ -97,7 +97,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                LEARN MORE
+                {{ t('learnMore') }}
               </span>
             </button>
             <button @click="goToBooking" class="secondary-button group">
@@ -105,7 +105,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                BOOKING
+                {{ t('booking') }}
               </span>
             </button>
           </div>
@@ -119,109 +119,107 @@
 
   <!-- Choose Your Program Section -->
   <section class="programs-section py-15 lg:py-10">
-  <div class="programs-content">
-    <div class="container mx-auto px-4">
-      <div class="text-center mb-16 scroll-fade">
-        <h2 class="programs-title text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-          CHOOSE YOUR PROGRAM
-        </h2>
-        <p class="programs-description text-lg md:text-xl max-w-6xl mx-auto leading-relaxed">
-          XGYM provides training videos covering all parts of the body, suitable for trainers at different stages.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
-        <div class="program-card scroll-fade rounded-2xl shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 transition duration-300 overflow-hidden"
-             style="background-image: url('/src/assets/images/class-1.jpg');"
-             @click="goToVideo('arm')">
-          <div class="program-card-content p-8 lg:p-10 h-[28rem] lg:h-[32rem] flex flex-col justify-end">
-            <h4 class="program-title text-2xl lg:text-3xl font-bold mb-4 text-white">
-              Arm Workout
-            </h4>
-            <p class="program-description text-base lg:text-lg mb-6 leading-relaxed text-white">
-              Arms training program for strength and toning with professional guidance.
-            </p>
-            <button class="outlined-button text-sm self-start group">
-              <span class="inline-flex items-center gap-2 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15" />
-                </svg>
-                LEARN MORE
-              </span>
-            </button>
-          </div>
+    <div class="programs-content">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16 scroll-fade">
+          <h2 class="programs-title text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            {{ t('chooseProgram') }}
+          </h2>
+          <p class="programs-description text-lg md:text-xl max-w-6xl mx-auto leading-relaxed">
+            {{ t('programDescription') }}
+          </p>
         </div>
 
-        <div class="program-card scroll-fade rounded-2xl shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 transition duration-300 overflow-hidden"
-             style="background-image: url('/src/assets/images/class-2.jpg');"
-             @click="goToVideo('leg')">
-          <div class="program-card-content p-8 lg:p-10 h-[28rem] lg:h-[32rem] flex flex-col justify-end">
-            <h4 class="program-title text-2xl lg:text-3xl font-bold mb-4 text-white">
-              Leg Workout
-            </h4>
-            <p class="program-description text-base lg:text-lg mb-6 leading-relaxed text-white">
-              Legs workout designed for explosive power and endurance building.
-            </p>
-            <button class="outlined-button text-sm self-start group">
-              <span class="inline-flex items-center gap-2 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                LEARN MORE
-              </span>
-            </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+          <div class="program-card scroll-fade rounded-2xl shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 transition duration-300 overflow-hidden"
+               style="background-image: url('/src/assets/images/class-1.jpg');"
+               @click="goToVideo('arm')">
+            <div class="program-card-content p-8 lg:p-10 h-[28rem] lg:h-[32rem] flex flex-col justify-end">
+              <h4 class="program-title text-2xl lg:text-3xl font-bold mb-4 text-white">
+                {{ t('armWorkout') }}
+              </h4>
+              <p class="program-description text-base lg:text-lg mb-6 leading-relaxed text-white">
+                {{ t('armDescription') }}
+              </p>
+              <button class="outlined-button text-sm self-start group">
+                <span class="inline-flex items-center gap-2 text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15" />
+                  </svg>
+                  {{ t('learnMore') }}
+                </span>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div class="program-card scroll-fade rounded-2xl shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 transition duration-300 overflow-hidden"
-             style="background-image: url('/src/assets/images/class-3.jpg');"
-             @click="goToVideo('back')">
-          <div class="program-card-content p-8 lg:p-10 h-[28rem] lg:h-[32rem] flex flex-col justify-end">
-            <h4 class="program-title text-2xl lg:text-3xl font-bold mb-4 text-white">
-              Back Workout
-            </h4>
-            <p class="program-description text-base lg:text-lg mb-6 leading-relaxed text-white">
-              Back muscle strength and endurance program for core stability.
-            </p>
-            <button class="outlined-button text-sm self-start group">
-              <span class="inline-flex items-center gap-2 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                LEARN MORE
-              </span>
-            </button>
+          <div class="program-card scroll-fade rounded-2xl shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 transition duration-300 overflow-hidden"
+               style="background-image: url('/src/assets/images/class-2.jpg');"
+               @click="goToVideo('leg')">
+            <div class="program-card-content p-8 lg:p-10 h-[28rem] lg:h-[32rem] flex flex-col justify-end">
+              <h4 class="program-title text-2xl lg:text-3xl font-bold mb-4 text-white">
+                {{ t('legWorkout') }}
+              </h4>
+              <p class="program-description text-base lg:text-lg mb-6 leading-relaxed text-white">
+                {{ t('legDescription') }}
+              </p>
+              <button class="outlined-button text-sm self-start group">
+                <span class="inline-flex items-center gap-2 text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  {{ t('learnMore') }}
+                </span>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div class="program-card scroll-fade rounded-2xl shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 transition duration-300 overflow-hidden"
-             style="background-image: url('/src/assets/images/class-4.jpg');"
-             @click="goToVideo('chest')">
-          <div class="program-card-content p-8 lg:p-10 h-[28rem] lg:h-[32rem] flex flex-col justify-end">
-            <h4 class="program-title text-2xl lg:text-3xl font-bold mb-4 text-white">
-              Chest Workout
-            </h4>
-            <p class="program-description text-base lg:text-lg mb-6 leading-relaxed text-white">
-              Chest and upper body strength training for maximum power development.
-            </p>
-            <button class="outlined-button text-sm self-start group text-white">
-              <span class="inline-flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                LEARN MORE
-              </span>
-            </button>
+          <div class="program-card scroll-fade rounded-2xl shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 transition duration-300 overflow-hidden"
+               style="background-image: url('/src/assets/images/class-3.jpg');"
+               @click="goToVideo('back')">
+            <div class="program-card-content p-8 lg:p-10 h-[28rem] lg:h-[32rem] flex flex-col justify-end">
+              <h4 class="program-title text-2xl lg:text-3xl font-bold mb-4 text-white">
+                {{ t('backWorkout') }}
+              </h4>
+              <p class="program-description text-base lg:text-lg mb-6 leading-relaxed text-white">
+                {{ t('backDescription') }}
+              </p>
+              <button class="outlined-button text-sm self-start group">
+                <span class="inline-flex items-center gap-2 text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                  {{ t('learnMore') }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="program-card scroll-fade rounded-2xl shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 transition duration-300 overflow-hidden"
+               style="background-image: url('/src/assets/images/class-4.jpg');"
+               @click="goToVideo('chest')">
+            <div class="program-card-content p-8 lg:p-10 h-[28rem] lg:h-[32rem] flex flex-col justify-end">
+              <h4 class="program-title text-2xl lg:text-3xl font-bold mb-4 text-white">
+                {{ t('chestWorkout') }}
+              </h4>
+              <p class="program-description text-base lg:text-lg mb-6 leading-relaxed text-white">
+                {{ t('chestDescription') }}
+              </p>
+              <button class="outlined-button text-sm self-start group text-white">
+                <span class="inline-flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  {{ t('learnMore') }}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 </main>
-
-
 
 <div class="pt-20">
   <Footer />
-</div> 
+</div>

@@ -1,16 +1,18 @@
 <head>
-  <link rel="stylesheet" href="./profile.css">
-  <link rel="stylesheet" href="/src/assets/main.css">
+  <link rel="stylesheet" href="./profile.css" />
+  <link rel="stylesheet" href="/src/assets/main.css" />
   <script src="./index.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
 
 <NavBar />
 
 <main class="pt-16">
-  <!-- Profile 顶部横幅 -->
+  <!-- 顶部横幅 -->
   <section class="profile-banner">
-    <h1 class="profile-banner-title">更改您的信息</h1>
+    <h1 class="profile-banner-title">{{ t('profileTitle') }}</h1>
   </section>
+
   <div class="max-w-6xl mx-auto flex background-color-1 rounded-lg shadow-md border border-[var(--bg-4)] overflow-hidden">
     <!-- Sidebar -->
     <aside class="w-64 background-color-3 flex flex-col">
@@ -18,86 +20,161 @@
         <img :src="userAvatar" class="w-16 h-16 rounded-full object-cover" />
         <div class="text-lg font-semibold font-color-9">{{ userName }}</div>
       </div>
-    
-      <nav class="flex flex-col text-sm font-medium">
-        <button class="menu-btn" @click="switchTab('profile')">个人资料</button>
-        <button class="menu-btn" @click="switchTab('avatar')">修改头像</button>
-        <button class="menu-btn" @click="switchTab('password')">密码安全</button>
-        <button class="text-left px-6 py-3 text-red-500" @click="logout">退出登录</button>
+
+      <nav class="flex flex-col nav-buttons">
+        <button class="menu-item group" @click="switchTab('profile')">
+          <span class="material-symbols-outlined icon">person</span>
+          <span class="label">{{ t('profile') }}</span>
+        </button>
+        <button class="menu-item group" @click="switchTab('avatar')">
+          <span class="material-symbols-outlined icon">image</span>
+          <span class="label">{{ t('changeAvatar') }}</span>
+        </button>
+        <button class="menu-item group" @click="switchTab('password')">
+          <span class="material-symbols-outlined icon">lock</span>
+          <span class="label">{{ t('security') }}</span>
+        </button>
+        <button class="menu-item group text-red-500" @click="logout">
+          <span class="material-symbols-outlined icon">logout</span>
+          <span class="label">{{ t('logout') }}</span>
+        </button>
       </nav>
     </aside>
-    
 
     <!-- 主内容区域 -->
     <div class="flex-1 p-8 overflow-auto text-font-10">
-    <!-- Tab 1: Profile -->
-    <div v-show="currentTab === 'profile'">
-      <h2 class="text-2xl font-bold mb-4">个人资料</h2>
+      <!-- Tab 1 -->
+      <div v-show="currentTab === 'profile'">
+        <h2 class="text-2xl font-bold mb-4">{{ t('personalInfo') }}</h2>
 
-      <form id="profileForm" class="space-y-4 max-w-md">
-        <div>
-          <label for="profileName" class="block mb-1 text-sm font-medium">昵称</label>
-          <input id="profileName" type="text" class="input-box w-full" />
+        <!-- 表单 -->
+        <form id="profileForm" class="w-full max-w-4xl space-y-4 text-sm text-[var(--font-10)]" :class="{ editing: isEditing }">
+          <!-- 昵称 -->
+          <div class="flex items-center border-b border-gray-300 pb-2">
+            <label for="profileName" class="w-20 form-label">{{ t('nickname') }}：</label>
+            <input id="profileName" class="form-input" :disabled="!isEditing" />
+          </div>
+
+          <!-- 年龄 -->
+          <div class="flex items-center border-b border-gray-300 pb-2">
+            <label for="profileAge" class="w-20 form-label">{{ t('age') }}：</label>
+            <input id="profileAge" type="number" class="form-input" :disabled="!isEditing" />
+          </div>
+
+          <!-- 性别 -->
+          <div class="flex items-center border-b border-gray-300 pb-2">
+            <label for="profileGender" class="w-20 form-label">{{ t('gender') }}：</label>
+            <select id="profileGender" class="form-select" :disabled="!isEditing">
+              <option value="male">{{ t('male') }}</option>
+              <option value="female">{{ t('female') }}</option>
+              <option value="other">{{ t('other') }}</option>
+            </select>
+          </div>
+
+          <!-- 电话 -->
+          <div class="flex items-center border-b border-gray-300 pb-2">
+            <label for="phoneInput" class="w-20 form-label">{{ t('phone') }}：</label>
+            <input
+              id="phoneInput"
+              type="tel"
+              class="form-input"
+              :placeholder="t('phonePlaceholder')"
+              :disabled="!isEditing"
+            />
+          </div>
+
+          <!-- 身份 -->
+          <div class="flex items-center border-b border-gray-300 pb-2">
+            <label for="profileIdentity" class="w-20 form-label">{{ t('identity') }}：</label>
+            <select id="profileIdentity" class="form-select" :disabled="!isEditing">
+              <option value="student">{{ t('student') }}</option>
+              <option value="teacher">{{ t('teacher') }}</option>
+              <option value="visitor">{{ t('visitor') }}</option>
+            </select>
+          </div>
+
+          <!-- 地址 -->
+          <div class="flex items-center border-b border-gray-300 pb-2">
+            <label for="profileAddress" class="w-20 form-label">{{ t('address') }}：</label>
+            <input
+              id="profileAddress"
+              type="text"
+              class="form-input"
+              :placeholder="t('addressPlaceholder')"
+              :disabled="!isEditing"
+            />          
+          </div>
+
+          <!-- 提示信息 -->
+          <div class="flex items-center justify-start gap-4 pt-4">
+            <button type="button" class="gradient-button" @click="toggleEdit">
+              {{ isEditing ? t('cancel') : t('edit') }}
+            </button>
+            <button type="submit" class="gradient-button" v-if="isEditing">
+              {{ t('save') }}
+            </button>
+          
+            <div id="profileMessage" class="text-sm text-green-600"></div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tab 2 -->
+      <div v-show="currentTab === 'avatar'">
+        <h2 class="text-2xl font-bold mb-4">{{ t('changeAvatar') }}</h2>
+
+        <img
+          id="avatarPreview"
+          class="w-32 h-32 rounded-full object-cover border border-[var(--bg-4)]"
+          :src="userAvatar || '/src/assets/images/default-avatar.png'"
+          alt="User Avatar"
+        />
+
+        <div class="inline-block mt-6">
+          <label for="fileInput" class="gradient-button cursor-pointer">
+            {{ t('selectAvatar') }}
+          </label>
+          <input
+            id="fileInput"
+            type="file"
+            class="hidden"
+            @change="handleAvatarUpload"
+            accept="image/*"
+          />
         </div>
+      </div>
 
-        <div>
-          <label for="profileAge" class="block mb-1 text-sm font-medium">年龄</label>
-          <input id="profileAge" type="number" class="input-box w-full" />
+      <!-- Tab 3: 修改密码 -->
+      <div v-show="currentTab === 'password'">
+        <h2 class="text-2xl font-bold mb-4">{{ t('security') }}</h2>
+
+        <div class="space-y-4 max-w-xl text-sm text-[var(--font-10)]">
+          <!-- 当前密码 -->
+          <div class="flex items-center border-b border-gray-300 pb-2">
+            <label for="oldPassword" class="w-28 form-label">{{ t('currentPassword') }}：</label>
+            <input id="oldPassword" type="password" class="form-input input-purple" />
+          </div>
+
+          <!-- 新密码 -->
+          <div class="flex items-center border-b border-gray-300 pb-2">
+            <label for="newPassword" class="w-28 form-label">{{ t('newPassword') }}：</label>
+            <input id="newPassword" type="password" class="form-input input-purple" />
+          </div>
+
+          <!-- 确认密码 -->
+          <div class="flex items-center border-b border-gray-300 pb-2">
+            <label for="confirmPassword" class="w-28 form-label">{{ t('confirmPassword') }}：</label>
+            <input id="confirmPassword" type="password" class="form-input input-purple" />
+          </div>
+
+          <div class="flex items-center justify-start gap-4 pt-4">
+            <button class="gradient-button" @click="handlePasswordChange">
+              {{ t('submit') }}
+            </button>
+            <div id="passwordMessage" class="text-sm text-red-500"></div>
+          </div>
         </div>
-
-        <div>
-          <label for="profileGender" class="block mb-1 text-sm font-medium">性别</label>
-          <select id="profileGender" class="input-box w-full">
-            <option value="male">男</option>
-            <option value="female">女</option>
-            <option value="other">其他</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="phoneInput" class="block mb-1 text-sm font-medium">联系电话</label>
-          <input id="phoneInput" type="tel" class="input-box w-full" />
-        </div>
-
-        <div>
-          <label for="profileIdentity" class="block mb-1 text-sm font-medium">身份</label>
-          <select id="profileIdentity" class="input-box w-full">
-            <option value="student">学生</option>
-            <option value="teacher">老师</option>
-            <option value="visitor">访客</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="profileAddress" class="block mb-1 text-sm font-medium">地址</label>
-          <input id="profileAddress" type="text" class="input-box w-full" />
-        </div>
-
-        
-
-        <div id="profileMessage" class="text-sm text-red-500"></div>
-
-        <button type="submit" class="btn-primary mt-4">保存更改</button>
-      </form>
-    </div>
-
-
-    <!-- Tab 2: Avatar -->
-    <div v-show="currentTab === 'avatar'">
-      <h2 class="text-2xl font-bold mb-4">修改头像</h2>
-      <input type="file" @change="handleAvatarUpload" accept="image/*" />
-      <img id="avatarPreview" class="w-32 h-32 rounded-full mt-4 avatar-preview" />
-    </div>
-
-      <!-- Tab 3: Password -->
-    <div v-show="currentTab === 'password'">
-      <h2 class="text-2xl font-bold mb-4">修改密码</h2>
-      <input id="oldPassword" type="password" placeholder="当前密码" class="input-box mt-2" />
-      <input id="newPassword" type="password" placeholder="新密码" class="input-box" />
-      <input id="confirmPassword" type="password" placeholder="确认密码" class="input-box mt-2" />
-      <div id="passwordMessage" class="text-sm text-red-500 mt-1"></div>
-      <button class="btn-primary mt-4" @click="handlePasswordChange">提交</button>
-    </div>
+      </div>
     </div>
   </div>
 </main>
