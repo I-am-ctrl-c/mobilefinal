@@ -222,10 +222,18 @@
 }
 
 .analytics-header h2 {
-  background: linear-gradient(135deg, var(--decorPu-1), var(--decorPu-3));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: none;
+  color: #ff9800 !important;
+  font-weight: 900;
+  letter-spacing: 1px;
+  -webkit-text-fill-color: unset;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.dark .analytics-header h2 {
+  color: #ffd166 !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.32);
 }
 
 .period-selector {
@@ -297,6 +305,20 @@
 /* 时间偏好样式 */
 .time-slot {
   transition: all 0.3s ease;
+}
+
+.time-slot .time-label,
+.time-slot .time-count {
+  color: #ff9800 !important; /* bright orange for visibility */
+  font-weight: bold;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  letter-spacing: 0.5px;
+}
+
+.dark .time-slot .time-label,
+.dark .time-slot .time-count {
+  color: #ffd166 !important; /* lighter yellow for dark mode */
+  text-shadow: 0 2px 8px rgba(0,0,0,0.32);
 }
 
 .progress-bar {
@@ -478,4 +500,22 @@
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 百分比、Summary数值、右侧数字统一高亮 */
+.percentage,
+.stat-value,
+.count,
+.bar-value {
+  color: #ff9800 !important; /* 亮橙色，白天/深色都显眼 */
+  font-weight: bold;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  letter-spacing: 0.5px;
+}
+.dark .percentage,
+.dark .stat-value,
+.dark .count,
+.dark .bar-value {
+  color: #ffd166 !important; /* 深色模式下更亮的黄橙色 */
+  text-shadow: 0 2px 8px rgba(0,0,0,0.32);
 }
