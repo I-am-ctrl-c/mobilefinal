@@ -136,6 +136,45 @@ export default {
       })
     }
 
+    // 新增：激励文字轮播
+    const startMotivationalText = () => {
+      const slides = document.querySelectorAll('.text-slide')
+      let currentSlide = 0
+
+      const showSlide = (index) => {
+        slides.forEach((slide, i) => {
+          if (i === index) {
+            slide.classList.add('active')
+          } else {
+            slide.classList.remove('active')
+          }
+        })
+      }
+
+      const nextSlide = () => {
+        currentSlide = (currentSlide + 1) % slides.length
+        showSlide(currentSlide)
+      }
+
+      // 每5秒切换一次，给用户更多时间阅读
+      setInterval(nextSlide, 5000)
+    }
+
+    // 新增：浮动图标交互
+    const initFloatingIcons = () => {
+      const icons = document.querySelectorAll('.floating-icon')
+
+      icons.forEach(icon => {
+        // 添加点击效果
+        icon.addEventListener('click', () => {
+          icon.style.animation = 'none'
+          setTimeout(() => {
+            icon.style.animation = ''
+          }, 100)
+        })
+      })
+    }
+
     onMounted(() => {
       document.getElementById('authForm')?.addEventListener('submit', handleSubmit)
       document.getElementById('toggleAuth')?.addEventListener('click', toggleMode)
@@ -151,6 +190,10 @@ export default {
         sessionStorage.removeItem('prefillName')
         sessionStorage.removeItem('prefillEmail')
       }
+
+      // 启动交互效果
+      startMotivationalText()
+      initFloatingIcons()
     })
 
     return {}

@@ -1,65 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Schedule</title>
   <link rel="stylesheet" href="./schedule.css">
   <link rel="stylesheet" href="/src/assets/main.css">
-  <script src="./index.js" defer></script>
 </head>
-<NavBar />
+<body>
+  <div id="app">
+    <NavBar />
 
-<main class="schedule-page-wrapper pt-16 min-h-screen">
-  <!-- Hero Section with background image -->
-  <section class="schedule-hero">
-    <div class="overlay">
-      <h1 class="hero-title">{{ t('heroTitle') }}</h1>
-    </div>
-  </section>
+    <main class="schedule-page-wrapper pt-16 min-h-screen">
+      <!-- Hero Section with background image -->
+      <section class="schedule-hero">
+        <div class="overlay">
+          <h1 class="hero-title">YOUR BOOKING SCHEDULE</h1>
+        </div>
+      </section>
 
-  <!-- 这是表格区域 -->
-  <div class="table-container overflow-x-auto max-w-5xl mx-auto mt-12">
-    <table class="schedule-table w-full text-left rounded-lg overflow-hidden">
-      <thead class="table-header bg-[var(--decorPu-1)] text-white">
-        <tr>
-          <th class="px-4 py-3">{{ t('equipment') }}</th>
-          <th class="px-4 py-3">{{ t('startTime') }}</th>
-          <th class="px-4 py-3">{{ t('endTime') }}</th>
-          <th class="px-4 py-3">{{ t('status') }}</th>
-          <th class="px-4 py-3">{{ t('action') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- 如果没有数据 -->
-        <tr v-if="paginatedBookings().length === 0">
-          <td colspan="5" class="text-center py-6 text-[var(--font-10)] text-lg">
-            {{ t('noBookings') }}
-          </td>
-        </tr>
-
-        <!-- 如果有数据 -->
-        <tr v-else v-for="booking in paginatedBookings()" :key="booking.id" class="hover:bg-[var(--bg)] border-b border-[var(--bg-3)]">
-          <td class="px-4 py-3 flex items-center gap-2">
-            <img :src="equipmentMap[booking.equipmentId]?.imageUrl" alt="equipment" class="w-10 h-10 rounded-md object-cover" />
-            <div>
-              <div class="font-semibold text-[var(--font-10)]">{{ equipmentMap[booking.equipmentId]?.name || t('unknown') }}</div>
-              <div class="text-sm text-[var(--font-8)]">{{ equipmentMap[booking.equipmentId]?.tags?.join(', ') }}</div>
+      <!-- Filter Bar -->
+      <div class="filter-container max-w-5xl mx-auto mt-8 px-4">
+        <div class="filter-bar bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Status:</span>
             </div>
-          </td>
-          <td class="px-4 py-3">{{ formatDate(booking.startTime) }}</td>
-          <td class="px-4 py-3">{{ formatDate(booking.endTime) }}</td>
-          <td class="px-4 py-3 capitalize">{{ t(booking.status) }}</td>
-          <td class="px-4 py-3">
-            <button @click="toggleBookingStatus(booking)"
-              :class="booking.status === 'cancelled' ? 'restore-btn' : 'cancel-btn'">
-              {{ booking.status === 'cancelled' ? t('restore') : t('cancel') }}
+            <div class="flex flex-wrap gap-2">
+              <button
+                @click="setStatusFilter('all')"
+                :class="[
+                  'filter-btn',
+                  statusFilter === 'all' ? 'active' : ''
+                ]"
+                data-status="all"
+              >
+                All
+              </button>
+              <button
+                @click="setStatusFilter('active')"
+                :class="[
+                  'filter-btn',
+                  statusFilter === 'active' ? 'active' : ''
+                ]"
+                data-status="active"
+              >
+                Active
+              </button>
+              <button
+                @click="setStatusFilter('completed')"
+                :class="[
+                  'filter-btn',
+                  statusFilter === 'completed' ? 'active' : ''
+                ]"
+                data-status="completed"
+              >
+                Completed
+              </button>
+              <button
+                @click="setStatusFilter('cancelled')"
+                :class="[
+                  'filter-btn',
+                  statusFilter === 'cancelled' ? 'active' : ''
+                ]"
+                data-status="cancelled"
+              >
+                Cancelled
+              </button>
+            </div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+              {{ filteredBookings.length }} of {{ bookings.length }} bookings
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Section -->
+      <div class="table-container overflow-x-auto max-w-5xl mx-auto mt-8">
+        <table class="schedule-table w-full text-left rounded-lg overflow-hidden">
+          <thead class="table-header bg-[var(--decorPu-1)] text-white">
+            <tr>
+              <th class="px-4 py-3">Equipment</th>
+              <th class="px-4 py-3">Start Time</th>
+              <th class="px-4 py-3">End Time</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 如果没有数据 -->
+            <tr v-if="filteredBookings.length === 0">
+              <td colspan="5" class="text-center py-6 text-[var(--font-10)] text-lg">
+                No bookings found
+              </td>
+            </tr>
+
+            <!-- 如果有数据 -->
+            <tr v-else v-for="booking in paginatedBookings" :key="booking.id" class="table-row hover:bg-[var(--bg)] border-b border-[var(--bg-3)]">
+              <td class="px-4 py-3 flex items-center gap-2">
+                <img
+                  :src="getEquipmentImage(booking.equipmentId)"
+                  alt="equipment"
+                  class="w-10 h-10 rounded-md object-cover"
+                  onerror="this.src='/src/assets/placeholder.png'"
+                />
+                <div>
+                  <div class="font-semibold text-[var(--font-10)]">
+                    {{ getEquipmentName(booking.equipmentId) }}
+                  </div>
+                  <div class="text-sm text-[var(--font-8)]">
+                    {{ getEquipmentTags(booking.equipmentId) }}
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3">{{ formatDate(booking.startTime) }}</td>
+              <td class="px-4 py-3">{{ formatDate(booking.endTime) }}</td>
+              <td class="px-4 py-3 capitalize">{{ booking.status }}</td>
+              <td class="px-4 py-3">
+                <button
+                  @click="toggleBookingStatus(booking)"
+                  :class="booking.status === 'cancelled' ? 'restore-btn' : 'cancel-btn'"
+                  :disabled="booking.status === 'completed'"
+                >
+                  {{ booking.status === 'cancelled' ? 'Restore' : 'Cancel' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-controls flex justify-center items-center mt-8 gap-4">
+        <button @click="prevPage" class="pagination-btn" :disabled="currentPage === 1">Previous</button>
+        <span class="page-indicator">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button @click="nextPage" class="pagination-btn" :disabled="currentPage === totalPages">Next</button>
+      </div>
+
+      <!-- Analytics Section -->
+      <div class="analytics-container max-w-7xl mx-auto mt-12 px-4">
+        <div class="analytics-header text-center mb-8">
+          <h2 class="text-3xl font-bold text-[var(--font-10)] mb-2">Your Workout Analytics</h2>
+          <p class="text-[var(--font-8)]">Discover your fitness patterns and preferences</p>
+        </div>
+
+        <!-- Time Period Selector -->
+        <div class="period-selector flex justify-center mb-8">
+          <div class="bg-[var(--bg-3)] rounded-lg p-1 flex">
+            <button
+              v-for="period in timePeriods"
+              :key="period.value"
+              @click="setTimePeriod(period.value)"
+              :class="[
+                'period-btn px-4 py-2 rounded-md text-sm font-medium transition-all',
+                selectedPeriod === period.value 
+                  ? 'bg-[var(--decorPu-1)] text-white shadow-md' 
+                  : 'text-[var(--font-8)] hover:bg-[var(--bg)]'
+              ]"
+            >
+              {{ period.label }}
             </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+        </div>
+
+        <!-- Analytics Grid -->
+        <div class="analytics-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          
+          <!-- 空状态显示 -->
+          <div v-if="periodBookings.length === 0" class="col-span-full text-center py-12">
+            <div class="empty-state">
+              <div class="empty-icon text-6xl mb-4">📊</div>
+              <h3 class="text-xl font-semibold text-[var(--font-10)] mb-2">No Data Available</h3>
+              <p class="text-[var(--font-8)] mb-4">Start booking equipment to see your workout analytics here.</p>
+              <button @click="$router.push('/booking')" class="btn-primary px-6 py-2 rounded-lg bg-[var(--decorPu-1)] text-white hover:bg-[var(--decorPu-3)] transition-colors">
+                Book Equipment
+              </button>
+            </div>
+          </div>
+
+          <!-- Most Booked Equipment -->
+          <div v-else class="analytics-card bg-[var(--bg-3)] rounded-xl p-6 shadow-lg">
+            <div class="card-header flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-[var(--font-10)]">Most Booked Equipment</h3>
+              <div class="icon-wrapper w-8 h-8 bg-[var(--decorPu-1)] rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">🏋️</span>
+              </div>
+            </div>
+            <div class="equipment-stats">
+              <div v-for="(equipment, index) in topEquipment" :key="equipment.id" class="equipment-item flex items-center justify-between py-2">
+                <div class="flex items-center gap-3">
+                  <div class="rank-badge w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                       :class="index === 0 ? 'bg-yellow-500 text-white' : index === 1 ? 'bg-gray-400 text-white' : 'bg-orange-500 text-white'">
+                    {{ index + 1 }}
+                  </div>
+                  <div class="equipment-info">
+                    <div class="equipment-name text-[var(--font-10)] font-medium">{{ equipment.name }}</div>
+                    <div class="equipment-tags text-xs text-[var(--font-8)]">{{ equipment.tags.join(', ') }}</div>
+                  </div>
+                </div>
+                <div class="booking-count text-right">
+                  <div class="count text-lg font-bold text-[var(--decorPu-1)]">{{ equipment.count }}</div>
+                  <div class="label text-xs text-[var(--font-8)]">bookings</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Workout Time Preferences -->
+          <div v-if="periodBookings.length > 0" class="analytics-card bg-[var(--bg-3)] rounded-xl p-6 shadow-lg">
+            <div class="card-header flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-[var(--font-10)]">Preferred Workout Times</h3>
+              <div class="icon-wrapper w-8 h-8 bg-[var(--decorPu-1)] rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">⏰</span>
+              </div>
+            </div>
+            <div class="time-chart">
+              <div v-for="timeSlot in timePreferences" :key="timeSlot.hour" class="time-slot mb-3">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="time-label text-sm text-[var(--font-8)]">{{ timeSlot.label }}</span>
+                  <span class="time-count text-sm font-medium text-[var(--font-10)]">{{ timeSlot.count }}</span>
+                </div>
+                <div class="progress-bar bg-[var(--bg)] rounded-full h-2 overflow-hidden">
+                  <div class="progress-fill bg-gradient-to-r from-[var(--decorPu-1)] to-[var(--decorPu-3)] h-full rounded-full transition-all duration-300"
+                       :style="{ width: timeSlot.percentage + '%' }"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Body Part Focus -->
+          <div v-if="periodBookings.length > 0" class="analytics-card bg-[var(--bg-3)] rounded-xl p-6 shadow-lg">
+            <div class="card-header flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-[var(--font-10)]">Body Part Focus</h3>
+              <div class="icon-wrapper w-8 h-8 bg-[var(--decorPu-1)] rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">💪</span>
+              </div>
+            </div>
+            <div class="body-parts">
+              <div v-for="part in bodyPartFocus" :key="part.name" class="body-part-item flex items-center justify-between py-2">
+                <div class="flex items-center gap-3">
+                  <div class="part-icon text-2xl">{{ part.icon }}</div>
+                  <div class="part-info">
+                    <div class="part-name text-[var(--font-10)] font-medium">{{ part.name }}</div>
+                    <div class="part-description text-xs text-[var(--font-8)]">{{ part.description }}</div>
+                  </div>
+                </div>
+                <div class="part-percentage text-right">
+                  <div class="percentage text-lg font-bold text-[var(--decorPu-1)]">{{ part.percentage }}%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Activity -->
+          <div v-if="periodBookings.length > 0" class="analytics-card bg-[var(--bg-3)] rounded-xl p-6 shadow-lg lg:col-span-2">
+            <div class="card-header flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-[var(--font-10)]">Weekly Activity Pattern</h3>
+              <div class="icon-wrapper w-8 h-8 bg-[var(--decorPu-1)] rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">📊</span>
+              </div>
+            </div>
+            <div class="weekly-chart">
+              <div class="chart-container flex items-end justify-between h-32 gap-2">
+                <div v-for="day in weeklyActivity" :key="day.name" class="chart-bar flex flex-col items-center">
+                  <div class="bar-value text-xs text-[var(--font-8)] mb-1">{{ day.count }}</div>
+                  <div class="bar bg-gradient-to-t from-[var(--decorPu-1)] to-[var(--decorPu-3)] rounded-t transition-all duration-300"
+                       :style="{ height: day.height + '%' }"></div>
+                  <div class="bar-label text-xs text-[var(--font-8)] mt-1">{{ day.name }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Stats -->
+          <div v-if="periodBookings.length > 0" class="analytics-card bg-[var(--bg-3)] rounded-xl p-6 shadow-lg">
+            <div class="card-header flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-[var(--font-10)]">Summary</h3>
+              <div class="icon-wrapper w-8 h-8 bg-[var(--decorPu-1)] rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">📈</span>
+              </div>
+            </div>
+            <div class="summary-stats space-y-4">
+              <div class="stat-item flex items-center justify-between">
+                <span class="stat-label text-[var(--font-8)]">Total Bookings</span>
+                <span class="stat-value text-lg font-bold text-[var(--decorPu-1)]">{{ summaryStats.totalBookings }}</span>
+              </div>
+              <div class="stat-item flex items-center justify-between">
+                <span class="stat-label text-[var(--font-8)]">Active Sessions</span>
+                <span class="stat-value text-lg font-bold text-green-500">{{ summaryStats.activeSessions }}</span>
+              </div>
+              <div class="stat-item flex items-center justify-between">
+                <span class="stat-label text-[var(--font-8)]">Avg. Session Duration</span>
+                <span class="stat-value text-lg font-bold text-[var(--decorPu-1)]">{{ summaryStats.avgDuration }}</span>
+              </div>
+              <div class="stat-item flex items-center justify-between">
+                <span class="stat-label text-[var(--font-8)]">Consistency Score</span>
+                <span class="stat-value text-lg font-bold text-[var(--decorPu-1)]">{{ summaryStats.consistencyScore }}%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <Footer />
   </div>
 
-  <div class="pagination-controls flex justify-center mt-8 gap-4">
-    <button @click="prevPage" class="pagination-btn">{{ t('previous') }}</button>
-    <button @click="nextPage" class="pagination-btn">{{ t('next') }}</button>
-  </div>
-</main>
-
-<Footer />
+  <script src="./index.js" type="module"></script>
+</body>
+</html>

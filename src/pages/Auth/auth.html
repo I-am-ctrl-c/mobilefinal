@@ -1,53 +1,124 @@
 <!-- src/pages/Auth/auth.html -->
 <div class="login-page">
   <div class="login-wrapper">
-    <div class="login-left"></div>
+    <!-- 背景装饰 -->
+    <div class="background-decoration">
+      <div class="floating-elements">
+        <div class="floating-icon" data-icon="💪">💪</div>
+        <div class="floating-icon" data-icon="🏋️">🏋️</div>
+        <div class="floating-icon" data-icon="❤️">❤️</div>
+        <div class="floating-icon" data-icon="🔥">🔥</div>
+        <div class="floating-icon" data-icon="⚡">⚡</div>
+        <div class="floating-icon" data-icon="🎯">🎯</div>
+      </div>
+    </div>
 
-    <div class="login-right">
-      <div class="login-form fade-in">
-        <h2 class="form-title">Welcome to XGYM</h2>
-        <form id="authForm">
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+      <!-- Logo和品牌信息 -->
+      <div class="brand-section">
+        <div class="logo-container">
+          <img src="/src/assets/images/xgymlogo.png" alt="XGYM Logo" class="logo-image" />
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">XGYM</h1>
+          <p class="brand-subtitle">Transform Your Fitness Journey</p>
+        </div>
+      </div>
+
+      <!-- 登录表单卡片 -->
+      <div class="auth-card">
+        <div class="card-header">
+          <h2 class="form-title">Welcome Back</h2>
+          <p class="form-subtitle">Sign in to continue your fitness journey</p>
+        </div>
+        
+        <form id="authForm" class="auth-form">
           <div class="input-group">
             <label for="name">Name</label>
-            <input type="text" id="name" name="name" required />
+            <div class="input-wrapper">
+              <input type="text" id="name" name="name" required />
+              <div class="input-icon">👤</div>
+            </div>
           </div>
+          
           <div class="input-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
+            <div class="input-wrapper">
+              <input type="email" id="email" name="email" required />
+              <div class="input-icon">📧</div>
+            </div>
           </div>
+          
           <div class="input-group password-group">
             <label for="password">Password</label>
-            <div class="password-wrapper">
+            <div class="input-wrapper">
               <input type="password" id="password" name="password" required />
-              <span class="toggle-password" data-target="password">&#128065;</span>
+              <div class="input-icon">🔒</div>
+              <span class="toggle-password" data-target="password">👁️</span>
             </div>
           </div>
+          
           <div class="input-group hidden" id="confirmGroup">
             <label for="confirm">Confirm Password</label>
-            <div class="password-wrapper">
+            <div class="input-wrapper">
               <input type="password" id="confirm" name="confirm" />
-              <span class="toggle-password" data-target="confirm">&#128065;</span>
+              <div class="input-icon">🔒</div>
+              <span class="toggle-password" data-target="confirm">👁️</span>
             </div>
           </div>
+          
           <div class="input-group hidden" id="ageGroup">
             <label for="age">Age</label>
-            <input type="number" id="age" name="age" />
+            <div class="input-wrapper">
+              <input type="number" id="age" name="age" />
+              <div class="input-icon">🎂</div>
+            </div>
           </div>
+          
           <div class="input-group hidden" id="genderGroup">
             <label for="gender">Gender</label>
-            <select id="gender">
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
+            <div class="input-wrapper">
+              <select id="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+              <div class="input-icon">👥</div>
+            </div>
           </div>
-          <button type="submit" class="auth-btn" id="authButton">Login</button>
+          
+          <button type="submit" class="auth-btn" id="authButton">
+            <span class="btn-text">Login</span>
+            <div class="btn-icon">→</div>
+          </button>
         </form>
-        <p class="toggle-link" id="toggleText">
-          Don't have an account?
-          <span id="toggleAuth" class="auth-toggle-link">Sign Up</span>
-        </p>
-        <p class="form-message" id="formMessage"></p>
+        
+        <div class="form-footer">
+          <p class="toggle-link" id="toggleText">
+            Don't have an account?
+            <span id="toggleAuth" class="auth-toggle-link">Sign Up</span>
+          </p>
+          <p class="form-message" id="formMessage"></p>
+        </div>
+      </div>
+
+      <!-- 激励文字 -->
+      <div class="motivational-section">
+        <div class="motivational-text">
+          <div class="text-slide active">
+            <h3>💪 Push Your Limits</h3>
+            <p>Every workout brings you closer to your goals</p>
+          </div>
+          <div class="text-slide">
+            <h3>🔥 Stay Consistent</h3>
+            <p>Consistency is the key to transformation</p>
+          </div>
+          <div class="text-slide">
+            <h3>🎯 Achieve More</h3>
+            <p>Your potential is limitless</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

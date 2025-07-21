@@ -87,6 +87,6 @@ export default {
     })
     onUnmounted(() => window.removeEventListener('languagechange', handleLangChange))
 
-    return { t, equipments, tags, selectedCategory, searchQuery, toggleTag, goToDescription }
+    return { t, equipments, tags, selectedCategory, searchQuery, toggleTag, goToDescription,language }
   }
 }
