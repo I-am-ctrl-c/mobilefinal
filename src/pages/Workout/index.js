@@ -260,8 +260,8 @@ const topActivities = ref([])
       const weekArr = await metrics.getWeekArray(uid, range.start)
 
       const labels = [
-        t('mon'), t('tue'), t('wed'), t('thu'),
-        t('fri'), t('sat'), t('sun')
+        t('sun'), t('mon'), t('tue'), t('wed'), t('thu'),
+        t('fri'), t('sat')
       ]
       const dataCal = weekArr.map(d => d.caloriesCurrent ?? 0)
       const dataWgt = weekArr.map(d => d.bmi?.weight ?? null)
@@ -410,7 +410,7 @@ watch(currentMonth, async () => {
       const axisColor  = styles.getPropertyValue('--font-10').trim();
       // 等 DOM 真正挂载后再绘制图表
       nextTick(() => {
-        const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+        const labels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
         const dataCal = new Array(7).fill(0)
         const dataWgt = new Array(7).fill(null)
       onUnmounted(() => {

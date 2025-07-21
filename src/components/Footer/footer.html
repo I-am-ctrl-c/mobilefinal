@@ -21,7 +21,7 @@
 
     <!-- Support -->
     <div>
-      <h2 class="font-bold text-lg mb-4">SUPPORT</h2>
+      <h2 class="font-bold text-lg mb-4">{{ t('support') }}</h2>
       <ul class="text-sm space-y-2">
         <!-- FAQ -->
         <li>
@@ -33,7 +33,7 @@
               <path d="M9.09 9a3 3 0 115.82 0c0 1.5-1.5 2-1.5 2h-1v2"/>
               <circle cx="12" cy="17" r="1"/>
             </svg>
-            FAQ
+            {{ t('faq') }}
           </router-link>
         </li>
 
@@ -47,7 +47,7 @@
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
               <path d="M12 8v8M8 12h8" />
             </svg>
-            Upgrade Options
+            {{ t('upgradeOptions') }}
           </router-link>
         </li>
         
@@ -59,28 +59,28 @@
 
     <!-- Program -->
     <div>
-      <h2 class="font-bold text-lg mb-4">PROGRAM</h2>
+      <h2 class="font-bold text-lg mb-4">{{ t('program') }}</h2>
       <ul class="text-sm space-y-2">
-        <li>Bodybuilding</li>
-        <li>Running</li>
-        <li>Streching</li>
-        <li>Weight Loss</li>
-        <li>Gym Fitness</li>
+        <li>{{ t('bodyBuilding') }}</li>
+        <li>{{ t('running') }}</li>
+        <li>{{ t('stretching') }}</li>
+        <li>{{ t('weightLoss') }}</li>
+        <li>{{ t('gymFitness') }}</li>
       </ul>
     </div>
 
     <!-- Info -->
     <div>
-      <h2 class="font-bold text-lg mb-4">GET INFO</h2>
+      <h2 class="font-bold text-lg mb-4">{{ t('getInfo') }}</h2>
       <ul class="text-sm space-y-2">
-        <li>📞 Phone: (12) 345 6789</li>
-        <li>📧 Email: XGYM@xmu.edu.my</li>
-        <li>📍 Address: Xiamen University Malaysia, Jalan Sunsuria, Bandar Sunsuria, 43900 Sepang</li>
+        <li>📞 {{ t('phone') }} : (12) 345 6789</li>
+        <li>📧 {{ t('email') }} : XGYM@xmu.edu.my</li>
+        <li>📍 {{ t('address') }} : Xiamen University Malaysia, Jalan Sunsuria, Bandar Sunsuria, 43900 Sepang</li>
       </ul>
     </div>
   </div>
 
   <div class="text-center text-sm mt-8 border-t border-font-7 pt-4">
-    Copyright ©2025 All rights reserved | This template is made with ❤️ by <span class="text-primaryPurple">XGYM</span>
+    {{ t('copyright') }} <span class="text-primaryPurple">{{ t('xgym') }}</span>
   </div>
 </footer> 
