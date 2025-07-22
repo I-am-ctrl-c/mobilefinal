@@ -7,7 +7,6 @@ import logoLight from '../../assets/images/xgymlogo_b.png'
 import defaultAvatar from '../../assets/images/default-avatar.jpg'
 import messages from '../../i18n/messages.js'
 import FirebaseService from '../../services/firebaseService.js'
-import { getAuth } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 
 export default {
@@ -23,17 +22,21 @@ export default {
       { key: 'schedule', path: '/schedule' },
       { key: 'booking', path: '/booking' },
       { key: 'workout', path: '/workout' },
+      { key: 'map', path: '/map'},  
       { key: 'profile', path: '/profile' }
     ]
 
+    const savedLang = localStorage.getItem('language') || 'en'
+    const language = ref(savedLang)
+    window.currentLang = savedLang
+
     const t = (key) => {
-      const lang = language.value
-      return messages[lang]?.[key] || key
+      return messages[language.value]?.[key] || key
     }
 
     const isDarkMode = ref(
       localStorage.getItem('darkMode') === 'true' ||
-        document.documentElement.classList.contains('dark')
+      document.documentElement.classList.contains('dark')
     )
     const logoUrl = computed(() => (isDarkMode.value ? logoDark : logoLight))
 
@@ -43,10 +46,6 @@ export default {
       root.classList.toggle('dark', isDarkMode.value)
       localStorage.setItem('darkMode', isDarkMode.value)
     }
-
-    const savedLang = localStorage.getItem('language') || 'en'
-    const language = ref(savedLang)
-    window.currentLang = savedLang
 
     const toggleLanguage = () => {
       language.value = language.value === 'en' ? 'zh' : 'en'
@@ -76,7 +75,7 @@ export default {
         const service = FirebaseService.getInstance()
         const userDoc = doc(service.db, 'users', uid)
         const userSnap = await getDoc(userDoc)
-        
+
         if (userSnap.exists()) {
           const userData = userSnap.data()
           user.name = userData.name || 'User'

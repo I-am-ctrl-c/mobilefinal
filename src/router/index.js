@@ -5,6 +5,7 @@ import Schedule from '../pages/Schedule'
 import Booking from '../pages/Booking'
 import Workout from '../pages/Workout'
 import Profile from '../pages/Profile'
+import Map from '../pages/Map'
 import EquipmentSchedule from '../pages/EquipmentSchedule'
 import AuthPage from '../pages/Auth/index'
 import Description from '../pages/Description'
@@ -25,6 +26,7 @@ const protectedPaths = ['/workout', '/schedule', '/profile']
 const routes = [
   { path: '/', redirect: '/home' },  // 🔁 默认重定向到 /home
   { path: '/home', component: Home },
+  { path: '/map', component: Map },
   { path: '/schedule', component: Schedule },
   { path: '/booking', component: Booking },
   { path: '/workout', component: Workout },
