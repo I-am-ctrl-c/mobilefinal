@@ -10,13 +10,36 @@
 }
 
 #map {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.2rem;
+  /* 移除之前的背景渐变，让Leaflet接管 */
+  background: #f8f9fa;
+  border-radius: 8px;
   position: relative;
+  z-index: 1;
+}
+
+/* Leaflet地图容器样式调整 */
+.leaflet-container {
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+/* 自定义弹出窗口样式 */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-content {
+  margin: 16px;
+  line-height: 1.4;
+}
+
+.gym-popup h3 {
+  color: var(--font-color-1);
+}
+
+.gym-popup p {
+  color: var(--font-color-4);
 }
 
 /* 健身房按钮样式 */
@@ -26,6 +49,13 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  min-width: 200px;
+  text-align: center;
+}
+
+.gym-button.active {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
 }
 
 .gym-button:before {
@@ -60,50 +90,9 @@
   border-color: var(--decorPu-5);
 }
 
-/* 地图标记样式 */
-.map-marker {
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: absolute;
-  transform: translate(-50%, -50%);
-  z-index: 100;
-}
-
-.map-marker:hover {
-  filter: brightness(1.2);
-}
-
-.map-marker.active {
-  z-index: 1000;
-}
-
-/* 地图工具提示 */
-.map-tooltip {
-  position: absolute;
-  background: var(--background-color-9);
-  color: var(--font-color-1);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  pointer-events: none;
-  transform: translateY(-100%);
-  margin-top: -10px;
-  white-space: nowrap;
-  z-index: 1000;
-}
-
-.map-tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: var(--background-color-9);
+/* 地图加载状态 */
+.leaflet-container .leaflet-control-container {
+  font-family: inherit;
 }
 
 /* 响应式设计 */
@@ -111,33 +100,88 @@
   .gym-button {
     font-size: 0.9rem;
     padding: 8px 12px;
+    min-width: 180px;
   }
   
   .gym-info-card {
     padding: 16px;
   }
   
-  .map-marker {
-    width: 25px;
-    height: 25px;
+  #map {
+    height: 300px !important;
   }
 }
 
-/* 加载动画 */
-.map-loading {
+@media (max-width: 640px) {
+  .gym-button {
+    min-width: 150px;
+    font-size: 0.8rem;
+  }
+}
+
+/* 地图区域样式增强 */
+.map-container {
+  background: var(--bg-8);
+  border: 2px solid transparent;
+  background-image: linear-gradient(var(--bg-8), var(--bg-8)),
+                    linear-gradient(45deg, var(--decorPu-5), var(--decorPu-6));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* Leaflet控件样式自定义 */
+.leaflet-control-zoom {
+  border: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: var(--bg-9) !important;
+  color: var(--font-color-1) !important;
+  border: none !important;
+  width: 35px !important;
+  height: 35px !important;
+  line-height: 35px !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: var(--decorPu-5) !important;
+  color: white !important;
+}
+
+/* 地图标记动画 */
+.leaflet-marker-icon {
+  transition: all 0.3s ease;
+}
+
+.leaflet-marker-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+/* 加载遮罩 */
+.map-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  flex-direction: column;
-  gap: 20px;
+  z-index: 1000;
+  border-radius: 8px;
 }
 
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
+  border: 4px solid rgba(139, 92, 246, 0.3);
+  border-top: 4px solid var(--decorPu-5);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -145,14 +189,4 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-/* 地图区域样式增强 */
-.map-container {
-  background: var(--background-color-8);
-  border: 2px solid transparent;
-  background-image: linear-gradient(var(--background-color-8), var(--background-color-8)),
-                    linear-gradient(45deg, var(--decorPu-5), var(--decorPu-6));
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
 }

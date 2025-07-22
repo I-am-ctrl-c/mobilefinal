@@ -1,8 +1,12 @@
+<!DOCTYPE html>
+<html>
 <head>
+  <!-- 添加Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="./map.css">
   <link rel="stylesheet" href="/src/assets/main.css">
-  <script src="./index.js" defer></script>
 </head>
+<body>
 
 <!-- 导航栏组件 -->
 <NavBar />
@@ -25,10 +29,11 @@
           v-for="gym in gymLocations" 
           :key="gym.id"
           @click="selectGym(gym)"
+          :data-gym-id="gym.id"
           class="gym-button px-4 py-2 rounded-lg transition-all duration-200"
           :class="[
             selectedGym?.id === gym.id
-              ? 'background-color-8 font-color-1 border-2 border-decorPu-5'
+              ? 'active background-color-8 font-color-1 border-2 border-decorPu-5'
               : 'background-color-9 font-color-4 hover:background-color-8 hover:font-color-1 border-2 border-transparent'
           ]"
         >
@@ -79,7 +84,7 @@
               </button>
               <button 
                 @click="goToBooking"
-                class="flex-1 bg-background-color-8 hover:bg-background-color-7 font-color-1 py-2 px-4 rounded-lg font-semibold transition-colors duration-200"
+                class="flex-1 background-color-8 hover:background-color-7 font-color-1 py-2 px-4 rounded-lg font-semibold transition-colors duration-200"
               >
                 <i class="fa-solid fa-calendar mr-2"></i>
                 {{ t('bookEquipment') }}
@@ -96,3 +101,10 @@
 <div class="pt-0">
   <Footer />
 </div>
+
+<!-- 添加Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="./index.js" defer></script>
+
+</body>
+</html>

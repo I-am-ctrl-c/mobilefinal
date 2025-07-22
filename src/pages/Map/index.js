@@ -1,9 +1,15 @@
+// 1. 首先在你的HTML中添加Leaflet CSS和JS
+// <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+// <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 import mapTemplate from './map.html?raw'
 import Footer from '../../components/Footer'
 import NavBar from '../../components/NavBar'
 import messages from '../../i18n/mapMessages.js'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 export default {
   name: 'MapPage',
@@ -14,7 +20,8 @@ export default {
     const language = ref(window.currentLang || 'en')
     const selectedGym = ref(null)
     const mapElement = ref(null)
-    const markers = ref([])
+    const leafletMap = ref(null) // 存储Leaflet地图实例
+    const mapMarkers = ref([]) // 存储地图标记
 
     const t = (key) => {
       return messages[language.value]?.[key] || key
@@ -94,117 +101,156 @@ export default {
       }
     ])
 
-    // 初始化地图
+    // 初始化Leaflet地图
     function initializeMap() {
+      console.log('Initializing Leaflet map...')
       const mapContainer = document.getElementById('map')
       if (!mapContainer) {
-        console.warn('Map container not found')
+        console.error('Map container not found')
         return
       }
 
-      // 清空容器内容
-      mapContainer.innerHTML = ''
-      
-      // 创建地图背景
-      mapContainer.style.position = 'relative'
-      mapContainer.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-      mapContainer.style.overflow = 'hidden'
+      // 检查Leaflet是否已加载
+      if (typeof L === 'undefined') {
+        console.error('Leaflet library not loaded')
+        return
+      }
 
-      // 添加地图标记
-      gymLocations.value.forEach(gym => {
-        createMapMarker(gym, mapContainer)
+      // 清理现有地图
+      if (leafletMap.value) {
+        leafletMap.value.remove()
+      }
+
+      // 创建地图实例，以马来西亚为中心
+      leafletMap.value = L.map('map').setView([3.139, 101.6869], 8)
+
+      // 添加地图图层 (OpenStreetMap)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(leafletMap.value)
+
+      // 创建自定义图标
+      const gymIcon = L.icon({
+        iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
+            <path fill="#8B5CF6" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            <circle fill="white" cx="12" cy="9" r="1.5"/>
+          </svg>
+        `),
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
       })
 
-      // 默认选中第一个健身房（Xiamen University Malaysia）
+      const activeGymIcon = L.icon({
+        iconUrl: 'data:image/svg+xml;base64=' + btoa(`
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40">
+            <path fill="#F59E0B" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            <circle fill="white" cx="12" cy="9" r="1.5"/>
+          </svg>
+        `),
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+      })
+
+      // 清理现有标记
+      mapMarkers.value.forEach(marker => {
+        leafletMap.value.removeLayer(marker)
+      })
+      mapMarkers.value = []
+
+      // 添加健身房标记
+      gymLocations.value.forEach(gym => {
+        const marker = L.marker([gym.lat, gym.lng], { 
+          icon: gymIcon,
+          gymId: gym.id 
+        }).addTo(leafletMap.value)
+
+        // 添加弹出窗口
+        marker.bindPopup(`
+          <div class="gym-popup">
+            <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold;">${gym.name}</h3>
+            <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;">${gym.description}</p>
+            <p style="margin: 0; font-size: 12px; color: #888;">
+              <i class="fa-solid fa-clock"></i> ${gym.hours}
+            </p>
+          </div>
+        `)
+
+        // 点击标记时选中健身房
+        marker.on('click', () => {
+          selectGym(gym)
+        })
+
+        mapMarkers.value.push(marker)
+      })
+
+      // 默认选中第一个健身房
       setTimeout(() => {
         selectGym(gymLocations.value[0])
       }, 100)
-    }
 
-    // 创建地图标记
-    function createMapMarker(gym, container) {
-      const marker = document.createElement('div')
-      marker.className = 'map-marker'
-      marker.setAttribute('data-gym-id', gym.id)
-      
-      // 计算相对位置（简化的坐标映射）
-      const containerRect = container.getBoundingClientRect()
-      const x = mapCoordinateX(gym.lng, container.clientWidth)
-      const y = mapCoordinateY(gym.lat, container.clientHeight)
-      
-      marker.style.left = `${x}px`
-      marker.style.top = `${y}px`
-
-      // 添加点击事件
-      marker.addEventListener('click', () => {
-        selectGym(gym)
-      })
-
-      // 添加悬停工具提示
-      const tooltip = document.createElement('div')
-      tooltip.className = 'map-tooltip'
-      tooltip.textContent = gym.name
-      tooltip.style.display = 'none'
-      
-      marker.addEventListener('mouseenter', (e) => {
-        tooltip.style.display = 'block'
-        tooltip.style.left = '50%'
-        tooltip.style.transform = 'translateX(-50%) translateY(-100%)'
-        marker.appendChild(tooltip)
-      })
-
-      marker.addEventListener('mouseleave', () => {
-        if (tooltip.parentNode) {
-          tooltip.parentNode.removeChild(tooltip)
-        }
-      })
-
-      container.appendChild(marker)
-    }
-
-    // 简化的坐标映射函数
-    function mapCoordinateX(lng, containerWidth) {
-      // 马来西亚大致经度范围：100°E - 119°E
-      const minLng = 100.0
-      const maxLng = 119.0
-      const normalizedX = (lng - minLng) / (maxLng - minLng)
-      return Math.max(50, Math.min(containerWidth - 50, normalizedX * containerWidth))
-    }
-
-    function mapCoordinateY(lat, containerHeight) {
-      // 马来西亚大致纬度范围：1°N - 7°N
-      const minLat = 1.0
-      const maxLat = 7.0
-      const normalizedY = 1 - ((lat - minLat) / (maxLat - minLat)) // 翻转Y轴
-      return Math.max(50, Math.min(containerHeight - 50, normalizedY * containerHeight))
+      console.log('Leaflet map initialized successfully')
     }
 
     // 选择健身房
     function selectGym(gym) {
       selectedGym.value = gym
 
+      if (!leafletMap.value) return
+
       // 更新标记样式
-      const markers = document.querySelectorAll('.map-marker')
-      markers.forEach(marker => {
-        marker.classList.remove('active')
-        if (parseInt(marker.getAttribute('data-gym-id')) === gym.id) {
-          marker.classList.add('active')
-        }
+      mapMarkers.value.forEach(marker => {
+        const isActive = marker.options.gymId === gym.id
+        const icon = isActive ? 
+          L.icon({
+            iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40">
+                <path fill="#F59E0B" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                <circle fill="white" cx="12" cy="9" r="1.5"/>
+              </svg>
+            `),
+            iconSize: [40, 40],
+            iconAnchor: [20, 40],
+            popupAnchor: [0, -40]
+          }) :
+          L.icon({
+            iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
+                <path fill="#8B5CF6" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                <circle fill="white" cx="12" cy="9" r="1.5"/>
+              </svg>
+            `),
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+          })
+        
+        marker.setIcon(icon)
       })
 
-      // 模拟地图中心移动到选中的健身房
-      animateMapToLocation(gym)
+      // 移动地图视图到选中的健身房
+      leafletMap.value.setView([gym.lat, gym.lng], 12, {
+        animate: true,
+        duration: 0.5
+      })
+
+      // 更新按钮样式
+      updateGymButtonStyles(gym.id)
     }
 
-    // 动画移动到位置（视觉效果）
-    function animateMapToLocation(gym) {
-      const mapContainer = document.getElementById('map')
-      if (!mapContainer) return
-
-      mapContainer.style.transform = 'scale(0.95)'
-      setTimeout(() => {
-        mapContainer.style.transform = 'scale(1)'
-      }, 200)
+    // 更新健身房按钮样式
+    function updateGymButtonStyles(selectedId) {
+      const buttons = document.querySelectorAll('.gym-button')
+      buttons.forEach(button => {
+        const gymId = parseInt(button.getAttribute('data-gym-id'))
+        if (gymId === selectedId) {
+          button.classList.add('active')
+        } else {
+          button.classList.remove('active')
+        }
+      })
     }
 
     // 获取路线
@@ -234,6 +280,11 @@ export default {
 
     onUnmounted(() => {
       window.removeEventListener('languagechange', handleLangChange)
+      
+      // 清理地图实例
+      if (leafletMap.value) {
+        leafletMap.value.remove()
+      }
     })
 
     return {
