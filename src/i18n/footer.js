@@ -1,7 +1,7 @@
 // src/i18n/footer.js
 export default {
   en: {
-    description: "Developed by five students from Xiamen University Malaysia, this platform offers smart and personalized fitness services to support a healthy lifestyle for young people.",
+    description: "Join us today to transform your body, elevate your mind, and unlock your full potential.",
     support: "SUPPORT",
     program: "PROGRAM",
     getInfo: "GET INFO",
@@ -15,10 +15,10 @@ export default {
     phone: "Phone",
     email: "Email",
     address: "Address",
-    copyright: "Copyright ©2025 All rights reserved by"
+    copyright: "Copyright ©2025 All rights reserved | This template is made with ❤ by"
   },
   zh: {
-    description: "本平台由厦门大学马来西亚分校五人小组设计与实现，项目旨在打造一个兼具智能化、个性化与高可用性的健身服务系统，助力青年群体实现健康生活方式。",
+    description: "立即加入我们，改变您的身体，提升您的思维，释放您的全部潜力。",
     support: "支持",
     program: "项目",
     getInfo: "联系信息",
@@ -32,6 +32,6 @@ export default {
     phone: "电话",
     email: "邮箱",
     address: "地址",
-    copyright: "版权所有 ©2025"
+    copyright: "©2025 版权所有 | 本模板由❤倾情打造"
   }
 }
