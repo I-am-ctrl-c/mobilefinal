@@ -1,0 +1,158 @@
+/* Map page styles */
+
+.map-container {
+  position: relative;
+  transition: box-shadow 0.3s ease;
+}
+
+.map-container:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+#map {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  position: relative;
+}
+
+/* 健身房按钮样式 */
+.gym-button {
+  font-weight: 500;
+  text-transform: capitalize;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.gym-button:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s;
+}
+
+.gym-button:hover:before {
+  left: 100%;
+}
+
+.gym-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 健身房信息卡片样式 */
+.gym-info-card {
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.gym-info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  border-color: var(--decorPu-5);
+}
+
+/* 地图标记样式 */
+.map-marker {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+}
+
+.map-marker:hover {
+  filter: brightness(1.2);
+}
+
+.map-marker.active {
+  z-index: 1000;
+}
+
+/* 地图工具提示 */
+.map-tooltip {
+  position: absolute;
+  background: var(--background-color-9);
+  color: var(--font-color-1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  transform: translateY(-100%);
+  margin-top: -10px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+.map-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--background-color-9);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .gym-button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+  
+  .gym-info-card {
+    padding: 16px;
+  }
+  
+  .map-marker {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+/* 加载动画 */
+.map-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 地图区域样式增强 */
+.map-container {
+  background: var(--background-color-8);
+  border: 2px solid transparent;
+  background-image: linear-gradient(var(--background-color-8), var(--background-color-8)),
+                    linear-gradient(45deg, var(--decorPu-5), var(--decorPu-6));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}

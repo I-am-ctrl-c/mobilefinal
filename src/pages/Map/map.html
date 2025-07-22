@@ -1,0 +1,98 @@
+<head>
+  <link rel="stylesheet" href="./map.css">
+  <link rel="stylesheet" href="/src/assets/main.css">
+  <script src="./index.js" defer></script>
+</head>
+
+<!-- 导航栏组件 -->
+<NavBar />
+
+<!-- 主容器：设置顶部内边距避免被导航栏遮挡，使用背景色和最小高度 -->
+<main class="pt-16 min-h-screen">
+
+  <!-- 标题横幅区域 -->
+  <section class="h-48 w-full bg-cover bg-center flex items-center justify-center mt-6" style="background-image: url('/src/assets/images/Map_bg.png')">
+    <h1 class="text-5xl font-bold text-white">{{ t('title') }}</h1>
+  </section>
+
+  <!-- 主要内容区域 -->
+  <section class="container mx-auto py-8 px-4">
+    
+    <!-- 地图控制面板 -->
+    <div class="mb-6">
+      <div class="flex flex-wrap gap-4 justify-center items-center background-color-9 rounded-lg p-4">
+        <button 
+          v-for="gym in gymLocations" 
+          :key="gym.id"
+          @click="selectGym(gym)"
+          class="gym-button px-4 py-2 rounded-lg transition-all duration-200"
+          :class="[
+            selectedGym?.id === gym.id
+              ? 'background-color-8 font-color-1 border-2 border-decorPu-5'
+              : 'background-color-9 font-color-4 hover:background-color-8 hover:font-color-1 border-2 border-transparent'
+          ]"
+        >
+          {{ gym.name }}
+        </button>
+      </div>
+    </div>
+
+    <!-- 地图容器 -->
+    <div class="map-container rounded-lg overflow-hidden shadow-lg background-color-9">
+      <div id="map" class="w-full h-96 md:h-[500px] lg:h-[600px]"></div>
+    </div>
+
+    <!-- 选中健身房信息卡片 -->
+    <div v-if="selectedGym" class="mt-12 max-w-8xl mx-auto">
+      <div class="gym-info-card background-color-9 rounded-lg p-6 shadow-lg">
+        <div class="flex flex-col md:flex-row gap-6">
+          
+          <!-- 健身房信息 -->
+          <div class="md:w-4/4">
+            <h3 class="text-2xl font-bold font-color-1 mb-3">{{ selectedGym.name }}</h3>
+            <p class="font-color-4 text-lg mb-4">{{ selectedGym.description }}</p>
+            
+            <!-- 详细信息 -->
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-map-marker-alt text-decorPu-5"></i>
+                <span class="font-color-4">{{ selectedGym.address }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-phone text-decorPu-5"></i>
+                <span class="font-color-4">{{ selectedGym.phone }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-clock text-decorPu-5"></i>
+                <span class="font-color-4">{{ selectedGym.hours }}</span>
+              </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="flex gap-4 mt-4">
+              <button 
+                @click="getDirections"
+                class="flex-1 bg-decorPu-5 hover:bg-decorPu-6 text-white py-2 px-4 rounded-lg font-semibold transition-colors duration-200"
+              >
+                <i class="fa-solid fa-directions mr-2"></i>
+                {{ t('getDirections') }}
+              </button>
+              <button 
+                @click="goToBooking"
+                class="flex-1 bg-background-color-8 hover:bg-background-color-7 font-color-1 py-2 px-4 rounded-lg font-semibold transition-colors duration-200"
+              >
+                <i class="fa-solid fa-calendar mr-2"></i>
+                {{ t('bookEquipment') }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<div class="pt-0">
+  <Footer />
+</div>
