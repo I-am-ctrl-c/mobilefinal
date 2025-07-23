@@ -174,30 +174,53 @@ const openCalorieEditor = () => {
   calorieEditorGoal.value = selectedCalories.value.goal
   showCalorieEditor.value = true
 }
-const saveCalorieEdit = async () => {
-  const uid = window.currentUserId || 'demoUser'
-  const dateStr = selectedDate.value
-  const dateObj = new Date(dateStr)
-  const current = parseInt(calorieEditorCurrent.value)
-  const goal = parseInt(calorieEditorGoal.value)
+ const saveCalorieEdit = async () => {
+     const uid      = window.currentUserId || 'demoUser'
+     const dateStr  = selectedDate.value
+     const dateObj  = new Date(dateStr)
+     const current  = parseInt(calorieEditorCurrent.value)
+     const goal     = parseInt(calorieEditorGoal.value)
+  
+     // 1. 保存前记录旧值，用于增量计算
+     const prevStat    = dailyStats.value[dateStr] || { caloriesCurrent: 0, caloriesGoal: 0 }
+     const prevCurrent = prevStat.caloriesCurrent
+     const prevGoal    = prevStat.caloriesGoal
+  
+     // 2. 更新当日环的数据并关闭编辑器
+     selectedCalories.value = { current, goal }
+     showCalorieEditor.value = false
+  
+     // 3. 持久化到 Firebase
+     await FirebaseService.getInstance().updateCalories(uid, dateObj, current, goal)
+  
+     // 4. 同步更新日历数据源
+     dailyStats.value[dateStr] = { caloriesCurrent: current, caloriesGoal: goal }
+  
+     // 5. 增量更新本周累计（避免 cache 问题）
+     weeklyTotals.value = {
+       current: weeklyTotals.value.current + (current - prevCurrent),
+       goal:    weeklyTotals.value.goal    + (goal    - prevGoal)
+     }
+  
+     // 6. 等 Vue 更新 data-* 属性，然后重绘所有圆环
+     await nextTick()
+     // 6a. 手动同步 #weeklyRing 的 dataset
+     const weeklyEl = document.getElementById('weeklyRing')
+     if (weeklyEl) {
+       weeklyEl.dataset.current = String(weeklyTotals.value.current)
+       weeklyEl.dataset.goal    = String(weeklyTotals.value.goal)
+     }
+     // 6b. 重绘 SVG 环
+     renderCalorieRings()
+  
+     // 7. 更新本周柱状图中对应日期的值
+     const dayIndex = new Date(dateObj).getDay()  // 0 = Sunday ... 6 = Saturday
+     if (calorieChart) {
+       calorieChart.data.datasets[0].data[dayIndex] = current
+       calorieChart.update()
+     }
+   }
 
-    // 1. 更新当前选中圈的数据
-    selectedCalories.value = { current, goal }
-    showCalorieEditor.value = false
-
-    // 2. 持久化到 Firebase
-    await FirebaseService.getInstance().updateCalories(uid, dateObj, current, goal)
-
-    // 3. 同步更新月度日历的数据源 dailyStats
-    //    这样模板里 :data-current/:data-goal 会自动变更
-    dailyStats.value[dateStr] = {
-      caloriesCurrent: current,
-      caloriesGoal:    goal
-    }
-
-    // 4. 重新渲染所有圆环
-    await nextTick(renderCalorieRings)
-}
 const topActivities = ref([])
 
     /* ─────────────────────────── Firebase 数据加载 ─────────────────────────── */
@@ -272,20 +295,37 @@ const topActivities = ref([])
         acc.goal    += d.caloriesGoal    || 0
         return acc
       }, {current:0, goal:0})
-      weeklyTotals.value = totals
-           // —— 新增：汇总本周所有活动并取前两位 ——
-           const activityMap = {}
-           weekArr.forEach(d => {
-             (d.activities || []).forEach(a => {
-               activityMap[a.name] = (activityMap[a.name] || 0) + (a.duration || 0)
-             })
-           })
-           const sorted = Object.entries(activityMap)
-             .map(([name, duration]) => ({ name, duration }))
-             .sort((a, b) => b.duration - a.duration)
-           topActivities.value = sorted.slice(0, 2)
+      
+// 1) 更新响应式数据
+  weeklyTotals.value = totals
+  // 2) 计算并更新本周前两大活动
+  const activityMap = {}
+  weekArr.forEach(d => {
+    (d.activities || []).forEach(a => {
+      activityMap[a.name] = (activityMap[a.name] || 0) + (a.duration || 0)
+    })
+  })
+  const sorted = Object.entries(activityMap)
+    .map(([name, duration]) => ({ name, duration }))
+    .sort((a, b) => b.duration - a.duration)
+  topActivities.value = sorted.slice(0, 2)
 
-      await nextTick(renderCalorieRings)
+  // 3) 等 Vue 把上述响应式改动更新到 DOM（data-* 以及 v-for 列表）
+  await nextTick()
+
+  // 4) 手动更新「周圆环」的 data-* 属性并立刻重绘
+  const weeklyEl = document.getElementById('weeklyRing')
+  if (weeklyEl) {
+    weeklyEl.dataset.current = String(totals.current)
+    weeklyEl.dataset.goal    = String(totals.goal)
+  }
+  renderCalorieRings()
+
+  // —— 手动同步本周进度 + 前两大活动 —— 
+
+
+
+  // 5) 再更新 Chart.js 柱状图 & 折线图
 
       if (calorieChart) {
         calorieChart.data.labels = labels
@@ -402,7 +442,7 @@ watch(currentMonth, async () => {
       // 渲染：SVG 环、BMI 计算器、活动弹窗
       renderCalorieRings()
       setupBMICalculator(t)
-      setupActivityModal(t)
+      setupActivityModal(t,loadWeekStats)
       document.getElementById('calorieRingContainer')?.addEventListener('click', openCalorieEditor)
       window.addEventListener('languagechange', handleLangChange)
 
@@ -667,7 +707,9 @@ function setupBMICalculator(t) {
 
 // src/pages/Workout/index.js
 
-function setupActivityModal(t) {
+function setupActivityModal(t, loadWeekStats) {
+    // —— 补：拿到 metrics 实例，供下面清缓存用 —— 
+    const metrics = WorkoutMetrics.getInstance();
 
   // 用当前模式（add/edit）动态更新弹窗标题
   function updateModalTitle() {
@@ -726,6 +768,9 @@ function setupActivityModal(t) {
       const dateStr = document.querySelector('input[type="date"]').value;
       await FirebaseService.getInstance()
         .updateActivities(uid, new Date(dateStr), remaining);
+         if (metrics.dailyCache) metrics.dailyCache = {}
+ if (metrics.weekCache)  metrics.weekCache  = {}
+        await loadWeekStats();
     } catch (err) {
       console.error("Failed to delete activity:", err);
     }
@@ -809,6 +854,9 @@ function setupActivityModal(t) {
       const dateObj = dateStr ? new Date(dateStr) : new Date();
       await FirebaseService.getInstance()
         .updateActivities(uid, dateObj, acts);
+         if (metrics.dailyCache) metrics.dailyCache = {}
+         if (metrics.weekCache)  metrics.weekCache  = {}        
+        await loadWeekStats();
     } catch (err) {
       console.error("Failed to update activities:", err);
     }

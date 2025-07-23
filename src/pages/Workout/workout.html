@@ -207,6 +207,7 @@
     />
     <!-- flex-shrink-0 保证在行不下时单独换行 -->
     <div
+      id="weeklyRing"
       class="calorie-ring flex-shrink-0"
       :data-current="weeklyTotals.current"
       :data-goal="weeklyTotals.goal"
@@ -270,7 +271,11 @@
 
       <!-- ✅ 数据块展示 -->
 <!-- ✅ 数据块展示（Progress + 本周前两大活动） -->
-<div class="flex flex-wrap gap-x-10 gap-y-6 mt-6">
+ <div
+   id="weeklySummary"
+   :key="weeklyTotals.current + '-' + weeklyTotals.goal"
+   class="flex flex-wrap gap-x-10 gap-y-6 mt-6"
+ >
   <!-- 本周进度 -->
   <div>
     <p class="text-decorPu-5 text-3xl font-bold">
