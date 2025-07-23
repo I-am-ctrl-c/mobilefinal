@@ -684,9 +684,20 @@ function setupBMICalculator(t) {
       const uid = window.currentUserId || 'demoUser'
       const dateStr = document.querySelector('input[type="date"]')?.value
       const dateObj = dateStr ? new Date(dateStr) : new Date()
-      FirebaseService.getInstance()
-        .updateBMIDoubleAndPropagate(uid, dateObj, height, weight, bmiVal)
-        .catch(console.error)
+          FirebaseService.getInstance()
+            .updateBMIDoubleAndPropagate(uid, dateObj, height, weight, bmiVal)
+            .then(() => {
+              // 1. 取到当前选中日期的星期索引
+              const dateStr = document.querySelector('input[type="date"]').value
+              const dayIndex = new Date(dateStr).getDay()  // 0 = 周日 … 6 = 周六
+      
+              // 2. 更新 Chart.js 的 weightChart 数据并重绘
+              if (weightChart) {
+                weightChart.data.datasets[0].data[dayIndex] = weight
+                weightChart.update()
+              }
+            })
+            .catch(console.error)
     }
   }
 
