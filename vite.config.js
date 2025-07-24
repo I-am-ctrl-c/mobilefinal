@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -18,4 +17,10 @@ export default defineConfig({
       'vue': 'vue/dist/vue.esm-bundler.js'
     },
   },
+  server: {
+    host: '0.0.0.0',
+    port: 52115,
+    strictPort: true,
+    allowedHosts: ['xgym.mark23519.top']
+  }
 })
