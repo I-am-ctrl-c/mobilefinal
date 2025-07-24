@@ -29,5 +29,15 @@ coverage
 
 *.tsbuildinfo
 
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Firebase config backups
+firebaseConfig.original.js
+*.backup.js
+
 # Local Firebase config (never commit real keys)
 /src/firebaseConfig.local.js
