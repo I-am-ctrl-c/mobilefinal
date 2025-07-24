@@ -154,7 +154,8 @@ mobilefinal/
 ## 🚀 Quick Start
 
 ### System Requirements
-- Node.js 20.0.0
+- Node.js v20
+- Npm v10
 
 ### Installation Steps
 
@@ -248,21 +249,6 @@ Adding new translations:
 1. Add translation key-value pairs in corresponding files under `src/i18n/`
 2. Use `t('key')` function to get translated text
 3. Support dynamic language switching
-
-### Component Development Standards
-
-```javascript
-// Component structure example
-export default {
-  name: 'ComponentName',
-  setup() {
-    // Composition API logic
-    return {
-      // Export data and methods
-    }
-  }
-}
-```
 
 ## 📄 License
 
